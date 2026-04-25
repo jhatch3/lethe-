@@ -36,12 +36,6 @@
 
 <br />
 
-<!-- Replace this with a real screenshot or animated GIF of your dashboard -->
-<img src="https://placehold.co/1100x600/1e293b/94a3b8/png?text=Dashboard+Screenshot+→+Replace+Me" alt="Lethe dashboard" width="90%" />
-
-</div>
-
-<br />
 
 ---
 
@@ -340,9 +334,8 @@ lethe/
 <tr>
 <td align="center" width="25%">
   <img src="https://placehold.co/120x120/1e293b/94a3b8/png?text=P1" width="100" /><br />
-  <b>[Name]</b><br />
-  <sub>Backend / AI Lead</sub><br />
-  <a href="#">GitHub</a> · <a href="#">LinkedIn</a>
+  <b>Justin Hatch</b><br />
+  <a href="https://github.com/jhatch3">GitHub</a> · <a href="https://www.linkedin.com/in/justinhatch/">LinkedIn</a>
 </td>
 <td align="center" width="25%">
   <img src="https://placehold.co/120x120/1e293b/94a3b8/png?text=P2" width="100" /><br />
