@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Lethe is a hackathon-stage system that audits medical bills via AI consensus. A bill is parsed, sent to three independent LLM agents (GPT-4o, Claude, Gemini) communicating peer-to-peer over Gensyn AXL, and only acted on when at least two agents agree. The bill itself is held in coordinator memory only — never written to disk, never logged, never persisted on 0G. What persists is a SHA-256 hash on 0G Chain (proof of *what was analyzed*) and an anonymized pattern record on 0G Storage. Disputes are submitted on-chain via KeeperHub.
+Lethe is a hackathon-stage system that audits medical bills via AI consensus. The pipeline is: (1) a deterministic PDF parser extracts structured data from the uploaded bill (CPT/ICD codes, modifiers, charges, DOS); (2) a PHI redactor strips all patient identifiers (name, DOB, address, MRN, account numbers) before anything leaves the coordinator; (3) the redacted payload is sent to three independent LLM agents (GPT-4o, Claude, Gemini) communicating peer-to-peer over Gensyn AXL; (4) action is taken only when at least two agents agree. The original bill is held in coordinator memory only — never written to disk, never logged, never persisted on 0G, and never sent to a model provider. What persists is a SHA-256 hash on 0G Chain (proof of *what was analyzed*) and an anonymized pattern record on 0G Storage. Disputes are submitted on-chain via KeeperHub.
 
-The "zero retention" guarantee is load-bearing — privacy is a product feature, not just a nice-to-have. When touching the coordinator or agent code, treat any code path that could persist a bill (logging, error reporting, caching, telemetry) as a bug.
+The "zero retention" guarantee is load-bearing — privacy is a product feature, not just a nice-to-have. AI agents must only ever see the redacted payload, never the original bill. When touching the coordinator, parser, redactor, or agent code, treat any path that could persist or leak a bill (logging, error reporting, caching, telemetry, or sending un-redacted data to a model) as a bug.
 
 ## Repository layout
 

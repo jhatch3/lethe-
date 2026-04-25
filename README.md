@@ -74,9 +74,9 @@ Existing services upload your records to a central database and keep them indefi
 
 ## ✨ What Lethe does
 
-Drop in a medical bill. Three independent AI agents — running on three different model providers, communicating peer-to-peer over [Gensyn AXL](https://blog.gensyn.ai/introducing-axl/) — each analyze it for overcharges, coding errors, and dispute opportunities. They vote. If consensus emerges with sufficient confidence, Lethe auto-drafts a dispute letter and submits it on-chain via [KeeperHub](https://keeperhub.com).
+Drop in a medical bill. A deterministic PDF parser extracts the structured data (CPT/ICD codes, modifiers, charges, dates of service) and a redaction pass strips every piece of PHI — patient name, DOB, address, MRN, account numbers — *before any AI ever sees the payload*. Three independent AI agents — running on three different model providers, communicating peer-to-peer over [Gensyn AXL](https://blog.gensyn.ai/introducing-axl/) — then analyze the redacted bill for overcharges, coding errors, and dispute opportunities. They vote. If consensus emerges with sufficient confidence, Lethe auto-drafts a dispute letter and submits it on-chain via [KeeperHub](https://keeperhub.com).
 
-The bill itself never touches storage. It lives in coordinator memory long enough for the agents to read it, then it's discarded. What persists is a SHA-256 hash anchored on [0G Chain](https://0g.ai) — proof of *what was analyzed* — and an anonymized pattern record on [0G Storage](https://docs.0g.ai) that makes the next user's analysis smarter without anyone's records being recoverable.
+The original bill never touches storage and never reaches a model provider. It lives in coordinator memory long enough for the parser and redactor to run, then it's discarded. What persists is a SHA-256 hash anchored on [0G Chain](https://0g.ai) — proof of *what was analyzed* — and an anonymized pattern record on [0G Storage](https://docs.0g.ai) that makes the next user's analysis smarter without anyone's records being recoverable.
 
 ---
 
@@ -90,7 +90,8 @@ flowchart TB
 
     subgraph Orchestration["⚙️ Orchestration"]
         API[FastAPI Gateway]
-        Parser[Bill Parser<br/>GPT-4o Vision]
+        Parser[PDF Parser<br/>deterministic extract]
+        Redactor[PHI Redactor<br/>strip all identifiers]
         Coordinator[Consensus Coordinator<br/>AXL Node #0]
     end
 
@@ -111,8 +112,9 @@ flowchart TB
     end
 
     UI --> API --> Parser
-    Parser -->|in-memory only| Coordinator
-    Coordinator <-->|AXL| A1 & A2 & A3
+    Parser -->|in-memory only| Redactor
+    Redactor -->|redacted payload| Coordinator
+    Coordinator <-->|AXL, redacted only| A1 & A2 & A3
     Coordinator -->|anonymized| ZGStorage
     Coordinator --> KH
     KH --> ZGChain
@@ -126,7 +128,7 @@ flowchart TB
     classDef exec      fill:#000,stroke:#f87171,stroke-width:2px,color:#fff
 
     class UI client
-    class API,Parser,Coordinator orch
+    class API,Parser,Redactor,Coordinator orch
     class A1,A2,A3 agent
     class ZGStorage,ZGChain chain
     class KH,Insurer exec
