@@ -345,9 +345,9 @@ lethe/
 </td>
 <td align="center" width="25%">
   <img src="https://placehold.co/120x120/1e293b/94a3b8/png?text=P2" width="100" /><br />
-  <b>[Name]</b><br />
+  <b>Drew Manley</b><br />
   <sub>Chain / Execution</sub><br />
-  <a href="#">GitHub</a> · <a href="#">LinkedIn</a>
+  <a href="https://github.com/drewmanley16">GitHub</a> · <a href="https://www.linkedin.com/in/drewmanley/">LinkedIn</a>
 </td>
 <td align="center" width="25%">
   <img src="https://placehold.co/120x120/1e293b/94a3b8/png?text=P3" width="100" /><br />
