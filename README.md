@@ -339,9 +339,9 @@ lethe/
 <table>
 <tr>
 <td align="center" width="25%">
-  <img src="https://placehold.co/120x120/1e293b/94a3b8/png?text=P1" width="100" /><br />
+  <img src="./assets/jmoney.jpg" width="100" /><br />
   <b>Justin Hatch</b><br />
-  <a href="https://github.com/jhatch3">GitHub</a> · <a href="https://www.linkedin.com/in/justinhatch/">LinkedIn</a>
+  <a href="assets\jmoney.jpg">GitHub</a> · <a href="https://www.linkedin.com/in/justinhatch/">LinkedIn</a>
 </td>
 <td align="center" width="25%">
   <img src="https://placehold.co/120x120/1e293b/94a3b8/png?text=P2" width="100" /><br />
@@ -372,7 +372,7 @@ lethe/
 <tr>
 <td valign="middle" width="20%" align="center" bgcolor="#ffffff">
   <a href="https://www.oregonblockchain.org">
-    <img src="./assets/obg.webp" alt="Oregon Blockchain Group" width="120" />
+    <img src="./assets/obg.webp" alt="Oregon Blockchain Group" width="100" />
   </a>
 </td>
 <td valign="middle">
