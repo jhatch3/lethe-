@@ -12,10 +12,7 @@
 
 <img src="./assets/banner.png" alt="Lethe banner" width="100%" />
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 20f7fd0031108ecc9dfb4f87efd72ea4a9135f11
 <h3>Medical bills, audited by AI consensus.<br/>Forgotten by design.</h3>
 
 <p>
