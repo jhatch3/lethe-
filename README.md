@@ -12,7 +12,6 @@
 
 <img src="./assets/banner.png" alt="Lethe banner" width="100%" />
 
-<h1>Lethe</h1>
 
 <h3>Medical bills, audited by AI consensus.<br/>Forgotten by design.</h3>
 
@@ -372,16 +371,16 @@ lethe/
 
 <table>
 <tr>
-<td valign="middle" width="20%" align="center">
+<td valign="middle" width="20%" align="center" bgcolor="#ffffff">
   <a href="https://www.oregonblockchain.org">
-    <img src="https://placehold.co/180x180/154733/FEE123/png?text=OBG" alt="Oregon Blockchain Group" width="120" />
+    <img src="./assets/obg.webp" alt="Oregon Blockchain Group" width="120" />
   </a>
 </td>
 <td valign="middle">
 
 ### [Oregon Blockchain Group](https://www.oregonblockchain.org)
 
-Built with support from the **Oregon Blockchain Group** at the University of Oregon — a student-led organization at the heart of the Pacific Northwest blockchain ecosystem and part of the [University Blockchain Research Initiative](https://ripple.com/impact/ubri/). OBG provided the community, mentorship, and infrastructure that made this project possible.
+Built with support from the **Oregon Blockchain Group** at the University of Oregon — a student-led organization at the heart of the Pacific Northwest blockchain ecosystem and part of the [University Blockchain Research Initiative](https://ripple.com/impact/ubri/).
 
 [Website](https://www.oregonblockchain.org) · [LinkedIn](https://www.linkedin.com/company/oregonblockchain) · [Twitter](https://x.com/oregonblock) · [Instagram](https://www.instagram.com/oregonblockchaingroup/)
 
