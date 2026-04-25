@@ -316,19 +316,20 @@ The compose file spins up:
 
 ```
 lethe/
-├── frontend/              # Next.js dashboard
-├── coordinator/           # FastAPI orchestrator + AXL node #0
-├── agent/                 # Agent template (cloned per LLM provider)
-│   ├── alpha/             # GPT-4o agent + AXL node #1
-│   ├── beta/              # Claude agent  + AXL node #2
-│   └── gamma/             # Gemini agent  + AXL node #3
-├── assets/                # Static images (README banner, etc.)
-├── contracts/             # Foundry project — BillRegistry, ConsensusVote
-├── infra/                 # docker-compose, AXL configs, KeeperHub workflows
-├── samples/               # Anonymized example bills for demo
+├── src/                       # All application code
+│   ├── frontend/              # Next.js dashboard
+│   ├── coordinator/           # FastAPI orchestrator + AXL node #0
+│   ├── agent/                 # Agent template (cloned per LLM provider)
+│   │   ├── alpha/             # GPT-4o agent + AXL node #1
+│   │   ├── beta/              # Claude agent  + AXL node #2
+│   │   └── gamma/             # Gemini agent  + AXL node #3
+│   └── contracts/             # Foundry project — BillRegistry, ConsensusVote
+├── assets/                    # Static images (README banner, etc.)
+├── infra/                     # docker-compose, AXL configs, KeeperHub workflows
+├── samples/                   # Anonymized example bills for demo
 ├── docs/
-│   ├── ROADMAP.md         # Full architecture & build plan
-│   └── PRIVACY.md         # Zero-retention threat model
+│   ├── ROADMAP.md             # Full architecture & build plan
+│   └── PRIVACY.md             # Zero-retention threat model
 └── README.md
 ```
 

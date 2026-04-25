@@ -1,0 +1,485 @@
+[
+  {
+    "metadata": {
+      "is_clean": true,
+      "specialty": "family_medicine",
+      "bill_type": "CMS-1500",
+      "planted_errors": []
+    },
+    "provider": {
+      "name": "Cascade Family Medicine PLLC",
+      "npi": "1487263905",
+      "tax_id": "91-3845127",
+      "address": {"street": "2840 SW Cedar Hills Blvd", "city": "Beaverton", "state": "OR", "zip": "97005"},
+      "phone": "(503) 555-0142",
+      "specialty_taxonomy": "207Q00000X"
+    },
+    "patient": {
+      "name": "Margaret R. Holloway",
+      "dob": "1972-03-18",
+      "sex": "F",
+      "account_number": "CFM-2025-08841",
+      "address": {"street": "1455 NE 47th Ave", "city": "Portland", "state": "OR", "zip": "97213"},
+      "insurance_id": "BCBS-OR-44872019"
+    },
+    "insurance": {
+      "payer_name": "Regence BlueCross BlueShield of Oregon",
+      "plan_type": "PPO",
+      "group_number": "GRP-77820",
+      "subscriber_id": "BCBS-OR-44872019"
+    },
+    "encounter": {
+      "date_of_service": "2025-09-12",
+      "billing_date": "2025-09-15",
+      "place_of_service_code": "11",
+      "place_of_service_description": "Office",
+      "facility": null
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "I10", "description": "Essential (primary) hypertension"},
+      {"pointer": "B", "icd10": "E11.9", "description": "Type 2 diabetes mellitus without complications"},
+      {"pointer": "C", "icd10": "Z00.00", "description": "Encounter for general adult medical exam without abnormal findings"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-09-12", "place_of_service": "11", "cpt_hcpcs": "99214", "modifiers": [], "diagnosis_pointers": ["A", "B"], "units": 1, "unit_charge": 235.00, "line_charge": 235.00, "description": "Office/outpatient visit, established patient, moderate complexity"},
+      {"line_number": 2, "date_of_service": "2025-09-12", "place_of_service": "11", "cpt_hcpcs": "85025", "modifiers": [], "diagnosis_pointers": ["A", "B"], "units": 1, "unit_charge": 28.00, "line_charge": 28.00, "description": "Complete CBC with auto differential WBC"},
+      {"line_number": 3, "date_of_service": "2025-09-12", "place_of_service": "11", "cpt_hcpcs": "80053", "modifiers": [], "diagnosis_pointers": ["A", "B"], "units": 1, "unit_charge": 42.00, "line_charge": 42.00, "description": "Comprehensive metabolic panel"},
+      {"line_number": 4, "date_of_service": "2025-09-12", "place_of_service": "11", "cpt_hcpcs": "83036", "modifiers": [], "diagnosis_pointers": ["B"], "units": 1, "unit_charge": 35.00, "line_charge": 35.00, "description": "Hemoglobin A1c"}
+    ],
+    "totals": {"total_charges": 340.00, "insurance_payment": 272.00, "patient_responsibility": 68.00, "amount_due": 68.00}
+  },
+
+  {
+    "metadata": {
+      "is_clean": false,
+      "specialty": "family_medicine",
+      "bill_type": "CMS-1500",
+      "planted_errors": [
+        {"error_type": "UPCODE", "affected_line": 1, "description": "99215 (high complexity, 40+ min) billed for what diagnoses (uncomplicated URI) and lab workup indicate was a low-complexity acute visit consistent with 99213.", "expected_savings_usd": 95.00}
+      ]
+    },
+    "provider": {
+      "name": "Sunset Hills Primary Care",
+      "npi": "1659432718",
+      "tax_id": "33-7821094",
+      "address": {"street": "117 N Main St", "city": "Bentonville", "state": "AR", "zip": "72712"},
+      "phone": "(479) 555-0188",
+      "specialty_taxonomy": "207Q00000X"
+    },
+    "patient": {
+      "name": "Tyler J. Whitfield",
+      "dob": "1995-11-04",
+      "sex": "M",
+      "account_number": "SHC-2025-31207",
+      "address": {"street": "208 SE Walton Blvd", "city": "Bentonville", "state": "AR", "zip": "72712"},
+      "insurance_id": "AET-W7710334"
+    },
+    "insurance": {
+      "payer_name": "Aetna Choice POS II",
+      "plan_type": "POS",
+      "group_number": "AET-WMT-44",
+      "subscriber_id": "AET-W7710334"
+    },
+    "encounter": {
+      "date_of_service": "2025-10-03",
+      "billing_date": "2025-10-04",
+      "place_of_service_code": "11",
+      "place_of_service_description": "Office",
+      "facility": null
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "J06.9", "description": "Acute upper respiratory infection, unspecified"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-10-03", "place_of_service": "11", "cpt_hcpcs": "99215", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 310.00, "line_charge": 310.00, "description": "Office/outpatient visit, established patient, high complexity"},
+      {"line_number": 2, "date_of_service": "2025-10-03", "place_of_service": "11", "cpt_hcpcs": "87880", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 38.00, "line_charge": 38.00, "description": "Strep A rapid antigen detection"}
+    ],
+    "totals": {"total_charges": 348.00, "insurance_payment": 245.00, "patient_responsibility": 103.00, "amount_due": 103.00}
+  },
+
+  {
+    "metadata": {
+      "is_clean": true,
+      "specialty": "orthopedics",
+      "bill_type": "CMS-1500",
+      "planted_errors": []
+    },
+    "provider": {
+      "name": "Rocky Mountain Orthopedic Associates",
+      "npi": "1284709361",
+      "tax_id": "84-2918374",
+      "address": {"street": "9450 E Mississippi Ave", "city": "Denver", "state": "CO", "zip": "80247"},
+      "phone": "(303) 555-0211",
+      "specialty_taxonomy": "207X00000X"
+    },
+    "patient": {
+      "name": "Daniel S. Park",
+      "dob": "1981-07-22",
+      "sex": "M",
+      "account_number": "RMO-2025-18834",
+      "address": {"street": "3411 S Tamarac Dr", "city": "Denver", "state": "CO", "zip": "80231"},
+      "insurance_id": "UHC-887193045"
+    },
+    "insurance": {
+      "payer_name": "UnitedHealthcare Choice Plus",
+      "plan_type": "PPO",
+      "group_number": "UHC-DEN-99",
+      "subscriber_id": "UHC-887193045"
+    },
+    "encounter": {
+      "date_of_service": "2025-08-19",
+      "billing_date": "2025-08-22",
+      "place_of_service_code": "24",
+      "place_of_service_description": "Ambulatory Surgical Center",
+      "facility": "Denver South ASC"
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "S83.231A", "description": "Complex tear of medial meniscus, current injury, right knee, initial encounter"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-08-19", "place_of_service": "24", "cpt_hcpcs": "29881", "modifiers": ["RT"], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 2850.00, "line_charge": 2850.00, "description": "Arthroscopy, knee, surgical, with meniscectomy (medial OR lateral)"},
+      {"line_number": 2, "date_of_service": "2025-08-19", "place_of_service": "24", "cpt_hcpcs": "01382", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 720.00, "line_charge": 720.00, "description": "Anesthesia for diagnostic arthroscopic procedures of knee joint"}
+    ],
+    "totals": {"total_charges": 3570.00, "insurance_payment": 3035.00, "patient_responsibility": 535.00, "amount_due": 535.00}
+  },
+
+  {
+    "metadata": {
+      "is_clean": false,
+      "specialty": "orthopedics",
+      "bill_type": "CMS-1500",
+      "planted_errors": [
+        {"error_type": "NCCI_PAIR", "affected_line": 2, "description": "CPT 29877 (chondroplasty) billed alongside 29881 (meniscectomy) on the same knee/same compartment without modifier 59 justification. NCCI bundles 29877 into 29881 in the same compartment.", "expected_savings_usd": 875.00}
+      ]
+    },
+    "provider": {
+      "name": "Lakeshore Sports Orthopedics",
+      "npi": "1773829405",
+      "tax_id": "36-4019822",
+      "address": {"street": "550 N Lake Shore Dr Ste 220", "city": "Chicago", "state": "IL", "zip": "60611"},
+      "phone": "(312) 555-0317",
+      "specialty_taxonomy": "207X00000X"
+    },
+    "patient": {
+      "name": "Rachel M. Sandoval",
+      "dob": "1988-02-14",
+      "sex": "F",
+      "account_number": "LSO-2025-44721",
+      "address": {"street": "1812 W Belmont Ave", "city": "Chicago", "state": "IL", "zip": "60657"},
+      "insurance_id": "BCBS-IL-99204117"
+    },
+    "insurance": {
+      "payer_name": "Blue Cross Blue Shield of Illinois",
+      "plan_type": "HMO",
+      "group_number": "BCBS-IL-220",
+      "subscriber_id": "BCBS-IL-99204117"
+    },
+    "encounter": {
+      "date_of_service": "2025-09-26",
+      "billing_date": "2025-09-29",
+      "place_of_service_code": "24",
+      "place_of_service_description": "Ambulatory Surgical Center",
+      "facility": "Lakeshore Surgical Center"
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "S83.232A", "description": "Complex tear of medial meniscus, current injury, left knee, initial encounter"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-09-26", "place_of_service": "24", "cpt_hcpcs": "29881", "modifiers": ["LT"], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 3100.00, "line_charge": 3100.00, "description": "Arthroscopy, knee, surgical, with meniscectomy"},
+      {"line_number": 2, "date_of_service": "2025-09-26", "place_of_service": "24", "cpt_hcpcs": "29877", "modifiers": ["LT"], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 875.00, "line_charge": 875.00, "description": "Arthroscopy, knee, surgical, debridement/shaving of articular cartilage (chondroplasty)"}
+    ],
+    "totals": {"total_charges": 3975.00, "insurance_payment": 3180.00, "patient_responsibility": 795.00, "amount_due": 795.00}
+  },
+
+  {
+    "metadata": {
+      "is_clean": true,
+      "specialty": "dermatology",
+      "bill_type": "CMS-1500",
+      "planted_errors": []
+    },
+    "provider": {
+      "name": "Sonoran Skin & Surgery Center",
+      "npi": "1908473726",
+      "tax_id": "86-3091844",
+      "address": {"street": "7400 N Oracle Rd Ste 110", "city": "Tucson", "state": "AZ", "zip": "85704"},
+      "phone": "(520) 555-0145",
+      "specialty_taxonomy": "207N00000X"
+    },
+    "patient": {
+      "name": "Eleanor V. Buchanan",
+      "dob": "1956-05-09",
+      "sex": "F",
+      "account_number": "SSC-2025-09112",
+      "address": {"street": "5402 E Speedway Blvd", "city": "Tucson", "state": "AZ", "zip": "85712"},
+      "insurance_id": "MCR-XYZ4422088"
+    },
+    "insurance": {
+      "payer_name": "Medicare Part B",
+      "plan_type": "Medicare",
+      "group_number": "N/A",
+      "subscriber_id": "MCR-XYZ4422088"
+    },
+    "encounter": {
+      "date_of_service": "2025-10-15",
+      "billing_date": "2025-10-16",
+      "place_of_service_code": "11",
+      "place_of_service_description": "Office",
+      "facility": null
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "L57.0", "description": "Actinic keratosis"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-10-15", "place_of_service": "11", "cpt_hcpcs": "17000", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 145.00, "line_charge": 145.00, "description": "Destruction (eg, laser surgery, electrosurgery, cryosurgery), premalignant lesions; first lesion"},
+      {"line_number": 2, "date_of_service": "2025-10-15", "place_of_service": "11", "cpt_hcpcs": "17003", "modifiers": [], "diagnosis_pointers": ["A"], "units": 6, "unit_charge": 22.00, "line_charge": 132.00, "description": "Destruction, premalignant lesions; 2nd through 14th lesions, each"}
+    ],
+    "totals": {"total_charges": 277.00, "insurance_payment": 221.60, "patient_responsibility": 55.40, "amount_due": 55.40}
+  },
+
+  {
+    "metadata": {
+      "is_clean": false,
+      "specialty": "dermatology",
+      "bill_type": "CMS-1500",
+      "planted_errors": [
+        {"error_type": "MODIFIER_25_ABUSE", "affected_line": 1, "description": "Modifier 25 added to E&M (99213) on the same day as a planned, scheduled cryosurgery (17000). The encounter was a follow-up specifically for the procedure with no separately identifiable E&M service performed.", "expected_savings_usd": 165.00}
+      ]
+    },
+    "provider": {
+      "name": "Coastal Dermatology Group",
+      "npi": "1547829034",
+      "tax_id": "27-8830192",
+      "address": {"street": "880 Boylston St", "city": "Boston", "state": "MA", "zip": "02199"},
+      "phone": "(617) 555-0228",
+      "specialty_taxonomy": "207N00000X"
+    },
+    "patient": {
+      "name": "James A. Pemberton",
+      "dob": "1968-12-30",
+      "sex": "M",
+      "account_number": "CDG-2025-77621",
+      "address": {"street": "44 Marlborough St", "city": "Boston", "state": "MA", "zip": "02116"},
+      "insurance_id": "HPHC-883372"
+    },
+    "insurance": {
+      "payer_name": "Harvard Pilgrim Health Care",
+      "plan_type": "PPO",
+      "group_number": "HPHC-MA-02",
+      "subscriber_id": "HPHC-883372"
+    },
+    "encounter": {
+      "date_of_service": "2025-08-28",
+      "billing_date": "2025-09-02",
+      "place_of_service_code": "11",
+      "place_of_service_description": "Office",
+      "facility": null
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "L57.0", "description": "Actinic keratosis"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-08-28", "place_of_service": "11", "cpt_hcpcs": "99213", "modifiers": ["25"], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 185.00, "line_charge": 185.00, "description": "Office/outpatient visit, established patient, low complexity"},
+      {"line_number": 2, "date_of_service": "2025-08-28", "place_of_service": "11", "cpt_hcpcs": "17000", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 165.00, "line_charge": 165.00, "description": "Destruction, premalignant lesion; first lesion"}
+    ],
+    "totals": {"total_charges": 350.00, "insurance_payment": 245.00, "patient_responsibility": 105.00, "amount_due": 105.00}
+  },
+
+  {
+    "metadata": {
+      "is_clean": true,
+      "specialty": "radiology",
+      "bill_type": "CMS-1500",
+      "planted_errors": []
+    },
+    "provider": {
+      "name": "Pacific Imaging Specialists",
+      "npi": "1832947105",
+      "tax_id": "94-1827744",
+      "address": {"street": "1701 Divisadero St", "city": "San Francisco", "state": "CA", "zip": "94115"},
+      "phone": "(415) 555-0298",
+      "specialty_taxonomy": "2085R0202X"
+    },
+    "patient": {
+      "name": "Aisha N. Brennan",
+      "dob": "1990-04-27",
+      "sex": "F",
+      "account_number": "PIS-2025-66109",
+      "address": {"street": "1255 Post St", "city": "San Francisco", "state": "CA", "zip": "94109"},
+      "insurance_id": "ANTHEM-CA-7733019"
+    },
+    "insurance": {
+      "payer_name": "Anthem Blue Cross of California",
+      "plan_type": "EPO",
+      "group_number": "ANT-SF-119",
+      "subscriber_id": "ANTHEM-CA-7733019"
+    },
+    "encounter": {
+      "date_of_service": "2025-09-08",
+      "billing_date": "2025-09-09",
+      "place_of_service_code": "22",
+      "place_of_service_description": "On Campus-Outpatient Hospital",
+      "facility": "Pacific Heights Outpatient Imaging"
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "M54.50", "description": "Low back pain, unspecified"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-09-08", "place_of_service": "22", "cpt_hcpcs": "72148", "modifiers": ["TC"], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 880.00, "line_charge": 880.00, "description": "MRI lumbar spine without contrast, technical component"},
+      {"line_number": 2, "date_of_service": "2025-09-08", "place_of_service": "22", "cpt_hcpcs": "72148", "modifiers": ["26"], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 235.00, "line_charge": 235.00, "description": "MRI lumbar spine without contrast, professional component (interpretation)"}
+    ],
+    "totals": {"total_charges": 1115.00, "insurance_payment": 892.00, "patient_responsibility": 223.00, "amount_due": 223.00}
+  },
+
+  {
+    "metadata": {
+      "is_clean": false,
+      "specialty": "radiology",
+      "bill_type": "CMS-1500",
+      "planted_errors": [
+        {"error_type": "UNBUNDLE", "affected_line": null, "description": "Three separate vascular ultrasound CPTs (93970 bilateral lower extremity venous, plus 93971 unilateral, plus 93971 unilateral) billed for what is essentially a bilateral exam. Should be billed as 93970 alone. The two 93971 lines duplicate coverage already paid for under 93970.", "expected_savings_usd": 410.00}
+      ]
+    },
+    "provider": {
+      "name": "Heartland Vascular Imaging",
+      "npi": "1456382091",
+      "tax_id": "73-9018224",
+      "address": {"street": "12100 W Center Rd Ste 408", "city": "Omaha", "state": "NE", "zip": "68144"},
+      "phone": "(402) 555-0173",
+      "specialty_taxonomy": "2085R0202X"
+    },
+    "patient": {
+      "name": "Robert E. Kowalski",
+      "dob": "1949-08-11",
+      "sex": "M",
+      "account_number": "HVI-2025-33218",
+      "address": {"street": "8217 Pacific St", "city": "Omaha", "state": "NE", "zip": "68114"},
+      "insurance_id": "MCR-AB7740219"
+    },
+    "insurance": {
+      "payer_name": "Medicare Part B",
+      "plan_type": "Medicare",
+      "group_number": "N/A",
+      "subscriber_id": "MCR-AB7740219"
+    },
+    "encounter": {
+      "date_of_service": "2025-10-21",
+      "billing_date": "2025-10-23",
+      "place_of_service_code": "11",
+      "place_of_service_description": "Office",
+      "facility": null
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "I83.93", "description": "Asymptomatic varicose veins of bilateral lower extremities"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-10-21", "place_of_service": "11", "cpt_hcpcs": "93970", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 425.00, "line_charge": 425.00, "description": "Duplex scan of extremity veins; complete bilateral study"},
+      {"line_number": 2, "date_of_service": "2025-10-21", "place_of_service": "11", "cpt_hcpcs": "93971", "modifiers": ["RT"], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 205.00, "line_charge": 205.00, "description": "Duplex scan of extremity veins; unilateral or limited study"},
+      {"line_number": 3, "date_of_service": "2025-10-21", "place_of_service": "11", "cpt_hcpcs": "93971", "modifiers": ["LT"], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 205.00, "line_charge": 205.00, "description": "Duplex scan of extremity veins; unilateral or limited study"}
+    ],
+    "totals": {"total_charges": 835.00, "insurance_payment": 668.00, "patient_responsibility": 167.00, "amount_due": 167.00}
+  },
+
+  {
+    "metadata": {
+      "is_clean": true,
+      "specialty": "pediatrics",
+      "bill_type": "CMS-1500",
+      "planted_errors": []
+    },
+    "provider": {
+      "name": "Bluegrass Pediatric Partners",
+      "npi": "1278934056",
+      "tax_id": "61-2884437",
+      "address": {"street": "1850 Nicholasville Rd", "city": "Lexington", "state": "KY", "zip": "40503"},
+      "phone": "(859) 555-0184",
+      "specialty_taxonomy": "208000000X"
+    },
+    "patient": {
+      "name": "Olivia G. Marchetti",
+      "dob": "2020-01-08",
+      "sex": "F",
+      "account_number": "BPP-2025-72018",
+      "address": {"street": "421 Ashland Ave", "city": "Lexington", "state": "KY", "zip": "40502"},
+      "insurance_id": "HUM-KY-3344210"
+    },
+    "insurance": {
+      "payer_name": "Humana ChoiceCare",
+      "plan_type": "PPO",
+      "group_number": "HUM-KY-088",
+      "subscriber_id": "HUM-KY-3344210"
+    },
+    "encounter": {
+      "date_of_service": "2025-08-04",
+      "billing_date": "2025-08-05",
+      "place_of_service_code": "11",
+      "place_of_service_description": "Office",
+      "facility": null
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "Z00.129", "description": "Encounter for routine child health examination without abnormal findings"},
+      {"pointer": "B", "icd10": "Z23", "description": "Encounter for immunization"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-08-04", "place_of_service": "11", "cpt_hcpcs": "99392", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 215.00, "line_charge": 215.00, "description": "Periodic preventive medicine reevaluation; established patient, age 1-4"},
+      {"line_number": 2, "date_of_service": "2025-08-04", "place_of_service": "11", "cpt_hcpcs": "90460", "modifiers": [], "diagnosis_pointers": ["B"], "units": 2, "unit_charge": 32.00, "line_charge": 64.00, "description": "Immunization administration through 18 years with counseling, first/only component"},
+      {"line_number": 3, "date_of_service": "2025-08-04", "place_of_service": "11", "cpt_hcpcs": "90686", "modifiers": [], "diagnosis_pointers": ["B"], "units": 1, "unit_charge": 28.00, "line_charge": 28.00, "description": "Influenza virus vaccine, quadrivalent, preservative free, IM"},
+      {"line_number": 4, "date_of_service": "2025-08-04", "place_of_service": "11", "cpt_hcpcs": "90707", "modifiers": [], "diagnosis_pointers": ["B"], "units": 1, "unit_charge": 95.00, "line_charge": 95.00, "description": "Measles, mumps and rubella virus vaccine (MMR), live, SC"}
+    ],
+    "totals": {"total_charges": 402.00, "insurance_payment": 402.00, "patient_responsibility": 0.00, "amount_due": 0.00}
+  },
+
+  {
+    "metadata": {
+      "is_clean": false,
+      "specialty": "emergency_medicine",
+      "bill_type": "UB-04",
+      "planted_errors": [
+        {"error_type": "DUPLICATE", "affected_line": 3, "description": "CT abdomen/pelvis with contrast (74177) billed twice on the same date of service for the same patient encounter without modifier 76 (repeat procedure by same physician) or clinical indication for repeat imaging.", "expected_savings_usd": 1620.00},
+        {"error_type": "INFLATED_CHARGE", "affected_line": 5, "description": "Single dose of IV ondansetron (J2405) billed at $245 — typical hospital chargemaster is $40-80, and Medicare allowed amount is approximately $0.40 per 1mg unit.", "expected_savings_usd": 200.00}
+      ]
+    },
+    "provider": {
+      "name": "Mercy Saint Vincent Medical Center",
+      "npi": "1665498032",
+      "tax_id": "34-1672805",
+      "address": {"street": "2213 Cherry St", "city": "Toledo", "state": "OH", "zip": "43608"},
+      "phone": "(419) 555-0144",
+      "specialty_taxonomy": "282N00000X"
+    },
+    "patient": {
+      "name": "Kevin D. O'Sullivan",
+      "dob": "1983-06-19",
+      "sex": "M",
+      "account_number": "MSV-ED-2025-44178",
+      "address": {"street": "5128 Monroe St", "city": "Toledo", "state": "OH", "zip": "43623"},
+      "insurance_id": "CIGNA-OH-9928114"
+    },
+    "insurance": {
+      "payer_name": "Cigna OAP",
+      "plan_type": "PPO",
+      "group_number": "CIG-OH-441",
+      "subscriber_id": "CIGNA-OH-9928114"
+    },
+    "encounter": {
+      "date_of_service": "2025-09-30",
+      "billing_date": "2025-10-04",
+      "place_of_service_code": "23",
+      "place_of_service_description": "Emergency Room - Hospital",
+      "facility": "Mercy Saint Vincent Emergency Department"
+    },
+    "diagnoses": [
+      {"pointer": "A", "icd10": "R10.84", "description": "Generalized abdominal pain"},
+      {"pointer": "B", "icd10": "R11.2", "description": "Nausea with vomiting, unspecified"}
+    ],
+    "service_lines": [
+      {"line_number": 1, "date_of_service": "2025-09-30", "place_of_service": "23", "cpt_hcpcs": "99284", "modifiers": [], "diagnosis_pointers": ["A", "B"], "units": 1, "unit_charge": 1845.00, "line_charge": 1845.00, "description": "ED visit, moderate-high complexity"},
+      {"line_number": 2, "date_of_service": "2025-09-30", "place_of_service": "23", "cpt_hcpcs": "80053", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 188.00, "line_charge": 188.00, "description": "Comprehensive metabolic panel"},
+      {"line_number": 3, "date_of_service": "2025-09-30", "place_of_service": "23", "cpt_hcpcs": "74177", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 1620.00, "line_charge": 1620.00, "description": "CT abdomen and pelvis with contrast"},
+      {"line_number": 4, "date_of_service": "2025-09-30", "place_of_service": "23", "cpt_hcpcs": "74177", "modifiers": [], "diagnosis_pointers": ["A"], "units": 1, "unit_charge": 1620.00, "line_charge": 1620.00, "description": "CT abdomen and pelvis with contrast"},
+      {"line_number": 5, "date_of_service": "2025-09-30", "place_of_service": "23", "cpt_hcpcs": "J2405", "modifiers": [], "diagnosis_pointers": ["B"], "units": 1, "unit_charge": 245.00, "line_charge": 245.00, "description": "Ondansetron HCl injection, per 1 mg"},
+      {"line_number": 6, "date_of_service": "2025-09-30", "place_of_service": "23", "cpt_hcpcs": "96374", "modifiers": [], "diagnosis_pointers": ["B"], "units": 1, "unit_charge": 312.00, "line_charge": 312.00, "description": "IV push, single or initial substance/drug"}
+    ],
+    "totals": {"total_charges": 5830.00, "insurance_payment": 4081.00, "patient_responsibility": 1749.00, "amount_due": 1749.00}
+  }
+]

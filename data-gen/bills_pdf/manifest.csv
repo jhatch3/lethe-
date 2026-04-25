@@ -1,0 +1,11 @@
+filename,is_clean,specialty,bill_type,planted_errors,expected_total_savings_usd
+clean_001.pdf,True,family_medicine,CMS-1500,,0.00
+dis_001.pdf,False,family_medicine,CMS-1500,UPCODE,95.00
+clean_002.pdf,True,orthopedics,CMS-1500,,0.00
+dis_002.pdf,False,orthopedics,CMS-1500,NCCI_PAIR,875.00
+clean_003.pdf,True,dermatology,CMS-1500,,0.00
+dis_003.pdf,False,dermatology,CMS-1500,MODIFIER_25_ABUSE,165.00
+clean_004.pdf,True,radiology,CMS-1500,,0.00
+dis_004.pdf,False,radiology,CMS-1500,UNBUNDLE,410.00
+clean_005.pdf,True,pediatrics,CMS-1500,,0.00
+dis_005.pdf,False,emergency_medicine,UB-04,DUPLICATE;INFLATED_CHARGE,1820.00

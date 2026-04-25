@@ -12,17 +12,18 @@ The "zero retention" guarantee is load-bearing — privacy is a product feature,
 
 The full intended structure is documented in `README.md` under "Repository structure". Currently scaffolded:
 
-- `frontend/` — Next.js 16 (App Router) + TypeScript + Tailwind 4 + Framer Motion. The user-facing dashboard.
-- `coordinator/` — FastAPI orchestrator. Will eventually host AXL node #0 and the consensus logic.
+- `src/frontend/` — Next.js 16 (App Router) + TypeScript + Tailwind 4 + Framer Motion. The user-facing dashboard.
+- `src/coordinator/` — FastAPI orchestrator. Will eventually host AXL node #0 and the consensus logic.
+- `src/agent/{alpha,beta,gamma}/` — Per-LLM agent containers (scaffolded, not yet implemented).
+- `src/contracts/` — Foundry project for `BillRegistry` / `ConsensusVote` (scaffolded, not yet implemented).
 - `assets/` — Static images for the README only. Not application assets.
-
-Not yet scaffolded but referenced in the README: `agent/{alpha,beta,gamma}/`, `contracts/` (Foundry), `infra/`, `samples/`, `docs/`.
+- `docs/`, `infra/`, `samples/` — Scaffolded, not yet populated.
 
 ## Frontend
 
 **Important:** Next.js 16 has breaking changes from older versions (the model's training data is likely Next 13–15). Before writing non-trivial Next.js code, read the relevant guide in `frontend/node_modules/next/dist/docs/01-app/` rather than relying on memory. Tailwind is v4 (uses `@import "tailwindcss"` and `@theme inline` in `globals.css`, not the v3 `@tailwind base/components/utilities` directives).
 
-Commands (run from `frontend/`):
+Commands (run from `src/frontend/`):
 
 ```bash
 npm run dev       # dev server on :3000
@@ -35,7 +36,7 @@ The page reads `NEXT_PUBLIC_API_URL` (defaulting to `http://localhost:8000`) to 
 
 ## Coordinator (FastAPI)
 
-Commands (run from `coordinator/`):
+Commands (run from `src/coordinator/`):
 
 ```bash
 python -m venv .venv && .venv\Scripts\activate     # Windows; use source .venv/bin/activate elsewhere
@@ -47,4 +48,4 @@ CORS is currently open only to `http://localhost:3000`. When adding a new fronte
 
 ## Running the full stack locally
 
-Two terminals: `uvicorn` in `coordinator/` on port 8000, `npm run dev` in `frontend/` on port 3000. The landing page fetches `/` from the coordinator and shows "backend offline" if it can't reach it.
+Two terminals: `uvicorn` in `src/coordinator/` on port 8000, `npm run dev` in `src/frontend/` on port 3000. The landing page fetches `/` from the coordinator and shows "backend offline" if it can't reach it.
