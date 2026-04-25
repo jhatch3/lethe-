@@ -36,6 +36,12 @@
 
 <br />
 
+<!-- Replace this with a real screenshot or animated GIF of your dashboard -->
+
+
+</div>
+
+<br />
 
 ---
 
