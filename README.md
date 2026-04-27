@@ -77,44 +77,38 @@ flowchart TB
     end
 
     subgraph Orchestration["⚙️ Orchestration node — FastAPI Coordinator"]
+        direction TB
         API[API gateway<br/>+ SSE event bus]
         Parse[Parser<br/>PDF / TXT / image]
         Redact[PHI Redactor<br/>regex + LLM sweep]
-        Tally[Consensus<br/>2-of-3 quorum<br/>· clarify on tie]
+        Tally[Consensus<br/>2-of-3 quorum · clarify on tie]
         Drafter[Drafter<br/>Claude → appeal letter]
     end
 
     subgraph AgentMesh["🕸️ Agent mesh — Gensyn AXL P2P"]
+        direction TB
         Alpha[Agent α<br/>GPT-4o<br/>ed25519 c4737e16…]
         Beta[Agent β<br/>Claude Sonnet 4.5<br/>ed25519 fc40f9dd…]
         Gamma[Agent γ<br/>Gemini Flash<br/>ed25519 739dd219…]
+        Alpha <-->|AXL| Beta
+        Alpha <-->|AXL| Gamma
+        Beta <-->|AXL| Gamma
     end
 
     subgraph Chain["⛓️ Chain anchors"]
+        direction TB
         ZG[0G Galileo<br/>BillRegistry + PatternRegistry]
         KH[KeeperHub<br/>Direct Execution]
         Sep[Sepolia<br/>BillRegistry mirror]
+        KH --> Sep
     end
 
     UI <-->|HTTP + SSE| API
-    API --> Parse
-    Parse -->|in-memory only| Redact
-    Redact -->|redacted payload| Alpha & Beta & Gamma
-
-    Alpha <-->|AXL · redacted only| Beta
-    Beta <-->|AXL · redacted only| Gamma
-    Alpha <-->|AXL · redacted only| Gamma
-
-    Alpha -->|vote| Tally
-    Beta -->|vote| Tally
-    Gamma -->|vote| Tally
-
-    Tally --> Drafter
-    Tally -->|sha-256 + verdict| ZG
-    Tally -->|same hash| KH
-    KH --> Sep
-    Tally -->|anonymized findings| ZG
-    Drafter --> API
+    API --> Parse --> Redact
+    Redact ==>|redacted payload| AgentMesh
+    AgentMesh ==>|votes + peer findings| Tally
+    Tally --> Drafter --> API
+    Tally ==>|sha-256 · verdict · patterns| Chain
 
     classDef client fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
     classDef orch   fill:#0b1220,stroke:#34d399,stroke-width:2px,color:#fff
