@@ -2,6 +2,8 @@
 
 <img src="./assets/banner.png" alt="Lethe banner" width="100%" />
 
+<h4><sub><i>Lethe</i> &nbsp;·&nbsp; <code>/ˈliː.θi/</code> &nbsp;·&nbsp; LEE-thee &nbsp;·&nbsp; the river of forgetfulness in Greek mythology</sub></h4>
+
 <h3>Medical bills, audited by AI consensus.<br/>Forgotten by design.</h3>
 
 <p>
