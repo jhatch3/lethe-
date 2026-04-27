@@ -36,6 +36,32 @@
 
 ---
 
+## 📑 Table of contents
+
+- [🩺 The problem](#-the-problem)
+- [✨ What Lethe does](#-what-lethe-does)
+- [🏗️ Architecture](#%EF%B8%8F-architecture)
+- [🎯 Features](#-features-all-wired-and-verified)
+- [🛠️ Built with](#%EF%B8%8F-built-with)
+- [🏆 Hackathon tracks](#-hackathon-tracks)
+- [📋 Submission details](#-submission-details)
+  - [Deployed contracts](#deployed-contracts)
+  - [🎖️ Track 1 — Gensyn AXL](#%EF%B8%8F-track-1--gensyn-axl--best-application-of-axl)
+  - [🛠️ Track 2 — 0G](#%EF%B8%8F-track-2--0g--best-autonomous-agents-swarms--inft-innovations)
+  - [💚 Track 3 — KeeperHub](#-track-3--keeperhub--best-innovative-use-of-keeperhub)
+  - [🔍 Bonus — KH Builder Feedback Bounty](#-bonus--keeperhub-builder-feedback-bounty-submission)
+ 
+- [🚀 Quick start](#-quick-start)
+- [🎬 Demo](#-demo)
+- [📁 Repository structure](#-repository-structure)
+- [👥 Team](#-team)
+- [🙏 Acknowledgments](#-acknowledgments)
+- [📄 License](#-license)
+
+> Setup, env vars, and verification: **[SETUP.md](./SETUP.md)**.
+
+---
+
 ## 🩺 The problem
 
 <table>
@@ -264,6 +290,110 @@ Every BillRegistry anchor on 0G Galileo is mirrored via KeeperHub's Direct Execu
 
 ---
 
+## 📋 Submission details
+
+Lethe is submitted to all three sponsor tracks. This section maps each sponsor's qualification requirements to where they're satisfied in the project.
+
+### Deployed contracts
+
+| Contract | Network | Address | Explorer |
+|----------|---------|---------|----------|
+| `BillRegistry` (canonical anchor) | 0G Galileo testnet (chain id 16602) | `0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457) |
+| `PatternRegistry` (priors index) | 0G Galileo testnet | `0x7665c9692b1c4e6ef90495a584288604b735e23f` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0x7665c9692b1c4e6ef90495a584288604b735e23f) |
+| `BillRegistry` (Sepolia mirror) | Ethereum Sepolia | `0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457) |
+
+Solidity sources: [`src/contracts/src/BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`src/contracts/src/PatternRegistry.sol`](./src/contracts/src/PatternRegistry.sol). Deploy script (`py-solc-x` + `web3.py`, no Foundry): [`src/contracts/deploy.py`](./src/contracts/deploy.py).
+
+---
+
+### 🎖️ Track 1 — Gensyn AXL · Best Application of AXL
+
+**How we use AXL:** Each of the three audit agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 keypair, joined to the public Gensyn mesh via two TLS bootstrap peers. Agents exchange their findings between rounds via real `POST /send` broadcasts and `GET /recv` inbox drains — the round-2 reflection LLM call literally cannot fire without findings arriving across the mesh.
+
+**Cross-node communication proof (qualification req):**
+- Three separate Docker containers (`axl-alpha`, `axl-beta`, `axl-gamma`) — see [`docker-compose.yml`](./docker-compose.yml).
+- Three distinct ed25519 peer IDs in [`infra/axl/keys/peer_ids.json`](./infra/axl/keys/peer_ids.json):
+  - α: `c4737e1652ed8b8450a1afea70996dad76d68e602f8a79c2e9ac3bcdbf417598`
+  - β: `fc40f9ddaf71a6f1824eef6194082a5d46f6ca1a776c8e70b8b053196f6d2ecb`
+  - γ: `739dd21944361f496f097e107834716fd1375cc19429e4c58b6319e0abb49e21`
+- Live verification at `http://localhost:3000/axl` — shows the three sidecars' `/topology` responses with verified pubkeys and connections to public Gensyn peers.
+- No central message broker — `POST /send` from agent X's sidecar to agent Y's sidecar over the encrypted Yggdrasil overlay.
+
+**Code:** [`src/coordinator/agents/transport_axl.py`](./src/coordinator/agents/transport_axl.py) (HTTP client), [`src/coordinator/pipeline/runner.py`](./src/coordinator/pipeline/runner.py) (the `_exchange()` and `_reflect_all()` stages), [`infra/axl/Dockerfile`](./infra/axl/Dockerfile) (sidecar build).
+
+---
+
+### 🛠️ Track 2 — 0G · Best Autonomous Agents, Swarms & iNFT Innovations
+
+**How we use 0G:** Lethe is a 3-agent swarm (GPT-4o · Claude · Gemini) that coordinates via **two Solidity contracts on 0G Galileo testnet**:
+- **`BillRegistry`** — anchors SHA-256 + verdict for every audited bill. Public, on-chain proof of *what was analyzed*, without keeping the bill itself.
+- **`PatternRegistry`** — indexes anonymized findings (canonical code · action · severity · amount · voters) as events. The coordinator reads these back via `eth_getLogs` (cached 120s server-side) and feeds aggregate dispute / clarify rates into agent prompts as priors. **Each new audit literally gets smarter than the last via on-chain shared memory.**
+
+**Swarm coordination (qualification req):**
+- Three independent LLM agents reason in parallel during round 1.
+- Findings broadcast over Gensyn AXL (see Track 1).
+- Round-2 reflection per agent with peer findings as context — agents may revise verdict, add findings, downgrade ones peers contested.
+- Final consensus tallied with 2-of-3 quorum on the canonical billing code; 1-1-1 splits resolve to "clarify" (no silent registration-order tiebreak).
+
+**Protocol features used:**
+- 0G Chain (EVM) — contract deployment + writes via `web3.py` and `eth-account`.
+- 0G Galileo testnet RPC (`https://evmrpc-testnet.0g.ai`, chain id 16602) for reads (`eth_getLogs`) and writes (`anchorBill`, `indexPattern`).
+- Solidity events as the data-availability layer for the read-back loop.
+
+**Code:** [`src/coordinator/chain/zerog.py`](./src/coordinator/chain/zerog.py) (anchor writes), [`src/coordinator/chain/zerog_storage.py`](./src/coordinator/chain/zerog_storage.py) (pattern indexer), [`src/coordinator/chain/patterns.py`](./src/coordinator/chain/patterns.py) (read-back + caching).
+
+---
+
+### 💚 Track 3 — KeeperHub · Best Innovative Use of KeeperHub
+
+**How we use KeeperHub:** Every BillRegistry anchor on 0G Galileo is mirrored to a separate Sepolia `BillRegistry` via KeeperHub's **Direct Execution API** (`POST /api/execute/contract-call` followed by status polling). Same SHA-256 + verdict + counts, two independent chains. Audit receipts include **both** transaction hashes — judges and users can verify the analysis from either explorer, and if one chain has issues the proof still lives on the other.
+
+**Real-world value:** Submitting the same proof to two chains is a problem usually solved by hand-rolled retry logic, gas-spike handling, and bridge orchestration. KeeperHub abstracts all of that into a single API call. For a system that anchors *every* audit, this is meaningful execution infrastructure — not a novelty integration.
+
+**Note on integration vector:** We use the **Direct Execution REST API** rather than the MCP server or CLI. The pipeline runs server-side from Python via `httpx`, so REST was the natural fit. The execution semantics (retry, gas optimization, audit trail) are the same.
+
+**Code:** [`src/coordinator/chain/keeperhub.py`](./src/coordinator/chain/keeperhub.py) — submits the call, polls execution status, returns the Sepolia tx hash for the receipt. Resources used: [API docs](https://docs.keeperhub.com/api), [platform](https://app.keeperhub.com/).
+
+---
+
+### 🔍 Bonus — KeeperHub Builder Feedback Bounty submission
+
+KeeperHub also runs a separate $500 bounty for builders who file specific, actionable, reproducible feedback while integrating during the hackathon. Two friction points hit during this build, with reproduction steps. Screenshots and a screen recording are included under [`docs/keeperhub-feedback/`](./docs/keeperhub-feedback/).
+
+#### Issue 1 — No discoverable way to add a workflow to a project (UX friction)
+
+**Reproduction:**
+1. Create a project (e.g. `lethe`).
+2. Click into it — shows "No workflows".
+3. There is no button, drag target, or context menu to move workflows into it.
+
+**What was confusing:** I eventually found that workflows can be assigned to a project via the **Properties panel** (right side), but only after clicking into an individual workflow. The mental model is inverted — users go *to a project to populate it*, not *to a workflow to file it under one*. Until I stumbled on the Properties field, the project feature appeared broken.
+
+**Suggested fixes (in order of cheapest first):**
+- A `+ Add workflow` button in the project's empty state, where "No workflows" currently displays.
+- Drag-and-drop from "Other Workflows" onto a project name in the left list.
+- Right-click context menu on a workflow → "Move to project →".
+
+The empty-state button is the most discoverable; the other two would still be nice once a project has many workflows.
+
+**Screenshot:** [`docs/keeperhub-feedback/empty-project-state.png`](./docs/keeperhub-feedback/empty-project-state.png)
+
+#### Issue 2 — Right-panel close glitches when left side is fully extended (reproducible bug)
+
+**Reproduction:**
+1. Left side panels (All Workflows + project list) both fully expanded.
+2. Click a workflow to open the right-side Properties panel.
+3. Close the Properties panel via the **X** button.
+
+The canvas does not reflow correctly on close — the layout state appears to depend on the left panel's expanded state at the moment of close.
+
+**Suggested check:** fire a viewport-resize event on right-panel close so the canvas recalculates regardless of the left panel's state. If the X button itself is the part that misbehaves, anchor it to the canvas (always-visible) rather than the panel.
+
+**Screen recording:** [`docs/keeperhub-feedback/right-panel-close-bug.mp4`](./docs/keeperhub-feedback/right-panel-close-bug.mp4)
+
+---
+
+
 ## 🚀 Quick start
 
 ```bash
@@ -352,15 +482,19 @@ lethe-/
 <td align="center" width="50%">
   <img src="./assets/jmoney.jpg" width="100" /><br />
   <b>Justin Hatch</b><br />
-  <a href="https://github.com/Justyhatch3">GitHub</a> · <a href="https://www.linkedin.com/in/justinhatch/">LinkedIn</a>
+  <a href="https://github.com/Justyhatch3">GitHub</a> · <a href="https://www.linkedin.com/in/justinhatch/">LinkedIn</a><br />
+  <sub>Telegram <code>@your-telegram-here</code> · X <code>@your-x-here</code></sub>
 </td>
 <td align="center" width="50%">
   <img src="https://placehold.co/120x120/1e293b/94a3b8/png?text=DM" width="100" /><br />
   <b>Drew Manley</b><br />
-  <a href="https://github.com/drewmanley16">GitHub</a> · <a href="https://www.linkedin.com/in/drewmanley/">LinkedIn</a>
+  <a href="https://github.com/drewmanley16">GitHub</a> · <a href="https://www.linkedin.com/in/drewmanley/">LinkedIn</a><br />
+  <sub>Telegram <code>@your-telegram-here</code> · X <code>@your-x-here</code></sub>
 </td>
 </tr>
 </table>
+
+> **Note:** Telegram + X handles are placeholders — fill in before submission. 0G's qualification requirements specifically ask for these.
 
 ---
 
