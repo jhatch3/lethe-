@@ -33,6 +33,7 @@ class Settings(BaseSettings):
         "broadcast": 600,
         "reason": 1400,
         "exchange": 0,
+        "reflect": 0,
         "consensus": 700,
         "anchor": 900,
     }

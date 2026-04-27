@@ -86,6 +86,20 @@ class AgentClient(Protocol):
 
     async def analyze(self, redacted_payload: Dict[str, Any]) -> AgentVote: ...
 
+    async def reflect(
+        self,
+        redacted_payload: Dict[str, Any],
+        original_vote: AgentVote,
+        peer_received: List[Dict[str, Any]],
+    ) -> AgentVote:
+        """Round-2 LLM call after the AXL findings exchange.
+
+        Sees the agent's own round-1 vote plus all findings received from peers.
+        Returns a revised AgentVote (may be identical to original if no revision).
+        Optional — falls back to the original vote if not implemented.
+        """
+        ...
+
 
 class DrafterClient(Protocol):
     spec: AgentSpec

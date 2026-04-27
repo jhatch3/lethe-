@@ -16,6 +16,7 @@ from agents.prompts import (
     ALPHA_CONTEXT_CLUES,
     ALPHA_SKILLS,
     ALPHA_SYSTEM_PROMPT,
+    build_reflect_user_msg,
 )
 from agents.registry import register_audit
 from agents.stub import StubAuditAgent
@@ -97,6 +98,64 @@ class OpenAIAuditAgent:
             findings=list(data.get("findings", []) or []),
             notes=str(data.get("notes", "") or ""),
             duration_ms=duration_ms,
+        )
+
+
+    async def reflect(
+        self,
+        redacted_payload: Dict[str, Any],
+        original_vote: AgentVote,
+        peer_received: list,
+        on_message: Optional[Callable[[str], Awaitable[None]]] = None,
+    ) -> AgentVote:
+        """Round-2 LLM call — sees own vote + peers' findings, returns revised vote."""
+        from openai import AsyncOpenAI
+
+        client = AsyncOpenAI(api_key=self._api_key)
+        started = time.perf_counter()
+
+        user_msg = build_reflect_user_msg(
+            redacted_payload=redacted_payload,
+            original_verdict=original_vote.verdict,
+            original_confidence=original_vote.confidence,
+            original_findings=original_vote.findings,
+            peer_received=peer_received,
+        )
+
+        collector = StreamCollector(on_message=on_message)
+        try:
+            stream = await client.chat.completions.create(
+                model=self.spec.model,
+                messages=[
+                    {"role": "system", "content": self.spec.system_prompt},
+                    {"role": "user", "content": user_msg},
+                ],
+                temperature=0.2,
+                max_tokens=1500,
+                stream=True,
+            )
+            async for chunk in stream:
+                if not chunk.choices:
+                    continue
+                delta = chunk.choices[0].delta.content or ""
+                if delta:
+                    await collector.feed(delta)
+            _, json_text = await collector.finalize()
+            data = parse_json_block(json_text)
+        except Exception as e:
+            # On reflection failure, fall back to original vote — better than crashing.
+            return original_vote
+
+        duration_ms = int((time.perf_counter() - started) * 1000)
+        return AgentVote(
+            agent=self.spec.name,
+            model=self.spec.model,
+            verdict=str(data.get("verdict", original_vote.verdict)),
+            confidence=float(data.get("confidence", original_vote.confidence) or 0.0),
+            findings=list(data.get("findings", []) or []),
+            notes=str(data.get("notes", "") or ""),
+            duration_ms=duration_ms,
+            peer_received=peer_received,
         )
 
 

@@ -36,7 +36,7 @@ from chain import patterns as chain_patterns
 
 log = logging.getLogger("lethe.pipeline")
 
-STAGE_ORDER = ["parse", "redact", "broadcast", "reason", "exchange", "consensus", "anchor"]
+STAGE_ORDER = ["parse", "redact", "broadcast", "reason", "exchange", "reflect", "consensus", "anchor"]
 
 
 def _short(job_id: str) -> str:
@@ -116,19 +116,42 @@ async def run(job_id: str) -> None:
 
         await _stage(job, "broadcast", _broadcast())
 
-        # 4. Reason — agents in parallel, each only sees redacted payload
+        # 4. Reason — agents in parallel, each only sees redacted payload.
         # Fetch prior pattern stats once for all three agents — cached.
+        # Surface the read on the SSE bus so the dashboard can show the
+        # agents literally pulling from the on-chain PatternRegistry.
         try:
             prior_stats = await chain_patterns.get_pattern_stats()
             prior_block = chain_patterns.format_for_prompt(prior_stats, top_n=30)
         except Exception as e:
             log.warning("prior pattern fetch failed: %s — proceeding without", e)
+            prior_stats = {}
             prior_block = ""
         if prior_block:
+            top = sorted(prior_stats.values(), key=lambda s: s["n_observations"], reverse=True)[:3]
+            top_codes = [
+                {
+                    "code": s["code"],
+                    "n_observations": s["n_observations"],
+                    "dispute_rate": s["dispute_rate"],
+                    "clarify_rate": s["clarify_rate"],
+                    "mean_amount_usd": s["mean_amount_usd"],
+                }
+                for s in top
+            ]
+            registry_short = (
+                settings.pattern_registry_address[:10] + "…"
+                if settings.pattern_registry_address
+                else ""
+            )
             await _emit(
                 job_id, "patterns.prior_loaded",
                 code_count=len(prior_stats),
                 total_observations=sum(s["n_observations"] for s in prior_stats.values()),
+                top_codes=top_codes,
+                registry_address=settings.pattern_registry_address,
+                registry_short=registry_short,
+                network="0g-galileo-testnet",
             )
 
         async def _run_agent(agent: AgentClient) -> AgentVote:
@@ -245,6 +268,7 @@ async def run(job_id: str) -> None:
                             "verdict": j.get("verdict"),
                             "confidence": j.get("confidence"),
                             "finding_count": len(j.get("findings", [])),
+                            "findings": j.get("findings", []),
                         })
                 # Attach to this agent's vote so consensus + UI can see it.
                 v = vote_by_name.get(name)
@@ -263,6 +287,77 @@ async def run(job_id: str) -> None:
             await asyncio.gather(*(_drain(a.spec.name) for a in audit_agents))
 
         await _stage(job, "exchange", _exchange())
+
+        # 4.7. Reflection round — each agent sees its peers' findings (delivered
+        # via AXL during exchange) and gets ONE additional LLM call to revise.
+        # The original round-1 vote is preserved on the SSE bus via
+        # `agent.revised`; the consensus tally below runs on the round-2 votes.
+        async def _reflect_all() -> None:
+            if not transport_axl.is_enabled():
+                return  # No peer findings to reflect on without AXL.
+
+            vote_by_name = {v.agent: v for v in votes}
+
+            async def _reflect_one(agent: AgentClient) -> AgentVote:
+                original = vote_by_name.get(agent.spec.name)
+                if original is None:
+                    return None  # type: ignore[return-value]
+
+                # If reflect isn't supported (stub or older client), keep original.
+                if not hasattr(agent, "reflect"):
+                    return original
+
+                # Nothing to reflect on if AXL didn't deliver any peer findings —
+                # don't burn an LLM call for no-op revision.
+                if not original.peer_received:
+                    return original
+
+                async def on_message(line: str) -> None:
+                    await _emit(
+                        job_id, "agent.message",
+                        agent=agent.spec.name, line=line, phase="reflect",
+                    )
+
+                await _emit(
+                    job_id, "agent.reflect_started",
+                    agent=agent.spec.name,
+                    peer_finding_total=sum(p.get("finding_count", 0) for p in original.peer_received),
+                )
+
+                try:
+                    revised = await agent.reflect(
+                        redacted_payload=redacted,
+                        original_vote=original,
+                        peer_received=original.peer_received,
+                        on_message=on_message,
+                    )
+                except Exception as e:
+                    log.warning("[%s] reflect failed for %s: %s — keeping round-1 vote",
+                                _short(job_id), agent.spec.name, e)
+                    return original
+
+                await _emit(
+                    job_id, "agent.revised",
+                    agent=agent.spec.name,
+                    round1_verdict=original.verdict,
+                    round1_confidence=original.confidence,
+                    round1_finding_count=len(original.findings),
+                    round2_verdict=revised.verdict,
+                    round2_confidence=revised.confidence,
+                    round2_finding_count=len(revised.findings),
+                    verdict_changed=(revised.verdict != original.verdict),
+                    duration_ms=revised.duration_ms,
+                )
+                return revised
+
+            revised_list = await asyncio.gather(*(_reflect_one(a) for a in audit_agents))
+            # Replace the votes list in-place so consensus uses round-2 outcomes.
+            votes.clear()
+            for v in revised_list:
+                if v is not None:
+                    votes.append(v)
+
+        await _stage(job, "reflect", _reflect_all())
 
         # 5. Consensus
         async def _consensus():

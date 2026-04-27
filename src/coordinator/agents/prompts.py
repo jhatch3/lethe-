@@ -225,6 +225,79 @@ DRAFTER_CONTEXT_CLUES = [
     "Letter length: 4-6 paragraphs, concise but complete.",
 ]
 
+# ============================================================
+# Round-2 reflection — used after the AXL findings exchange
+# ============================================================
+
+def build_reflect_user_msg(
+    redacted_payload: dict,
+    original_verdict: str,
+    original_confidence: float,
+    original_findings: list,
+    peer_received: list,
+) -> str:
+    """Build the user message for a round-2 reflection.
+
+    The agent is the SAME alpha/beta/gamma identity (same system prompt) doing
+    a second pass with peer findings as additional context. The goal is informed
+    independence — agree where peers genuinely caught something you missed,
+    push back where they're wrong.
+    """
+    import json as _json
+
+    def _fmt_findings(findings: list) -> str:
+        if not findings:
+            return "  (no findings)"
+        lines = []
+        for f in findings:
+            code = f.get("code", "?")
+            action = f.get("action", "?")
+            amt = f.get("amount_usd", 0)
+            sev = f.get("severity", "?")
+            desc = (f.get("description") or "")[:160]
+            lines.append(f"  - {code} · {action} · ${amt} · {sev}" + (f"\n      {desc}" if desc else ""))
+        return "\n".join(lines)
+
+    peer_block_parts = []
+    for p in peer_received:
+        from_agent = p.get("from_agent", "?")
+        v = p.get("verdict", "?")
+        conf = p.get("confidence", 0.0)
+        peer_block_parts.append(f"\nPeer {from_agent} (verdict={v}, conf={conf:.2f}):")
+        peer_block_parts.append(_fmt_findings(p.get("findings", [])))
+    peer_block = "\n".join(peer_block_parts) if peer_received else "  (no peer findings received)"
+
+    return f"""You are doing a SECOND PASS on this medical bill audit. You already produced an
+initial vote independently. Now your two peer agents' findings have arrived via
+the AXL P2P mesh. Use this peer input to refine — but do NOT herd-vote. Only
+update if you actually agree on a second look. Disagreement is fine; it's data.
+
+YOUR ROUND-1 VOTE:
+  verdict: {original_verdict}
+  confidence: {original_confidence:.2f}
+  findings:
+{_fmt_findings(original_findings)}
+
+PEER FINDINGS (received via AXL):
+{peer_block}
+
+REDACTED BILL (same as round 1, for reference):
+{_json.dumps(redacted_payload, indent=2)}
+
+REFLECTION TASK:
+1. For each PEER finding you didn't flag — add it ONLY if you genuinely agree
+   on review. If you think the peer is wrong, ignore it.
+2. For each of YOUR findings — if both peers also flagged it, increase your
+   confidence. If both peers missed it AND you're now uncertain, drop or
+   downgrade.
+3. Re-emit your FINAL verdict using the exact same prose-then-`---`-then-JSON
+   schema as round 1. Reasoning prose first; then a `---` separator on its own
+   line; then valid JSON matching the standard audit schema.
+4. In `notes`, briefly mention what changed (if anything) and why.
+
+Independent judgment > herd voting."""
+
+
 DRAFTER_SYSTEM_PROMPT = f"""You are the dispute-letter drafter for Lethe. You take the consensus
 findings from three independent audit agents and produce a polished, formal appeal letter
 suitable for sending to a US insurer or hospital billing department.
