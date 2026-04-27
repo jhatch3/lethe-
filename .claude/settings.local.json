@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL \"https://api.github.com/repos/gensyn-ai/axl/contents/\" -A \"Mozilla/5.0\" --max-time 30)",
+      "Bash(python -c \"import json,sys; [print\\(f\\\\\"{x['type']:5} {x['name']}\\\\\"\\) for x in json.load\\(sys.stdin\\)]\")",
+      "WebFetch(domain:keeperhub.com)",
+      "WebSearch",
+      "WebFetch(domain:docs.0g.ai)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:faucet.0g.ai)",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/gensyn-ai/axl/main/README.md\" --max-time 30 -o /c/Users/Justin/axl_readme.md)",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/gensyn-ai/axl/main/AGENTS.md\" --max-time 30 -o /c/Users/Justin/axl_agents.md)",
+      "Bash(curl -sL \"https://api.github.com/repos/gensyn-ai/axl/contents/examples\" --max-time 30)",
+      "Bash(curl -sL \"https://api.github.com/repos/gensyn-ai/axl/contents/docs\" --max-time 30)"
+    ]
+  }
+}

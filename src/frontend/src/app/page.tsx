@@ -30,8 +30,9 @@ export default function Home() {
         <div className="links">
           <a onClick={scrollTo("problem")}>Problem</a>
           <a onClick={scrollTo("features")}>Features</a>
-          <a onClick={scrollTo("tracks")}>Tracks</a>
-          <a onClick={scrollTo("sources")}>Sources</a>
+          <Link href="/verify">Verify</Link>
+          <Link href="/patterns">Patterns</Link>
+          <Link href="/axl">Mesh</Link>
         </div>
         <Link className="cta" href="/dashboard">
           Open dashboard →
@@ -40,13 +41,13 @@ export default function Home() {
 
       <section className="hero">
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="eyebrow"
+          // initial={{ opacity: 0, y: 6 }}
+          // animate={{ opacity: 1, y: 0 }}
+          // transition={{ duration: 0.6 }}
+          // className="eyebrow"
         >
           <span className="pulse" />
-          <span className="pill">ETHGlobal · OpenAgents 2026</span>
+          {/* <span className="pill">ETHGlobal · OpenAgents 2026</span> */}
         </motion.div>
 
         <motion.h1
@@ -96,9 +97,9 @@ export default function Home() {
           <Link className="btn btn-primary" href="/dashboard">
             Get started <span className="arr">→</span>
           </Link>
-          <a className="btn btn-ghost" onClick={scrollTo("demo")}>
-            Watch demo
-          </a>
+          <Link className="btn btn-ghost" href="/verify">
+            Verify a bill
+          </Link>
         </motion.div>
 
         <motion.div
@@ -415,6 +416,7 @@ export default function Home() {
           <div className="foot-col">
             <h4>Product</h4>
             <Link href="/dashboard">Dashboard</Link>
+            <Link href="/verify">Verify a bill</Link>
             <a onClick={scrollTo("features")}>Features</a>
             <a onClick={scrollTo("tracks")}>Tracks</a>
           </div>

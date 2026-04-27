@@ -1,0 +1,6 @@
+{
+  "_comment": "Real ed25519 public keys for the three Lethe AXL sidecars. Generated via `openssl genpkey -algorithm ed25519`. Private keys live alongside as alpha.pem / beta.pem / gamma.pem (gitignored).",
+  "alpha": "c4737e1652ed8b8450a1afea70996dad76d68e602f8a79c2e9ac3bcdbf417598",
+  "beta":  "fc40f9ddaf71a6f1824eef6194082a5d46f6ca1a776c8e70b8b053196f6d2ecb",
+  "gamma": "739dd21944361f496f097e107834716fd1375cc19429e4c58b6319e0abb49e21"
+}

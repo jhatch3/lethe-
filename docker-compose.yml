@@ -1,0 +1,74 @@
+services:
+  axl-alpha:
+    image: lethe-axl:latest
+    build:
+      context: ./infra/axl
+    command: ["/usr/local/bin/start.sh", "/config/alpha.json"]
+    volumes:
+      - ./infra/axl/keys:/keys:ro
+      - ./infra/axl/configs:/config:ro
+    # host:container — socat listens on 9100 inside, AXL on 127.0.0.1:9002
+    ports:
+      - "9002:9100"
+    restart: unless-stopped
+
+  axl-beta:
+    image: lethe-axl:latest
+    command: ["/usr/local/bin/start.sh", "/config/beta.json"]
+    volumes:
+      - ./infra/axl/keys:/keys:ro
+      - ./infra/axl/configs:/config:ro
+    ports:
+      - "9012:9100"
+    depends_on:
+      - axl-alpha
+    restart: unless-stopped
+
+  axl-gamma:
+    image: lethe-axl:latest
+    command: ["/usr/local/bin/start.sh", "/config/gamma.json"]
+    volumes:
+      - ./infra/axl/keys:/keys:ro
+      - ./infra/axl/configs:/config:ro
+    ports:
+      - "9022:9100"
+    depends_on:
+      - axl-alpha
+    restart: unless-stopped
+
+  coordinator:
+    build:
+      context: ./src/coordinator
+    ports:
+      - "8000:8000"
+    environment:
+      - LETHE_CORS_ORIGINS=http://localhost:3000
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - LETHE_AXL_ENABLED=${LETHE_AXL_ENABLED:-false}
+      - LETHE_AXL_ALPHA_URL=http://axl-alpha:9002
+      - LETHE_AXL_BETA_URL=http://axl-beta:9002
+      - LETHE_AXL_GAMMA_URL=http://axl-gamma:9002
+    depends_on:
+      - axl-alpha
+      - axl-beta
+      - axl-gamma
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./src/frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      coordinator:
+        condition: service_healthy
+    restart: unless-stopped

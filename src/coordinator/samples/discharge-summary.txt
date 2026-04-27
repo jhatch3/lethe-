@@ -1,0 +1,11 @@
+DISCHARGE SUMMARY — Lethe phase-1 sample
+
+Patient: K. Park   DOB: 1968-09-22   MRN: 0033409
+Provider: Riverbend Medical   NPI: 1122334455
+Admit: 2026-04-08   Discharge: 2026-04-12
+
+Line 1  CPT 99238   Hospital discharge day mgmt (≤30 min)                $186.00
+Line 2  CPT 99232   Subsequent hospital care                             $112.00
+Line 3  REV 0250    Pharmacy                                             $415.20
+
+Total billed: $713.20

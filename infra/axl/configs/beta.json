@@ -1,0 +1,14 @@
+{
+  "_comment": "AXL node config for the beta agent.",
+  "PrivateKeyPath": "/keys/beta.pem",
+  "ApiAddr": "0.0.0.0:9002",
+  "TcpListenAddr": "0.0.0.0:7002",
+  "Peers": [
+    "tls://34.46.48.224:9001",
+    "tls://136.111.135.206:9001"
+  ],
+  "AllowedPublicKeys": [],
+  "Logging": {
+    "Level": "info"
+  }
+}
