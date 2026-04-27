@@ -76,27 +76,18 @@ flowchart TB
         UI[Next.js Dashboard<br/>upload · SSE viewer · receipt PDF]
     end
 
-    subgraph Coordinator["⚙️ FastAPI Coordinator (single process)"]
-        Parse[Parser<br/>PDF / TXT / image → structured]
+    subgraph Orchestration["⚙️ Orchestration node — FastAPI Coordinator"]
+        API[API gateway<br/>+ SSE event bus]
+        Parse[Parser<br/>PDF / TXT / image]
         Redact[PHI Redactor<br/>regex + LLM sweep]
-        AlphaC[Agent α client<br/>GPT-4o]
-        BetaC[Agent β client<br/>Claude Sonnet 4.5]
-        GammaC[Agent γ client<br/>Gemini Flash]
-        Tally[Consensus<br/>2-of-3 quorum]
+        Tally[Consensus<br/>2-of-3 quorum<br/>· clarify on tie]
         Drafter[Drafter<br/>Claude → appeal letter]
     end
 
-    subgraph AXL["🕸️ Gensyn AXL P2P (3 Docker sidecars)"]
-        S1[axl-alpha<br/>ed25519 c4737e16…]
-        S2[axl-beta<br/>ed25519 fc40f9dd…]
-        S3[axl-gamma<br/>ed25519 739dd219…]
-        Mesh((Yggdrasil mesh<br/>· public Gensyn peers))
-    end
-
-    subgraph LLMs["☁️ Model APIs"]
-        OAI[OpenAI]
-        ANT[Anthropic]
-        GOO[Google]
+    subgraph AgentMesh["🕸️ Agent mesh — Gensyn AXL P2P"]
+        Alpha[Agent α<br/>GPT-4o<br/>ed25519 c4737e16…]
+        Beta[Agent β<br/>Claude Sonnet 4.5<br/>ed25519 fc40f9dd…]
+        Gamma[Agent γ<br/>Gemini Flash<br/>ed25519 739dd219…]
     end
 
     subgraph Chain["⛓️ Chain anchors"]
@@ -105,41 +96,34 @@ flowchart TB
         Sep[Sepolia<br/>BillRegistry mirror]
     end
 
-    UI -->|POST /api/jobs| Parse
+    UI <-->|HTTP + SSE| API
+    API --> Parse
     Parse -->|in-memory only| Redact
-    Redact -->|redacted payload| AlphaC & BetaC & GammaC
+    Redact -->|redacted payload| Alpha & Beta & Gamma
 
-    AlphaC <-->|HTTP| S1
-    BetaC <-->|HTTP| S2
-    GammaC <-->|HTTP| S3
-    S1 <-->|TLS| Mesh
-    S2 <-->|TLS| Mesh
-    S3 <-->|TLS| Mesh
+    Alpha <-->|AXL · redacted only| Beta
+    Beta <-->|AXL · redacted only| Gamma
+    Alpha <-->|AXL · redacted only| Gamma
 
-    AlphaC -->|HTTPS| OAI
-    BetaC -->|HTTPS| ANT
-    GammaC -->|HTTPS| GOO
+    Alpha -->|vote| Tally
+    Beta -->|vote| Tally
+    Gamma -->|vote| Tally
 
-    AlphaC & BetaC & GammaC --> Tally
     Tally --> Drafter
     Tally -->|sha-256 + verdict| ZG
     Tally -->|same hash| KH
     KH --> Sep
     Tally -->|anonymized findings| ZG
+    Drafter --> API
 
-    Drafter --> UI
-    Tally -->|SSE events| UI
-
-    classDef client    fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
-    classDef orch      fill:#0b1220,stroke:#34d399,stroke-width:2px,color:#fff
-    classDef axl       fill:#0b1220,stroke:#c084fc,stroke-width:2px,color:#fff
-    classDef llm       fill:#0b1220,stroke:#fbbf24,stroke-width:2px,color:#fff
-    classDef chain     fill:#0b1220,stroke:#f472b6,stroke-width:2px,color:#fff
+    classDef client fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
+    classDef orch   fill:#0b1220,stroke:#34d399,stroke-width:2px,color:#fff
+    classDef agent  fill:#0b1220,stroke:#c084fc,stroke-width:2px,color:#fff
+    classDef chain  fill:#0b1220,stroke:#f472b6,stroke-width:2px,color:#fff
 
     class UI client
-    class Parse,Redact,AlphaC,BetaC,GammaC,Tally,Drafter orch
-    class S1,S2,S3,Mesh axl
-    class OAI,ANT,GOO llm
+    class API,Parse,Redact,Tally,Drafter orch
+    class Alpha,Beta,Gamma agent
     class ZG,KH,Sep chain
 ```
 
