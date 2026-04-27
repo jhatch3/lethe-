@@ -1,0 +1,79 @@
+  ---                                                                                                                                                                                                                           
+  TL;DR (memorize this one line)                                                                                                                                                                                                
+                                                                                                                                                                                                                                
+  ▎ "Lethe audits medical bills with three AI agents that talk to each other peer-to-peer, reach consensus, and prove what they did on-chain — without ever keeping your bill."                                                 
+   
+  ---                                                                                                                                                                                                                           
+  The 3-minute pitch
+
+  [HOOK — ~25s, slow, look up]
+
+  Eighty percent of medical bills contain errors. Almost always tilted against the patient — duplicate charges, wrong modifiers, services that never happened.
+
+  When patients dispute these bills, three out of four win. The catch — most people never dispute. Forty percent say they don't know how.
+
+  And the few apps that do help solve this make a different problem worse: they upload your records to a central database and keep them forever. That's exactly what a HIPAA-anxious patient is trying to avoid.
+
+  [WHAT IT IS — ~25s, faster, confident]
+
+  Lethe runs on a different deal: ephemeral PHI, persistent learning.
+
+  You drop a bill in. Three independent AI agents analyze it. They talk to each other peer-to-peer over a real Gensyn AXL mesh, reach consensus, and draft a formal appeal letter for your review.
+
+  Your bill never touches storage. Never reaches a model provider. After about a minute, it's gone.
+
+  [WHY AI — ~45s, building energy]
+
+  Why three agents? Because no single LLM is reliable enough to act on financially. GPT-4o, Claude Sonnet 4.5, and Gemini Flash each have different blind spots — so we make them disagree productively.
+
+  Round one: each agent independently reasons over the redacted bill.
+
+  Round two — this is the headline. Every agent broadcasts its findings to the other two over the AXL mesh, drains its inbox, and runs a second LLM call with peer findings as context. They can add findings they missed. They
+  can downgrade ones their peers convinced them were wrong. We explicitly prompt against herd-voting — disagreement is fine; it's data.
+
+  The final consensus runs on those round-two votes. A finding only counts if it survived peer scrutiny and has a 2-of-3 majority. [pause] If they can't agree at all — a 1-1-1 split — we honestly fall back to "clarify." We
+  don't fake consensus.
+
+  [WHY BLOCKCHAIN — ~55s, slower, confident]
+
+  Why blockchain? Three reasons, three contracts.
+
+  One. The BillRegistry on 0G Galileo anchors a SHA-256 of every audited bill plus the verdict. You can verify what was analyzed without us holding the analysis.
+
+  Two. The same hash mirrors to a Sepolia BillRegistry through KeeperHub's Direct Execution API. Two chains, one truth — if 0G goes down, the proof still lives on Sepolia.
+
+  Three — the kicker. The PatternRegistry on 0G stores anonymized findings: just code, action, severity, amount. No patient data. Before every new audit, the coordinator queries eth_getLogs and feeds prior dispute rates back
+   into each agent's prompt.
+
+  So Lethe gets smarter with every bill it analyzes — without ever holding any patient's actual records. That's persistent learning without the privacy tradeoff. We're using the chain as the agents' shared memory,
+  deliberately.
+
+  [PROOF — ~20s, energetic]
+
+  Open the dashboard, drop a sample bill — the receipts are real. Three terminals stream live LLM tokens. Real AXL chatter shows peers exchanging findings. Each agent revises its vote. Two transaction hashes drop, both
+  verifiable on the matching block explorer. About a minute total. You download a formal appeal letter. We never saw your bill.
+
+  [CLOSE — ~10s, slow, look up]
+
+  Lethe — medical bills, audited by AI consensus. Forgotten by design.
+
+  ---
+  How to flex the timing
+
+  Compress to 2 min — drop the third "blockchain reason" (KeeperHub mirror). The PatternRegistry read-back is your strongest beat; lead with that one if you only have time for one chain claim.
+
+  Stretch to 5 min — add these two beats after WHY BLOCKCHAIN:
+
+  - (~30s) The privacy invariant beat. "Most AI products treat privacy as a feature you toggle. We treat it as the architecture. Every PHI strip happens before the model API call. Bill bytes are zeroed from memory the moment
+   parsing finishes. The SSE event stream — what powers the live dashboard — carries only stage names and counts, never bill content. We can't leak what we don't keep."
+  - (~30s) The judgment-call beat. "The most interesting decision wasn't technical — it was honesty. When agents split 1-1-1, the cheap thing to do is let registration order silently pick a winner, and ship. We caught that
+  and shipped 'no majority → clarify' instead. We'd rather tell you we don't know than fake confidence with your medical bill."
+
+  ---
+  Delivery tips
+
+  - The opening "Eighty percent" line: pause after it. Let the number land.
+  - "We make them disagree productively" — this is the line judges remember. Slow down on it.
+  - "Ephemeral PHI, persistent learning" is your tagline. Use it twice — once early as the framing, once at the close as the payoff.
+  - Don't read the chain reasons as a list — number them with your fingers if you're on stage. Visual rhythm matters.
+  - The closer ("Forgotten by design") is the wordmark. Match the cadence of the landing page; it's been engineered.
