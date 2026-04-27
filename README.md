@@ -77,12 +77,12 @@ flowchart TB
     end
 
     subgraph Orchestration["⚙️ Orchestration node — FastAPI Coordinator"]
-        direction TB
+        direction LR
         API[API gateway<br/>+ SSE event bus]
         Parse[Parser<br/>PDF / TXT / image]
         Redact[PHI Redactor<br/>regex + LLM sweep]
-        Tally[Consensus<br/>2-of-3 quorum · clarify on tie]
-        Drafter[Drafter<br/>Claude → appeal letter]
+        Tally[Consensus<br/>2-of-3 · clarify on tie]
+        Drafter[Drafter<br/>Claude · appeal letter]
     end
 
     subgraph AgentMesh["🕸️ Agent mesh — Gensyn AXL P2P"]
@@ -103,11 +103,11 @@ flowchart TB
         KH --> Sep
     end
 
-    UI <-->|HTTP + SSE| API
+    UI ==>|HTTP request · SSE event stream| API
     API --> Parse --> Redact
     Redact ==>|redacted payload| AgentMesh
     AgentMesh ==>|votes + peer findings| Tally
-    Tally --> Drafter --> API
+    Tally --> Drafter
     Tally ==>|sha-256 · verdict · patterns| Chain
 
     classDef client fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
