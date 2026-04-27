@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { NavBar } from "@/components/NavBar";
 
 const scrollTo = (id: string) => () => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -22,22 +23,7 @@ export default function Home() {
 
   return (
     <>
-      <nav className="nav-top">
-        <div className="brand">
-          <span className="dot" />
-          Lethe
-        </div>
-        <div className="links">
-          <a onClick={scrollTo("problem")}>Problem</a>
-          <a onClick={scrollTo("features")}>Features</a>
-          <Link href="/verify">Verify</Link>
-          <Link href="/patterns">Patterns</Link>
-          <Link href="/axl">Mesh</Link>
-        </div>
-        <Link className="cta" href="/dashboard">
-          Open dashboard →
-        </Link>
-      </nav>
+      <NavBar />
 
       <section className="hero">
         <motion.div
@@ -82,9 +68,10 @@ export default function Home() {
           transition={{ duration: 0.6, delay: 0.55 }}
           className="sub"
         >
-          Three independent AI agents review every bill. Anything they agree is
-          wrong gets disputed automatically. Your records exist in memory for
-          thirty seconds, then they&apos;re gone.
+          Three independent AI agents review every bill, then talk it over peer-to-peer
+          on a Gensyn AXL mesh and revise their votes with each other&apos;s findings as
+          context. Anything they still agree is wrong gets drafted into an appeal.
+          Your bill never touches storage and never reaches a model provider.
         </motion.p>
 
         <motion.div
@@ -111,8 +98,8 @@ export default function Home() {
         >
           <span><b>Zero</b> retention</span>
           <span><b>3</b> independent LLMs</span>
-          <span>AXL <b>P2P</b> consensus</span>
-          <span>Anchored on <b>0G</b></span>
+          <span><b>2-round</b> AXL P2P consensus</span>
+          <span>Dual-anchor: <b>0G</b> + <b>Sepolia</b></span>
         </motion.div>
       </section>
 
@@ -170,51 +157,59 @@ export default function Home() {
           <motion.div className="feat-grid" {...reveal}>
             <div className="feat green">
               <div className="label">Zero retention</div>
-              <h3>30-second TTL, then nothing.</h3>
+              <h3>Memory-only, then gone.</h3>
               <p>
-                Your bill exists in coordinator memory for the ~30 seconds it takes agents to analyze it, then it&apos;s discarded. Never written to disk, never stored on 0G, never logged. We can&apos;t leak what we don&apos;t have.
+                Your bill lives in coordinator memory for the ~60 seconds it takes the pipeline to run, then it&apos;s zeroed. Never written to disk, never persisted on 0G, never sent to a model provider. We can&apos;t leak what we don&apos;t hold.
               </p>
-              <div className="tick">— ttl 0:00:30</div>
+              <div className="tick">— bill bytes · in-memory only</div>
             </div>
             <div className="feat amber">
-              <div className="label">Decentralized AI</div>
-              <h3>Three models, three opinions.</h3>
+              <div className="label">3-agent consensus</div>
+              <h3>GPT-4o · Claude · Gemini.</h3>
               <p>
-                GPT-4o, Claude, and Gemini each analyze the bill independently. We only act when at least two agree with high confidence. No single model can be a bad actor.
+                Three independent models reason in parallel over the same redacted payload, then vote. A finding only enters the result if 2 of 3 agree on the canonical billing code. 1-1-1 splits fall back to clarify rather than letting registration order silently pick.
               </p>
-              <div className="tick">— quorum 2/3</div>
+              <div className="tick">— quorum 2/3 · clarify on tie</div>
             </div>
             <div className="feat violet">
-              <div className="label">P2P consensus</div>
-              <h3>Agents talk, not servers.</h3>
+              <div className="label">Real AXL P2P mesh</div>
+              <h3>Three peers, one Yggdrasil.</h3>
               <p>
-                Agents communicate directly over Gensyn AXL — no central message broker we control, no server that could be compromised to manipulate the vote.
+                Each agent has its own Gensyn AXL sidecar Docker container running the upstream Go <code>node</code> binary, with a unique ed25519 peer ID joined to the public Gensyn mesh. Real <code>POST /send</code>, real <code>GET /recv</code> — verifiable on the live mesh page.
               </p>
-              <div className="tick">— ed25519 · axl</div>
+              <div className="tick">— ed25519 · yggdrasil · public peers</div>
+            </div>
+            <div className="feat pink">
+              <div className="label">Round-2 reflection</div>
+              <h3>Consensus through conversation.</h3>
+              <p>
+                After round 1, every agent broadcasts its findings over AXL and drains its peer inbox. Then each one runs a <em>second</em> LLM call with the others&apos; findings as context — adding what it missed, downgrading what peers convinced it was wrong. The final tally runs on round-2 votes, so every verdict survived peer scrutiny.
+              </p>
+              <div className="tick">— round 1 → axl exchange → round 2</div>
             </div>
             <div className="feat rose">
-              <div className="label">On-chain audit</div>
-              <h3>Verifiable, not visible.</h3>
+              <div className="label">Dual-chain anchor</div>
+              <h3>0G + Sepolia, same hash.</h3>
               <p>
-                Every analysis leaves a hash and vote record on 0G Chain via KeeperHub&apos;s reliable execution layer. You hold your bill; the chain proves what was analyzed.
+                Every audit anchors the SHA-256 + verdict to a BillRegistry on 0G Galileo (canonical) and mirrors the same record to Sepolia via KeeperHub Direct Execution. Two chains, one truth — verifiable from either explorer.
               </p>
-              <div className="tick">— sha-256 · 0g</div>
+              <div className="tick">— sha-256 · 0g · keeperhub</div>
             </div>
             <div className="feat cyan">
-              <div className="label">Persistent learning</div>
-              <h3>Anonymized patterns, sharp tools.</h3>
+              <div className="label">Pattern read-back</div>
+              <h3>Each audit is smarter than the last.</h3>
               <p>
-                Patterns (&ldquo;duplicate CPT 99214 → 87% successful dispute rate&rdquo;) accumulate on 0G Storage and improve every future analysis — without ever holding any patient&apos;s data.
+                Anonymized findings (code · action · severity · amount) are written to a PatternRegistry contract on 0G. Before each new audit, the coordinator queries <code>eth_getLogs</code> and feeds prior dispute / clarify rates into agent prompts as priors.
               </p>
-              <div className="tick">— k-anonymous</div>
+              <div className="tick">— learn from past · zero PHI</div>
             </div>
             <div className="feat ink">
-              <div className="label">Auto-drafted disputes</div>
-              <h3>You approve, we send.</h3>
+              <div className="label">Auto-drafted appeal</div>
+              <h3>Letter, you review.</h3>
               <p>
-                When consensus identifies a problem, Lethe drafts a formal appeal letter with regulatory citations and submits it on your behalf — only after you sign off.
+                A fourth agent (Claude, separately prompted) takes the consensus findings and writes a formal appeal letter with regulatory citations. The dashboard renders it as an ASCII-bordered receipt PDF. Lethe never auto-submits to an insurer — you stay in the loop.
               </p>
-              <div className="tick">— review → submit</div>
+              <div className="tick">— draft → review → download</div>
             </div>
           </motion.div>
         </div>
@@ -236,30 +231,30 @@ export default function Home() {
               <div className="role">/ track · 01</div>
               <div className="name">0G — <em>memory</em></div>
               <p>
-                0G Chain holds the bill registry contracts; 0G Storage holds the anonymized agent memory layer.
+                Two contracts on 0G Galileo: <code>BillRegistry</code> anchors the SHA-256 of every audited bill plus its verdict; <code>PatternRegistry</code> indexes anonymized findings. Each new audit reads back priors via <code>eth_getLogs</code> so future agents see past patterns.
               </p>
               <p className="pitch">
-                Ephemeral PHI, persistent learning. We use 0G to make agents smarter without ever holding patient data.
+                Ephemeral PHI, persistent learning — agents get smarter without anyone&apos;s records being recoverable.
               </p>
             </div>
             <div className="track b">
               <div className="role">/ track · 02</div>
               <div className="name">Gensyn AXL — <em>mesh</em></div>
               <p>
-                Each agent runs in its own container with its own AXL node and ed25519 peer ID. Consensus happens without a central broker.
+                Each of the three agents has its own AXL sidecar Docker container running the upstream Gensyn <code>node</code> binary, joined to the public Gensyn mesh via TLS. Real ed25519 peer IDs, real <code>POST /send</code> broadcasts, real <code>GET /recv</code> drains.
               </p>
               <p className="pitch">
-                Pure P2P, demonstrated across separate machines.
+                The mesh is load-bearing — round-2 reflection won&apos;t fire without peer findings actually crossing it.
               </p>
             </div>
             <div className="track c">
               <div className="role">/ track · 03</div>
               <div className="name">KeeperHub — <em>execution</em></div>
               <p>
-                Every dispute submission, registry write, and vote anchor goes through KeeperHub for gas optimization and full audit trails.
+                Every BillRegistry anchor on 0G Galileo is mirrored via KeeperHub&apos;s Direct Execution API to a separate Sepolia <code>BillRegistry</code> — same SHA-256, two independent chains. Receipts include both transaction hashes for cross-chain verifiability.
               </p>
               <p className="pitch">
-                Failed execution = lost consumer money. Reliability is non-negotiable.
+                If one chain falls, the proof still lives on the other.
               </p>
             </div>
           </motion.div>
@@ -417,6 +412,9 @@ export default function Home() {
             <h4>Product</h4>
             <Link href="/dashboard">Dashboard</Link>
             <Link href="/verify">Verify a bill</Link>
+            <Link href="/patterns">Patterns</Link>
+            <Link href="/axl">Mesh viz</Link>
+            <Link href="/tech-stack">Tech stack</Link>
             <a onClick={scrollTo("features")}>Features</a>
             <a onClick={scrollTo("tracks")}>Tracks</a>
           </div>

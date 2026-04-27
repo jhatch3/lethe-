@@ -384,6 +384,7 @@ a { color: inherit; }
 .feat.rose .label::before { background: var(--accent-rose); }
 .feat.cyan .label::before { background: var(--accent-cyan); }
 .feat.ink .label::before { background: var(--ink); }
+.feat.pink .label::before { background: #f472b6; }
 
 /* === Tracks === */
 .tracks {
@@ -1715,6 +1716,210 @@ button.cta:hover { background: var(--ink); color: #000; border-color: var(--ink)
 }
 .terminal-card.beta .term-line.axl { border-left-color: var(--accent-amber); background: linear-gradient(90deg, rgba(245,158,11,0.06), transparent 70%); }
 .terminal-card.gamma .term-line.axl { border-left-color: var(--accent-green); background: linear-gradient(90deg, rgba(34,197,94,0.06), transparent 70%); }
+
+.term-line.priors {
+  color: var(--ink-faint);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  padding: 2px 0 2px 6px;
+  margin: 1px 0;
+  border-left: 2px solid #f472b6;
+  background: linear-gradient(90deg, rgba(244,114,182,0.08), transparent 75%);
+}
+.term-line.priors:first-letter { color: #f472b6; }
+
+/* =============================================================
+ * Tech Stack page
+ * ============================================================= */
+
+/* — Stages table (10-stage SSE pipeline) */
+.stages-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+.stage-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 48px;
+  gap: 18px;
+  align-items: start;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--bg-card), var(--bg-elev));
+  transition: border-color 0.2s ease;
+}
+.stage-row:hover { border-color: var(--line-strong); }
+.stage-step {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--accent-violet);
+  text-transform: lowercase;
+  padding-top: 2px;
+}
+.stage-body { display: flex; flex-direction: column; gap: 8px; }
+.stage-what { font-size: 14.5px; line-height: 1.5; color: var(--ink); }
+.stage-meta {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+.stage-tool { color: var(--ink-dim); }
+.stage-out { color: var(--accent-cyan); }
+.stage-idx {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--ink-faint);
+  text-align: right;
+  padding-top: 2px;
+}
+
+/* — Data flow visual */
+.dataflow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0;
+}
+.df-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.df-box {
+  flex: 1 1 220px;
+  max-width: 480px;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-card);
+  transition: border-color 0.2s ease;
+}
+.df-box:hover { border-color: var(--line-strong); }
+.df-label {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 6px;
+}
+.df-name {
+  font-family: var(--font-fraunces), serif;
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.df-detail {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-dim);
+}
+.df-box.client { border-top: 2px solid #60a5fa; }
+.df-box.orch   { border-top: 2px solid var(--accent-green); }
+.df-box.agent  { border-top: 2px solid var(--accent-violet); flex: 1 1 200px; }
+.df-box.chain  { border-top: 2px solid #f472b6; }
+.df-arrow {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+/* — Tech stack grid */
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+.stack-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-card);
+  padding: 22px 24px;
+}
+.stack-head {
+  font-family: var(--font-fraunces), serif;
+  font-size: 18px;
+  color: var(--ink);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.stack-list { display: flex; flex-direction: column; gap: 10px; }
+.stack-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stack-name {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12.5px;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.stack-role {
+  font-size: 12px;
+  color: var(--ink-faint);
+  line-height: 1.45;
+}
+
+/* — Privacy invariants */
+.invariants {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-card);
+  margin-top: 8px;
+}
+.inv-row {
+  display: grid;
+  grid-template-columns: 200px 180px 1fr;
+  gap: 18px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--line);
+  align-items: start;
+}
+.inv-row:last-child { border-bottom: none; }
+.inv-label {
+  font-family: var(--font-fraunces), serif;
+  font-size: 15px;
+  color: var(--ink);
+}
+.inv-state {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--accent-green);
+  align-self: center;
+}
+.inv-detail {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-dim);
+}
+
+@media (max-width: 760px) {
+  .stage-row { grid-template-columns: 100px 1fr; }
+  .stage-idx { display: none; }
+  .inv-row { grid-template-columns: 1fr; gap: 6px; }
+  .inv-state { align-self: start; }
+}
 .term-cursor {
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 11px;

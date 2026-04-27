@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { Suspense, useCallback, useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { useSearchParams } from "next/navigation";
+import { NavBar } from "@/components/NavBar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -124,20 +124,7 @@ function VerifyInner() {
 
   return (
     <>
-      <nav className="nav-top">
-        <div className="brand">
-          <span className="dot" />
-          Lethe
-          <span className="brand-sub">/ verify</span>
-        </div>
-        <div className="links">
-          <Link href="/">Home</Link>
-          <Link href="/dashboard">Dashboard</Link>
-        </div>
-        <Link className="cta" href="/">
-          ← Back to home
-        </Link>
-      </nav>
+      <NavBar subBrand="verify" />
 
       <div className="dash-page">
         <section className="dash-hero">

@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import { NavBar } from "@/components/NavBar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const CHAINSCAN = "https://chainscan-galileo.0g.ai";
@@ -60,21 +60,7 @@ export default function PatternsPage() {
 
   return (
     <>
-      <nav className="nav-top">
-        <div className="brand">
-          <span className="dot" />
-          Lethe
-          <span className="brand-sub">/ patterns</span>
-        </div>
-        <div className="links">
-          <Link href="/">Home</Link>
-          <Link href="/dashboard">Dashboard</Link>
-          <Link href="/verify">Verify</Link>
-        </div>
-        <Link className="cta" href="/">
-          ← Back to home
-        </Link>
-      </nav>
+      <NavBar subBrand="patterns" />
 
       <div className="dash-page">
         <section className="dash-hero" style={{ paddingBottom: 30 }}>

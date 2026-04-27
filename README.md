@@ -21,6 +21,7 @@
   <img src="https://img.shields.io/badge/PHI-zero%20retention-22c55e.svg" alt="Zero Retention" />
   <img src="https://img.shields.io/badge/agents-3%20independent%20LLMs-fbbf24.svg" alt="Agents" />
   <img src="https://img.shields.io/badge/transport-Gensyn%20AXL-c084fc.svg" alt="Transport" />
+  <img src="https://img.shields.io/badge/consensus-2--round%20P2P-f472b6.svg" alt="Two-round consensus" />
 </p>
 
 <br />
@@ -62,7 +63,7 @@ Existing services upload your records to a central database and keep them indefi
 
 ## ✨ What Lethe does
 
-Drop in a medical bill. A deterministic PDF parser extracts the structured data (CPT/ICD codes, modifiers, charges, dates of service) and a redaction pass strips every piece of PHI (patient name, DOB, address, MRN, account numbers) — *before any AI ever sees the payload*. Three independent AI agents (GPT-4o, Claude Sonnet, Gemini Flash) — each broadcasting the redacted payload to two real ed25519 peers over a [Gensyn AXL](https://blog.gensyn.ai/introducing-axl/) mesh joined to the public Gensyn network — analyze the bill in parallel. They vote. A finding only enters the final result if at least 2 of 3 agents flag it. A fourth agent (Claude) drafts a formal appeal letter from the agreed-on findings.
+Drop in a medical bill. A deterministic PDF parser extracts the structured data (CPT/ICD codes, modifiers, charges, dates of service) and a redaction pass strips every piece of PHI (patient name, DOB, address, MRN, account numbers) — *before any AI ever sees the payload*. Three independent AI agents (GPT-4o, Claude Sonnet, Gemini Flash) analyze the bill in parallel. They then **broadcast their own findings** over a [Gensyn AXL](https://blog.gensyn.ai/introducing-axl/) mesh joined to the public Gensyn network and run a **round-2 reflection** with their peers' findings as new context — so each agent gets a chance to revise its vote in light of what the other two saw. A finding only enters the final result if at least 2 of 3 agents agree on it after that reflection round. A fourth agent (Claude) drafts a formal appeal letter from the agreed-on findings.
 
 The original bill never touches storage and never reaches a model provider. It lives in coordinator memory long enough for the parser and redactor to run, then it's discarded. What persists is a SHA-256 hash anchored on [0G Chain](https://0g.ai) (proof of *what was analyzed*), the same hash mirrored to a Sepolia `BillRegistry` via [KeeperHub](https://keeperhub.com), and an anonymized pattern record on a 0G `PatternRegistry` that makes the next user's analysis smarter without anyone's records being recoverable.
 
@@ -137,16 +138,16 @@ A deterministic parser handles PDFs (with image fallback) inside the coordinator
 </td>
 <td width="50%" valign="top">
 
-### 🤖 3-agent LLM consensus
-GPT-4o (α), Claude Sonnet 4.5 (β), and Gemini Flash (γ) each independently analyze the redacted payload. The verdict is the majority vote; a finding only survives with ≥2-of-3 quorum on the canonical billing code. When no verdict reaches majority (a 1-1-1 split), the system honestly falls back to **clarify** rather than letting registration order silently pick a winner. Confidence is the mean across the winning side.
+### 🤖 3-agent independent consensus
+GPT-4o (α), Claude Sonnet 4.5 (β), and Gemini Flash (γ) each independently analyze the redacted payload — no shared scratchpad, no orchestrator nudge. The verdict is the majority vote; a finding only survives with ≥2-of-3 quorum on the canonical billing code. When no verdict reaches majority (a 1-1-1 split), the system falls back to **clarify** rather than letting registration order silently pick a winner. Confidence is the mean across the winning side.
 
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
 
-### 🕸️ Real Gensyn AXL P2P transport
-Each of the three agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 peer ID. After reasoning, each agent **broadcasts its own findings** to its peers via real `POST /send` calls; every sidecar's inbox is then drained with `GET /recv` so peers literally receive each other's analyses across the mesh. Each vote records the `peer_received` payloads it actually saw, so the P2P exchange is load-bearing — not symbolic. The `/axl` page shows live topology with verified peer keys; during a run the dashboard streams both broadcast and receipt events into each agent's terminal.
+### 🕸️ Real Gensyn AXL P2P mesh
+Each of the three agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 peer ID, joined to the public Gensyn mesh via two TLS bootstrap peers. Real `POST /send` broadcasts and real `GET /recv` inbox drains carry agents' findings between sidecars across the Yggdrasil overlay. The `/axl` page shows live topology with verified peer keys; during a run the dashboard streams every broadcast and receipt event into the relevant agent's terminal.
 
 </td>
 <td width="50%" valign="top">
@@ -167,6 +168,21 @@ Before each new audit, the coordinator queries `eth_getLogs` on the `PatternRegi
 
 ### ✍️ Auto-drafted appeal letter
 A fourth agent (Claude, separately prompted) takes the consensus findings and writes a formal, citation-bearing appeal letter. The dashboard renders it as an ASCII-bordered receipt PDF you can review and download — Lethe never auto-submits anything to an insurer.
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
+### 🔁 Round-2 reflection — consensus through conversation
+The three agents don't just vote in isolation — they **talk**. The pipeline runs in two distinct rounds:
+
+- **Round 1 (independent reasoning):** each agent reasons over the redacted bill in parallel and produces a vote.
+- **AXL exchange:** each agent broadcasts its own findings via its sidecar; every sidecar's inbox is drained so peers literally receive each other's analyses.
+- **Round 2 (reflection):** each agent runs a *second* LLM call with the peers' findings injected into the prompt — adding findings it missed, downgrading ones peers convinced it were wrong, or holding its ground. The dashboard streams a one-line summary per agent: `α: approve → dispute · findings 1→3 · conf 0.92`.
+- **Consensus tally** runs on the round-2 votes — so a finding only counts if it survived peer scrutiny *and* still has a 2-of-3 majority.
+
+The reflection prompt is biased explicitly against herd-voting: agents are told to update only if they actually agree on a second look. AXL is load-bearing here — without the mesh delivering peer findings, round 2 has no input and the pipeline gracefully falls back to round 1.
 
 </td>
 </tr>
@@ -267,8 +283,8 @@ For full env-var documentation, local-dev (no-Docker) instructions, and verifica
 
 1. Open `http://localhost:3000/dashboard`.
 2. Click one of the **sample bill chips** (general-hospital ER, imaging-center CT, ortho-clinic MRI, discharge summary, labs itemized) — each ships in `src/coordinator/samples/`.
-3. Watch the SSE pipeline run through nine stages: parse → redact → broadcast → reason → **exchange** → consensus → anchor → patterns → draft.
-4. During `reason`, each agent's terminal streams real LLM tokens. Then in `exchange`, you'll see each agent broadcast its findings via AXL (`⇆ axl · broadcasting 4 findings (612B) → β γ · ed25519:c4737e16…`) and each peer's inbox confirm the receipt (`⇆ axl · received 4 findings · verdict=dispute · from α · ed25519:c4737e16…`).
+3. Watch the SSE pipeline run through ten stages: parse → redact → broadcast → reason → **exchange** → **reflect** → consensus → anchor → patterns → draft.
+4. During `reason`, each agent's terminal streams real LLM tokens. In `exchange`, you'll see each agent broadcast its findings via AXL (`⇆ axl · broadcasting 4 findings (612B) → β γ · ed25519:c4737e16…`) and the inbox receipts confirm delivery (`⇆ axl · received 4 findings · verdict=dispute · from α · ed25519:c4737e16…`). Then in `reflect`, each agent runs a round-2 LLM call with peer findings as context and emits a revised line (`⇆ revised · verdict approve → dispute · findings 1→3 · conf 0.92`).
 5. After `done`, copy the 0G tx hash and paste it into [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai) — or hit the `/verify` page in-app.
 
 ### Other in-app pages

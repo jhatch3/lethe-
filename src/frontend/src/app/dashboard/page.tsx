@@ -11,6 +11,7 @@ import {
   type ChangeEvent,
   type DragEvent,
 } from "react";
+import { NavBar } from "@/components/NavBar";
 
 type Phase = "idle" | "processing" | "complete";
 
@@ -20,6 +21,7 @@ const PIPELINE = [
   { id: "broadcast", name: "Broadcast", detail: "AXL · 3 peers" },
   { id: "reason", name: "Reason", detail: "α · β · γ analyzing" },
   { id: "exchange", name: "P2P exchange", detail: "agents share findings" },
+  { id: "reflect", name: "Reflect", detail: "round-2 with peer input" },
   { id: "consensus", name: "Consensus", detail: "tallying votes" },
   { id: "anchor", name: "Anchor", detail: "0G chain · sha-256" },
   { id: "draft", name: "Draft", detail: "writing appeal letter" },
@@ -425,13 +427,15 @@ function AgentTerminal({
       <div className="term-body">
         {displayLines.map((l, i) => {
           const isAxl = l.startsWith("⇆");
+          const isPriors = l.startsWith("⛓");
+          const cls = isPriors ? "term-line priors" : isAxl ? "term-line axl" : "term-line";
           return (
             <motion.div
               key={`${i}-${l.slice(0, 12)}`}
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className={isAxl ? "term-line axl" : "term-line"}
+              className={cls}
             >
               {l}
             </motion.div>
@@ -834,6 +838,73 @@ export default function Dashboard() {
         }));
       } catch {}
     };
+
+    // Round-2 reflection: each agent revisits its vote after seeing peer findings.
+    // Emit a styled banner showing what changed.
+    const onAgentReflectStarted = (e: MessageEvent) => {
+      try {
+        const data = JSON.parse(e.data);
+        const name = data.agent as "alpha" | "beta" | "gamma";
+        const ftotal = Number(data.peer_finding_total ?? 0);
+        if (!(name in GLYPH)) return;
+        const line = `⇆ reflecting on ${ftotal} peer findings · round 2 begins`;
+        setLiveMessages((prev) => ({
+          ...prev,
+          [name]: [...prev[name], line],
+        }));
+      } catch {}
+    };
+
+    // The on-chain pattern read-back: agents pull prior dispute/clarify rates
+    // from the 0G Galileo PatternRegistry before reasoning. Show this happening
+    // in all three terminals — the priors are shared, but each agent sees them.
+    const onPatternsPriorLoaded = (e: MessageEvent) => {
+      try {
+        const data = JSON.parse(e.data);
+        const codeCount = Number(data.code_count ?? 0);
+        const totalObs = Number(data.total_observations ?? 0);
+        const regShort = String(data.registry_short ?? "");
+        const top = (data.top_codes as Array<{
+          code: string;
+          n_observations: number;
+          dispute_rate: number;
+        }>) ?? [];
+        const headerLine = `⛓ priors loaded · ${codeCount} codes · ${totalObs} obs · 0G PatternRegistry${regShort ? ` ${regShort}` : ""}`;
+        const topLine = top.length
+          ? `⛓ top: ${top
+              .map((t) => `${t.code} (n=${t.n_observations}, ${Math.round(t.dispute_rate * 100)}% dispute)`)
+              .join(" · ")}`
+          : "";
+        setLiveMessages((prev) => {
+          const next = { ...prev };
+          (["alpha", "beta", "gamma"] as const).forEach((k) => {
+            const additions = topLine ? [headerLine, topLine] : [headerLine];
+            next[k] = [...next[k], ...additions];
+          });
+          return next;
+        });
+      } catch {}
+    };
+
+    const onAgentRevised = (e: MessageEvent) => {
+      try {
+        const data = JSON.parse(e.data);
+        const name = data.agent as "alpha" | "beta" | "gamma";
+        const r1v = String(data.round1_verdict ?? "");
+        const r2v = String(data.round2_verdict ?? "");
+        const r1f = Number(data.round1_finding_count ?? 0);
+        const r2f = Number(data.round2_finding_count ?? 0);
+        const r2c = Number(data.round2_confidence ?? 0);
+        const changed = Boolean(data.verdict_changed);
+        if (!(name in GLYPH)) return;
+        const verdictDisplay = changed ? `${r1v} → ${r2v}` : `${r2v} (held)`;
+        const line = `⇆ revised · verdict ${verdictDisplay} · findings ${r1f}→${r2f} · conf ${r2c.toFixed(2)}`;
+        setLiveMessages((prev) => ({
+          ...prev,
+          [name]: [...prev[name], line],
+        }));
+      } catch {}
+    };
     const onAgentCompleted = (e: MessageEvent) => {
       try {
         const data = JSON.parse(e.data);
@@ -892,6 +963,9 @@ export default function Dashboard() {
     sse.addEventListener("agent.message", onAgentMessage as EventListener);
     sse.addEventListener("axl.findings_sent", onAxlFindingsSent as EventListener);
     sse.addEventListener("axl.findings_received", onAxlFindingsReceived as EventListener);
+    sse.addEventListener("patterns.prior_loaded", onPatternsPriorLoaded as EventListener);
+    sse.addEventListener("agent.reflect_started", onAgentReflectStarted as EventListener);
+    sse.addEventListener("agent.revised", onAgentRevised as EventListener);
     sse.addEventListener("agent.completed", onAgentCompleted as EventListener);
     sse.addEventListener("done", onDone as EventListener);
     sse.addEventListener("error", onErr as EventListener);
@@ -999,29 +1073,20 @@ export default function Dashboard() {
 
   return (
     <>
-      <nav className="nav-top">
-        <div className="brand">
-          <span className="dot" />
-          Lethe
-          <span className="brand-sub">/ dashboard</span>
-        </div>
-        <div className="links">
-          <Link href="/">Home</Link>
-          <Link href="/verify">Verify</Link>
-          <Link href="/patterns">Patterns</Link>
-          <Link href="/axl">Mesh</Link>
-          <Link href="/#features">Features</Link>
-        </div>
-        {phase === "idle" ? (
-          <Link className="cta" href="/">
-            ← Back to home
-          </Link>
-        ) : (
-          <button className="cta" onClick={reset}>
-            ⤺ New analysis
-          </button>
-        )}
-      </nav>
+      <NavBar
+        subBrand="dashboard"
+        cta={
+          phase === "idle" ? (
+            <Link className="cta" href="/">
+              ← Back to home
+            </Link>
+          ) : (
+            <button className="cta" onClick={reset}>
+              ⤺ New analysis
+            </button>
+          )
+        }
+      />
 
       <div className="dash-page">
         <AnimatePresence mode="wait">

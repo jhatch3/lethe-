@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import { NavBar } from "@/components/NavBar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -249,22 +249,7 @@ export default function AxlPage() {
 
   return (
     <>
-      <nav className="nav-top">
-        <div className="brand">
-          <span className="dot" />
-          Lethe
-          <span className="brand-sub">/ axl</span>
-        </div>
-        <div className="links">
-          <Link href="/">Home</Link>
-          <Link href="/dashboard">Dashboard</Link>
-          <Link href="/verify">Verify</Link>
-          <Link href="/patterns">Patterns</Link>
-        </div>
-        <Link className="cta" href="/">
-          ← Back to home
-        </Link>
-      </nav>
+      <NavBar subBrand="mesh" />
 
       <div className="dash-page">
         <section className="dash-hero" style={{ paddingBottom: 24 }}>
