@@ -128,6 +128,48 @@ async def broadcast_payload(from_agent: str, payload: Dict[str, Any]) -> Dict[st
     }
 
 
+async def poll_inbox(agent: str, max_msgs: int = 8, per_call_timeout: float = 1.0) -> List[Dict[str, Any]]:
+    """Drain everything currently waiting in this agent's sidecar inbox.
+
+    AXL's /recv returns 204 when empty, or 200 + X-From-Peer-Id + body when
+    a message is buffered. We loop until we either drain the queue or hit
+    `max_msgs`. Each returned entry has {from_peer_id, body_bytes, json}.
+    """
+    msgs: List[Dict[str, Any]] = []
+    url = _sidecar_url(agent)
+    if not url:
+        return msgs
+
+    # Reverse the peer-id → name map so we can label senders.
+    pubkey_to_name = {pubkey: name for name, pubkey in PEER_IDS.items()}
+
+    async with httpx.AsyncClient() as client:
+        for _ in range(max_msgs):
+            try:
+                r = await client.get(f"{url}/recv", timeout=per_call_timeout)
+            except Exception as e:
+                log.debug("poll_inbox %s err: %s", agent, e)
+                break
+            if r.status_code == 204:
+                break
+            if r.status_code != 200:
+                log.debug("poll_inbox %s http %d", agent, r.status_code)
+                break
+            from_peer = r.headers.get("X-From-Peer-Id", "")
+            body = r.content
+            try:
+                parsed = json.loads(body) if body else None
+            except Exception:
+                parsed = None
+            msgs.append({
+                "from_peer_id": from_peer,
+                "from_agent": pubkey_to_name.get(from_peer, "unknown"),
+                "body_bytes": len(body),
+                "json": parsed,
+            })
+    return msgs
+
+
 async def gather_topology() -> Dict[str, Any]:
     """One topology call per agent — for /api/status."""
     if not PEER_IDS:

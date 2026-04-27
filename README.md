@@ -152,7 +152,7 @@ GPT-4o (α), Claude Sonnet 4.5 (β), and Gemini Flash (γ) each independently an
 <td width="50%" valign="top">
 
 ### 🕸️ Real Gensyn AXL P2P transport
-Each of the three agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 peer ID. Sidecars join the public Gensyn mesh and exchange the redacted payload via real `POST /send` calls before reasoning. The `/axl` page shows live mesh topology with verified peer keys, and during each audit the dashboard streams real broadcast events into the agent terminals (`⇆ axl · sent NB → β γ · ed25519:c4737e16…`) so you can watch the cross-talk happen.
+Each of the three agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 peer ID. After reasoning, each agent **broadcasts its own findings** to its peers via real `POST /send` calls; every sidecar's inbox is then drained with `GET /recv` so peers literally receive each other's analyses across the mesh. Each vote records the `peer_received` payloads it actually saw, so the P2P exchange is load-bearing — not symbolic. The `/axl` page shows live topology with verified peer keys; during a run the dashboard streams both broadcast and receipt events into each agent's terminal.
 
 </td>
 <td width="50%" valign="top">
@@ -273,8 +273,8 @@ For full env-var documentation, local-dev (no-Docker) instructions, and verifica
 
 1. Open `http://localhost:3000/dashboard`.
 2. Click one of the **sample bill chips** (general-hospital ER, imaging-center CT, ortho-clinic MRI, discharge summary, labs itemized) — each ships in `src/coordinator/samples/`.
-3. Watch the SSE pipeline run through eight stages: parse → redact → broadcast → reason → consensus → anchor → patterns → draft.
-4. During `reason`, each agent terminal shows real AXL chatter (`⇆ axl · sent NB → β γ · ed25519:c4737e16…`) before LLM tokens stream in.
+3. Watch the SSE pipeline run through nine stages: parse → redact → broadcast → reason → **exchange** → consensus → anchor → patterns → draft.
+4. During `reason`, each agent's terminal streams real LLM tokens. Then in `exchange`, you'll see each agent broadcast its findings via AXL (`⇆ axl · broadcasting 4 findings (612B) → β γ · ed25519:c4737e16…`) and each peer's inbox confirm the receipt (`⇆ axl · received 4 findings · verdict=dispute · from α · ed25519:c4737e16…`).
 5. After `done`, copy the 0G tx hash and paste it into [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai) — or hit the `/verify` page in-app.
 
 ### Other in-app pages

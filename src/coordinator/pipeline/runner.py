@@ -36,7 +36,7 @@ from chain import patterns as chain_patterns
 
 log = logging.getLogger("lethe.pipeline")
 
-STAGE_ORDER = ["parse", "redact", "broadcast", "reason", "consensus", "anchor"]
+STAGE_ORDER = ["parse", "redact", "broadcast", "reason", "exchange", "consensus", "anchor"]
 
 
 def _short(job_id: str) -> str:
@@ -137,22 +137,6 @@ async def run(job_id: str) -> None:
                 agent=agent.spec.name, model=agent.spec.model, provider=agent.spec.provider,
             )
 
-            # If AXL is enabled, broadcast the redacted payload across the mesh
-            # before the LLM call. Fire-and-forget per AXL semantics.
-            if transport_axl.is_enabled():
-                manifest = await transport_axl.broadcast_payload(
-                    agent.spec.name,
-                    {"job_id": job_id, "redacted": redacted},
-                )
-                await _emit(
-                    job_id, "axl.broadcast",
-                    agent=agent.spec.name,
-                    delivered_to=manifest.get("delivered_to", []),
-                    from_peer_id=manifest.get("from_peer_id"),
-                    payload_bytes=manifest.get("payload_bytes", 0),
-                    errors=manifest.get("errors", []),
-                )
-
             async def on_message(line: str) -> None:
                 # Real reasoning tokens, streamed live from the LLM provider.
                 await _emit(
@@ -201,6 +185,84 @@ async def run(job_id: str) -> None:
             return await asyncio.gather(*(_run_agent(a) for a in audit_agents))
 
         votes: List[AgentVote] = await _stage(job, "reason", _reason())
+
+        # 4.5. P2P findings exchange — each agent broadcasts its OWN findings
+        # via its sidecar. Then every sidecar's inbox is drained so peers
+        # actually receive what was sent. Without this step the AXL traffic
+        # would be symbolic; with it, the mesh literally carries each agent's
+        # analysis between peers.
+        async def _exchange() -> None:
+            if not transport_axl.is_enabled():
+                return
+
+            vote_by_name = {v.agent: v for v in votes}
+
+            async def _broadcast_findings(v: AgentVote) -> None:
+                summary = {
+                    "phase": "findings",
+                    "job_id": job_id,
+                    "agent": v.agent,
+                    "verdict": v.verdict,
+                    "confidence": v.confidence,
+                    # Trim findings to code/action/severity so the broadcast
+                    # is small and contains zero PHI by construction.
+                    "findings": [
+                        {
+                            "code": f.get("code"),
+                            "action": f.get("action"),
+                            "severity": f.get("severity"),
+                            "amount_usd": f.get("amount_usd"),
+                        }
+                        for f in v.findings
+                    ],
+                }
+                manifest = await transport_axl.broadcast_payload(v.agent, summary)
+                await _emit(
+                    job_id, "axl.findings_sent",
+                    agent=v.agent,
+                    delivered_to=manifest.get("delivered_to", []),
+                    from_peer_id=manifest.get("from_peer_id"),
+                    payload_bytes=manifest.get("payload_bytes", 0),
+                    finding_count=len(summary["findings"]),
+                    errors=manifest.get("errors", []),
+                )
+
+            await asyncio.gather(*(_broadcast_findings(v) for v in votes))
+
+            # Give the mesh a brief moment to deliver before draining inboxes.
+            await asyncio.sleep(0.5)
+
+            async def _drain(name: str) -> None:
+                inbox = await transport_axl.poll_inbox(name)
+                # Filter to messages that are findings broadcasts for this job.
+                received = []
+                for m in inbox:
+                    j = m.get("json") or {}
+                    if j.get("phase") == "findings" and j.get("job_id") == job_id:
+                        received.append({
+                            "from_agent": m.get("from_agent"),
+                            "from_peer_id": m.get("from_peer_id"),
+                            "verdict": j.get("verdict"),
+                            "confidence": j.get("confidence"),
+                            "finding_count": len(j.get("findings", [])),
+                        })
+                # Attach to this agent's vote so consensus + UI can see it.
+                v = vote_by_name.get(name)
+                if v is not None:
+                    v.peer_received = received
+                for r in received:
+                    await _emit(
+                        job_id, "axl.findings_received",
+                        agent=name,
+                        from_agent=r["from_agent"],
+                        from_peer_id=r["from_peer_id"],
+                        finding_count=r["finding_count"],
+                        verdict=r["verdict"],
+                    )
+
+            await asyncio.gather(*(_drain(a.spec.name) for a in audit_agents))
+
+        await _stage(job, "exchange", _exchange())
 
         # 5. Consensus
         async def _consensus():

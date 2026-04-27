@@ -45,6 +45,10 @@ class AgentVote:
     findings: List[Dict[str, Any]]
     notes: str
     duration_ms: int
+    # Findings this agent received from peers via AXL after their own reasoning.
+    # Each entry: {from_agent, from_peer_id, verdict, finding_count, summary}.
+    # Empty when AXL is disabled.
+    peer_received: List[Dict[str, Any]] = field(default_factory=list)
 
     def public_dict(self) -> Dict[str, Any]:
         return {
@@ -55,6 +59,7 @@ class AgentVote:
             "findings": self.findings,
             "notes": self.notes,
             "duration_ms": self.duration_ms,
+            "peer_received": self.peer_received,
         }
 
 

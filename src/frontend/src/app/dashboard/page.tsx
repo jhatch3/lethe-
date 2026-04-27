@@ -19,6 +19,7 @@ const PIPELINE = [
   { id: "redact", name: "Redact PHI", detail: "stripping identifiers" },
   { id: "broadcast", name: "Broadcast", detail: "AXL · 3 peers" },
   { id: "reason", name: "Reason", detail: "α · β · γ analyzing" },
+  { id: "exchange", name: "P2P exchange", detail: "agents share findings" },
   { id: "consensus", name: "Consensus", detail: "tallying votes" },
   { id: "anchor", name: "Anchor", detail: "0G chain · sha-256" },
   { id: "draft", name: "Draft", detail: "writing appeal letter" },
@@ -788,14 +789,18 @@ export default function Dashboard() {
         }
       } catch {}
     };
-    // Real AXL P2P chatter: surface each sidecar broadcast in the sender's
-    // and recipients' terminals using the actual ed25519 peer id + payload size.
+    // Real AXL P2P chatter: surface each sidecar broadcast (sender's view)
+    // and each /recv read (recipient's view). The sender event is emitted
+    // when the agent broadcasts its OWN findings; the recipient event is
+    // emitted when that agent's sidecar inbox actually delivers them.
     const GLYPH = { alpha: "α", beta: "β", gamma: "γ" } as const;
-    const onAxlBroadcast = (e: MessageEvent) => {
+
+    const onAxlFindingsSent = (e: MessageEvent) => {
       try {
         const data = JSON.parse(e.data);
         const sender = data.agent as "alpha" | "beta" | "gamma";
         const recipients = (data.delivered_to as string[]) ?? [];
+        const fcount = Number(data.finding_count ?? 0);
         const bytes = Number(data.payload_bytes ?? 0);
         const peerId = String(data.from_peer_id ?? "");
         const peerShort = peerId ? peerId.slice(0, 8) : "?";
@@ -804,18 +809,29 @@ export default function Dashboard() {
           .filter((r): r is "alpha" | "beta" | "gamma" => r in GLYPH)
           .map((r) => GLYPH[r as "alpha" | "beta" | "gamma"])
           .join(" ");
-        const senderLine = `⇆ axl · sent ${bytes}B → ${recipGlyphs} · ed25519:${peerShort}`;
-        setLiveMessages((prev) => {
-          const next = { ...prev, [sender]: [...prev[sender], senderLine] };
-          recipients.forEach((r) => {
-            if (r in GLYPH) {
-              const k = r as "alpha" | "beta" | "gamma";
-              const recipLine = `⇆ axl · received ${bytes}B from ${GLYPH[sender]} · ed25519:${peerShort}`;
-              next[k] = [...next[k], recipLine];
-            }
-          });
-          return next;
-        });
+        const senderLine = `⇆ axl · broadcasting ${fcount} findings (${bytes}B) → ${recipGlyphs} · ed25519:${peerShort}`;
+        setLiveMessages((prev) => ({
+          ...prev,
+          [sender]: [...prev[sender], senderLine],
+        }));
+      } catch {}
+    };
+
+    const onAxlFindingsReceived = (e: MessageEvent) => {
+      try {
+        const data = JSON.parse(e.data);
+        const recipient = data.agent as "alpha" | "beta" | "gamma";
+        const fromAgent = data.from_agent as "alpha" | "beta" | "gamma";
+        const fcount = Number(data.finding_count ?? 0);
+        const verdict = String(data.verdict ?? "");
+        const peerId = String(data.from_peer_id ?? "");
+        const peerShort = peerId ? peerId.slice(0, 8) : "?";
+        if (!(recipient in GLYPH) || !(fromAgent in GLYPH)) return;
+        const line = `⇆ axl · received ${fcount} findings · verdict=${verdict} · from ${GLYPH[fromAgent]} · ed25519:${peerShort}`;
+        setLiveMessages((prev) => ({
+          ...prev,
+          [recipient]: [...prev[recipient], line],
+        }));
       } catch {}
     };
     const onAgentCompleted = (e: MessageEvent) => {
@@ -874,7 +890,8 @@ export default function Dashboard() {
 
     sse.addEventListener("step.completed", onStepCompleted as EventListener);
     sse.addEventListener("agent.message", onAgentMessage as EventListener);
-    sse.addEventListener("axl.broadcast", onAxlBroadcast as EventListener);
+    sse.addEventListener("axl.findings_sent", onAxlFindingsSent as EventListener);
+    sse.addEventListener("axl.findings_received", onAxlFindingsReceived as EventListener);
     sse.addEventListener("agent.completed", onAgentCompleted as EventListener);
     sse.addEventListener("done", onDone as EventListener);
     sse.addEventListener("error", onErr as EventListener);
