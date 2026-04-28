@@ -437,6 +437,11 @@ lethe-/
   <b>Drew Manley</b><br />
   <a href="https://github.com/drewmanley16">GitHub</a> · <a href="https://www.linkedin.com/in/drewmanley/">LinkedIn</a><br />
   <sub>Telegram <code>@your-telegram-here</code> · X <code>@your-x-here</code></sub>
+  <td align="center" width="50%">
+  <img src="./assets/cam.jpeg" width="100" /><br />
+  <b>Cameron Coleman</b><br />
+  <a href="https://github.com/camcoleman">GitHub</a> · <a href="https://www.linkedin.com/in/camcoleman/">LinkedIn</a><br />
+  <sub>Telegram <code>@cameroncoleman13</code> · X <code>@cam_coleman1</code></sub>
 </td>
 </tr>
 </table>
