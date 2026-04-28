@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode, MouseEvent } from "react";
+import { useWallet, shortenAddress } from "./useWallet";
 
 export type NavBarProps = {
   /** Optional sub-brand label shown after "Lethe", e.g. "dashboard", "verify". */
@@ -25,6 +26,7 @@ export type NavBarProps = {
 export function NavBar({ subBrand, cta }: NavBarProps) {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const { address, connecting, connect, disconnect } = useWallet();
 
   const handleAnchor = (id: string) => (e: MouseEvent<HTMLAnchorElement>) => {
     if (isHome) {
@@ -60,11 +62,64 @@ export function NavBar({ subBrand, cta }: NavBarProps) {
           GitHub
         </a>
       </div>
-      {cta ?? (
-        <Link className="cta" href="/dashboard">
-          Open dashboard →
-        </Link>
-      )}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {address ? (
+          <>
+            <Link
+              href="/my-audits"
+              style={{
+                fontSize: 12,
+                fontFamily: "var(--font-jetbrains-mono), monospace",
+                padding: "5px 10px",
+                border: "1px solid var(--line-strong)",
+                borderRadius: 3,
+                color: "var(--accent-violet)",
+                textDecoration: "none",
+              }}
+              title="View audits anchored from this wallet"
+            >
+              {shortenAddress(address)} ↗
+            </Link>
+            <button
+              onClick={disconnect}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--ink-faint)",
+                fontSize: 11,
+                cursor: "pointer",
+                padding: "2px 4px",
+              }}
+              title="Disconnect wallet"
+            >
+              ×
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => void connect()}
+            disabled={connecting}
+            style={{
+              fontSize: 12,
+              padding: "5px 12px",
+              border: "1px solid var(--line-strong)",
+              borderRadius: 3,
+              background: "transparent",
+              color: "var(--ink)",
+              cursor: connecting ? "wait" : "pointer",
+              fontFamily: "inherit",
+            }}
+            title="Connect a wallet to track your audits"
+          >
+            {connecting ? "Connecting…" : "Connect wallet"}
+          </button>
+        )}
+        {cta ?? (
+          <Link className="cta" href="/dashboard">
+            Open dashboard →
+          </Link>
+        )}
+      </div>
     </nav>
   );
 }

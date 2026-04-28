@@ -28,7 +28,6 @@ const PIPELINE = [
   { id: "draft", name: "Draft", detail: "writing appeal letter" },
 ] as const;
 
-const HEX = "0123456789abcdef";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 type BackendFinding = {
@@ -225,12 +224,6 @@ This dispute is anchored on 0G Chain at the hash below for reference. Please dir
 const EXPLORER_URL = "https://chainscan-galileo.0g.ai/tx";
 const ANCHOR_TX = "0x9f021a8b4c3e5d6f7a8b2c1d0e9f8a7b6c5d4e7c41";
 
-function randomHex(len: number) {
-  let s = "";
-  for (let i = 0; i < len; i++) s += HEX[Math.floor(Math.random() * 16)];
-  return s;
-}
-
 function ConvCard({
   variant,
   vote,
@@ -297,207 +290,6 @@ function ConvCard({
   );
 }
 
-function MeshSvg({ active }: { active: number }) {
-  // Three nodes positioned in a triangle around a center hash core.
-  // active = current pipeline step index (-1 idle, 0..5 progressing)
-  const links = [
-    { from: "core", to: "alpha", live: active >= 2 },
-    { from: "core", to: "beta", live: active >= 2 },
-    { from: "core", to: "gamma", live: active >= 2 },
-    { from: "alpha", to: "beta", live: active >= 3 },
-    { from: "beta", to: "gamma", live: active >= 3 },
-    { from: "gamma", to: "alpha", live: active >= 3 },
-  ];
-  const nodes: Record<
-    string,
-    { x: number; y: number; label: string; color: string }
-  > = {
-    core:  { x: 50, y: 50, label: "0",   color: "#ffffff" },
-    alpha: { x: 18, y: 22, label: "α",   color: "#a78bfa" },
-    beta:  { x: 82, y: 22, label: "β",   color: "#fbbf24" },
-    gamma: { x: 50, y: 86, label: "γ",   color: "#22c55e" },
-  };
-  return (
-    <svg className="mesh-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-      {links.map((l, i) => {
-        const a = nodes[l.from];
-        const b = nodes[l.to];
-        return (
-          <line
-            key={i}
-            x1={a.x}
-            y1={a.y}
-            x2={b.x}
-            y2={b.y}
-            stroke={l.live ? nodes[l.to].color : "rgba(255,255,255,0.08)"}
-            strokeWidth="0.3"
-            strokeDasharray={l.live ? "1.5 1.5" : "0.6 0.6"}
-            opacity={l.live ? 0.9 : 0.4}
-            style={{
-              transition: "stroke .3s, opacity .3s",
-            }}
-          >
-            {l.live && (
-              <animate
-                attributeName="stroke-dashoffset"
-                from="0"
-                to="-3"
-                dur="0.8s"
-                repeatCount="indefinite"
-              />
-            )}
-          </line>
-        );
-      })}
-      {Object.entries(nodes).map(([k, n]) => {
-        const isCore = k === "core";
-        const lit =
-          (k === "alpha" && active >= 3) ||
-          (k === "beta" && active >= 3) ||
-          (k === "gamma" && active >= 3) ||
-          (isCore && active >= 0);
-        return (
-          <g key={k}>
-            {lit && (
-              <circle
-                cx={n.x}
-                cy={n.y}
-                r={isCore ? 5 : 6}
-                fill={n.color}
-                opacity="0.15"
-              >
-                <animate
-                  attributeName="r"
-                  from={isCore ? 4 : 5}
-                  to={isCore ? 8 : 9}
-                  dur="1.6s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="0.25"
-                  to="0"
-                  dur="1.6s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-            )}
-            <circle
-              cx={n.x}
-              cy={n.y}
-              r={isCore ? 3 : 3.6}
-              fill={isCore ? "#000" : n.color}
-              stroke={n.color}
-              strokeWidth="0.4"
-              opacity={lit ? 1 : 0.55}
-              style={{ transition: "opacity .3s" }}
-            />
-            <text
-              x={n.x}
-              y={n.y + 1.4}
-              fontSize={isCore ? 2 : 4}
-              fontStyle={isCore ? "normal" : "italic"}
-              textAnchor="middle"
-              fill={isCore ? n.color : "#000"}
-              fontWeight={isCore ? 400 : 500}
-              style={{ fontFamily: "var(--font-fraunces), serif" }}
-            >
-              {isCore ? "0G" : n.label}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-function AgentTerminal({
-  variant,
-  glyph,
-  model,
-  step,
-  live,
-  messages,
-}: {
-  variant: "alpha" | "beta" | "gamma";
-  glyph: string;
-  model: string;
-  step: number;
-  live: BackendAgentVote | null;
-  messages: string[];
-}) {
-  // Prefer real backend messages once they start arriving; fall back to canned
-  // stream lines so the terminal isn't empty before the agent's first emit.
-  const displayLines = messages.length > 0 ? messages : AGENT_STREAMS[variant].slice(0, Math.max(0, step - 2));
-  const verdictColor =
-    live?.verdict === "approve"
-      ? "var(--accent-green)"
-      : live?.verdict === "clarify"
-      ? "var(--accent-amber)"
-      : "var(--accent-rose)";
-
-  return (
-    <div className={`terminal-card ${variant}`}>
-      <div className="term-head">
-        <span>
-          agent <b style={{ color: "var(--ink)" }}>{variant}</b>
-        </span>
-        <span>
-          <span className="glyph">{glyph}</span>
-          &nbsp;{live?.model ?? model}
-        </span>
-      </div>
-      <div className="term-body">
-        {displayLines.map((l, i) => {
-          const isAxl = l.startsWith("⇆");
-          const isPriors = l.startsWith("⛓");
-          const cls = isPriors ? "term-line priors" : isAxl ? "term-line axl" : "term-line";
-          return (
-            <motion.div
-              key={`${i}-${l.slice(0, 12)}`}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className={cls}
-            >
-              {l}
-            </motion.div>
-          );
-        })}
-        {!live && step >= 3 && (
-          <span className="term-cursor">▸</span>
-        )}
-        {live && (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            style={{
-              marginTop: "auto",
-              paddingTop: 10,
-              borderTop: "1px solid var(--line)",
-              fontFamily: "var(--font-jetbrains-mono), monospace",
-              fontSize: 10.5,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              color: "var(--ink-faint)",
-              display: "flex",
-              gap: 10,
-              alignItems: "center",
-            }}
-          >
-            <span style={{ color: verdictColor, fontWeight: 500 }}>
-              {live.verdict}
-            </span>
-            <span>· conf {live.confidence.toFixed(2)}</span>
-            <span>· {(live.duration_ms / 1000).toFixed(1)}s</span>
-          </motion.div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 const reveal = (delay = 0) => ({
   initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0 },
@@ -553,6 +345,41 @@ export default function Dashboard() {
     | { phase: "sent"; email: { sent: boolean; provider: string; error?: string | null }; attestation: { live: boolean; tx_hash?: string | null; tx_link?: string | null; executor: string } }
     | { phase: "error"; message: string }
   >({ phase: "idle" });
+
+  // Insurer/payer submission state
+  const [payerId, setPayerId] = useState("stedi-test");
+  const [memberId, setMemberId] = useState("");
+  const [payerStatus, setPayerStatus] = useState<
+    | { phase: "idle" }
+    | { phase: "submitting" }
+    | { phase: "submitted"; result: { submitted: boolean; adapter: string; live: boolean; claim_id?: string; payer_id?: string; disputed_count?: number; stub_note?: string } }
+    | { phase: "error"; message: string }
+  >({ phase: "idle" });
+
+  const onSubmitToPayer = useCallback(async () => {
+    if (!jobId) return;
+    setPayerStatus({ phase: "submitting" });
+    try {
+      const r = await fetch(`${API_URL}/api/payer/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          job_id: jobId,
+          payer_id: payerId,
+          member_id: memberId || undefined,
+        }),
+      });
+      if (!r.ok) {
+        const txt = await r.text();
+        setPayerStatus({ phase: "error", message: `HTTP ${r.status}: ${txt.slice(0, 160)}` });
+        return;
+      }
+      const data = await r.json();
+      setPayerStatus({ phase: "submitted", result: data });
+    } catch (e) {
+      setPayerStatus({ phase: "error", message: e instanceof Error ? e.message : String(e) });
+    }
+  }, [jobId, payerId, memberId]);
 
   // Compose a final letter from the structured personal fields and a body.
   // The drafter agent already produces its own date / RE / [NAME]/[ADDRESS]
@@ -978,15 +805,6 @@ export default function Dashboard() {
     doc.save(`lethe-receipt-${safe}-${hash.slice(2, 10)}.pdf`);
   }, [result, hash, filename]);
 
-  // morphing hash during processing (visual flair only)
-  useEffect(() => {
-    if (phase !== "processing") return;
-    const id = window.setInterval(() => {
-      setHash("0x" + randomHex(40));
-    }, 60);
-    return () => window.clearInterval(id);
-  }, [phase]);
-
   // Subscribe to the backend's SSE stream once we have a job_id and are processing.
   useEffect(() => {
     if (phase !== "processing" || !jobId) return;
@@ -1177,6 +995,25 @@ export default function Dashboard() {
               setBody(body.result.dispute.body);
             }
             setPhase("complete");
+            // If a wallet is connected, append this audit to the user's
+            // local history so it appears on /my-audits.
+            try {
+              const { loadAudits, appendAudit } = await import("@/components/useWallet");
+              void loadAudits;
+              const wallet = (typeof window !== "undefined" ? localStorage.getItem("lethe.wallet.address") : null);
+              if (wallet) {
+                const sha = "0x" + (body.sha256 || body.result.sha256);
+                appendAudit(wallet, {
+                  sha,
+                  filename: filename || undefined,
+                  verdict: body.result?.consensus?.verdict,
+                  agree_count: body.result?.consensus?.agree_count,
+                  total_agents: body.result?.consensus?.total_agents,
+                  anchor_tx: body.result?.proof?.anchor_tx ?? null,
+                  ts: Date.now(),
+                });
+              }
+            } catch {}
           } else {
             setErrorMsg("done event received but no result body");
           }
@@ -1424,151 +1261,236 @@ export default function Dashboard() {
           {phase === "processing" && (
             <motion.div
               key="proc"
+              className="audit-loader-page"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
+              style={{
+                position: "relative",
+                zIndex: 1,
+                minHeight: "calc(100vh - 73px)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "64px 24px",
+              }}
             >
-              <div className="proc-status">
-                <div className="grp">
-                  <span className="live-dot" />
-                  pipeline <b>{errorMsg ? "failed" : "running"}</b>
-                </div>
-                <div className="grp">
-                  file <b>{filename || "—"}</b>
-                </div>
-                <div className="grp">
-                  job <b>{jobId ? jobId.slice(0, 8) : "—"}</b>
-                </div>
-                <div className="grp">
-                  step <b>{Math.max(0, step + 1)} / {PIPELINE.length}</b>
-                </div>
-                <div className="grp">
-                  current <b style={{ color: "var(--accent-violet)" }}>
-                    {step >= 0 ? PIPELINE[Math.min(step, PIPELINE.length - 1)].name : "—"}
-                  </b>
-                </div>
-                <div className="progbar">
-                  <span>progress</span>
-                  <div className="bar">
-                    <span style={{ width: `${progress}%` }} />
-                  </div>
-                  <b>{Math.round(progress)}%</b>
-                </div>
-              </div>
-              {errorMsg && (
-                <div
-                  style={{
-                    margin: "16px 40px 0",
-                    padding: "14px 18px",
-                    border: "1px solid var(--accent-rose)",
-                    borderRadius: 6,
-                    background: "rgba(248,113,113,0.06)",
-                    color: "var(--accent-rose)",
-                    fontFamily: "var(--font-jetbrains-mono), monospace",
-                    fontSize: 12,
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  ⚠ {errorMsg}
-                  <button
-                    className="btn-sm"
-                    onClick={reset}
-                    style={{ marginLeft: 16 }}
-                  >
-                    Reset
-                  </button>
-                </div>
-              )}
-
-              <div className="proc-shell">
-                <motion.div className="hash-stage" {...reveal(0)}>
-                  <span className="hash-label">
-                    <span className="hash-pulse" />
-                    computing sha-256 · zero-retention proof
-                  </span>
-                  <span className="hash-text">{hash}</span>
-                  <div className="hash-progress">
+              <div className="audit-loader-halo" aria-hidden />
+              <div
+                className="audit-loader"
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  maxWidth: 520,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  gap: 14,
+                  padding: "44px 36px 36px",
+                  borderRadius: 16,
+                  border: "1px solid var(--line)",
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))",
+                  backdropFilter: "blur(16px)",
+                  WebkitBackdropFilter: "blur(16px)",
+                  boxShadow:
+                    "0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(167,139,250,0.06) inset",
+                }}
+              >
+                {errorMsg ? (
+                  <>
+                    <div className="audit-loader__error-title">Pipeline failed</div>
+                    <div className="audit-loader__error-msg">{errorMsg}</div>
+                    <button className="cta" onClick={reset} style={{ marginTop: 8 }}>
+                      Reset
+                    </button>
+                  </>
+                ) : (
+                  <>
                     <div
-                      className="hash-progress-bar"
+                      className="audit-loader__spinner"
                       style={{
-                        width: `${Math.min(100, Math.round((step / Math.max(1, PIPELINE.length - 1)) * 100))}%`,
+                        position: "relative",
+                        width: 56,
+                        height: 56,
+                        marginBottom: 4,
                       }}
-                    />
-                  </div>
-                  <div className="hash-status">
-                    <span className="hash-stage-name">
-                      {step < PIPELINE.length
-                        ? `stage ${String(step + 1).padStart(2, "0")} / ${PIPELINE.length} · ${PIPELINE[step]?.name ?? ""}`
-                        : "finalizing"}
-                    </span>
-                    <span className="hash-eta">analysis can take up to 3 minutes</span>
-                  </div>
-                  <div className="hash-meta">
-                    <span>network <b>0g galileo</b></span>
-                    <span>executor <b>keeperhub</b></span>
-                    <span>peers <b>α · β · γ</b></span>
-                  </div>
-                </motion.div>
+                      aria-hidden
+                    >
+                      <span className="audit-loader__ring audit-loader__ring--outer" />
+                      <span className="audit-loader__ring audit-loader__ring--inner" />
+                      <span className="audit-loader__core" />
+                    </div>
 
-                <div className="proc-grid">
-                  <motion.div className="pipeline-rail" {...reveal(0.1)}>
-                    {PIPELINE.map((p, i) => {
-                      const state =
-                        i < step ? "done" : i === step ? "active" : "pending";
-                      return (
-                        <div key={p.id} className={`pl-step ${state}`}>
-                          <span className="pl-num">{String(i + 1).padStart(2, "0")}</span>
-                          <div className="pl-body">
-                            <span className="pl-name">{p.name}</span>
-                            <span className="pl-detail">{p.detail}</span>
-                          </div>
-                          <span className="pl-state">
-                            {state === "done"
-                              ? "done"
-                              : state === "active"
-                              ? "running"
-                              : "queued"}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </motion.div>
+                    <div
+                      className="audit-loader__eyebrow"
+                      style={{
+                        fontFamily: "var(--font-jetbrains-mono), monospace",
+                        fontSize: 10.5,
+                        letterSpacing: "0.24em",
+                        textTransform: "uppercase",
+                        color: "var(--ink-faint)",
+                      }}
+                    >
+                      auditing {filename || "your bill"}
+                    </div>
 
-                  <div className="proc-right">
-                    <motion.div className="mesh-stage" {...reveal(0.15)}>
-                      <div className="mesh-label">axl mesh · live peer graph</div>
-                      <MeshSvg active={step} />
-                    </motion.div>
+                    <div
+                      className="audit-loader__stage"
+                      style={{
+                        fontFamily: "var(--font-fraunces), serif",
+                        fontSize: 38,
+                        letterSpacing: "-0.012em",
+                        color: "var(--ink)",
+                        lineHeight: 1.05,
+                      }}
+                    >
+                      {step >= 0
+                        ? PIPELINE[Math.min(step, PIPELINE.length - 1)].name
+                        : "Starting"}
+                    </div>
 
-                    <motion.div className="terminal-stack" {...reveal(0.2)}>
-                      <AgentTerminal
-                        variant="alpha"
-                        glyph="α"
-                        model="gpt-4o"
-                        step={step}
-                        live={liveAgents.alpha}
-                        messages={liveMessages.alpha}
+                    <div
+                      className="audit-loader__detail"
+                      style={{
+                        fontFamily: "var(--font-jetbrains-mono), monospace",
+                        fontSize: 12,
+                        color: "var(--ink-dim)",
+                        letterSpacing: "0.04em",
+                      }}
+                    >
+                      {step >= 0
+                        ? PIPELINE[Math.min(step, PIPELINE.length - 1)].detail
+                        : "preparing your bill"}
+                    </div>
+
+                    <div
+                      className="audit-loader__progress"
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        maxWidth: 360,
+                        height: 3,
+                        background: "rgba(255,255,255,0.07)",
+                        borderRadius: 999,
+                        overflow: "hidden",
+                        marginTop: 12,
+                      }}
+                    >
+                      <div
+                        className="audit-loader__progress-bar"
+                        style={{
+                          width: `${progress}%`,
+                          height: "100%",
+                          background:
+                            "linear-gradient(90deg, var(--accent-violet), var(--accent-cyan))",
+                          boxShadow: "0 0 14px rgba(167,139,250,0.6)",
+                          transition: "width 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
+                          borderRadius: 999,
+                        }}
                       />
-                      <AgentTerminal
-                        variant="beta"
-                        glyph="β"
-                        model="claude"
-                        step={step}
-                        live={liveAgents.beta}
-                        messages={liveMessages.beta}
-                      />
-                      <AgentTerminal
-                        variant="gamma"
-                        glyph="γ"
-                        model="gemini"
-                        step={step}
-                        live={liveAgents.gamma}
-                        messages={liveMessages.gamma}
-                      />
-                    </motion.div>
-                  </div>
-                </div>
+                    </div>
+
+                    <div
+                      className="audit-loader__counter"
+                      style={{
+                        fontFamily: "var(--font-jetbrains-mono), monospace",
+                        fontSize: 10,
+                        letterSpacing: "0.24em",
+                        textTransform: "uppercase",
+                        color: "var(--ink-faint)",
+                      }}
+                    >
+                      stage {Math.max(1, step + 1)} of {PIPELINE.length} ·{" "}
+                      {Math.round(progress)}%
+                    </div>
+
+                    <ol
+                      className="audit-loader__list"
+                      style={{
+                        listStyle: "none",
+                        margin: "28px 0 0",
+                        padding: 0,
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                        textAlign: "left",
+                      }}
+                    >
+                      {PIPELINE.map((p, i) => {
+                        const state =
+                          i < step ? "done" : i === step ? "active" : "pending";
+                        const isActive = state === "active";
+                        const isDone = state === "done";
+                        return (
+                          <li
+                            key={p.id}
+                            className={`audit-loader__item audit-loader__item--${state}`}
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "14px 1fr auto",
+                              alignItems: "center",
+                              gap: 12,
+                              padding: "9px 14px",
+                              borderRadius: 6,
+                              fontFamily:
+                                "var(--font-jetbrains-mono), monospace",
+                              fontSize: 11.5,
+                              letterSpacing: "0.04em",
+                              color: isActive
+                                ? "var(--ink)"
+                                : isDone
+                                ? "var(--ink-dim)"
+                                : "var(--ink-faint)",
+                              background: isActive
+                                ? "rgba(167,139,250,0.07)"
+                                : "transparent",
+                              transition:
+                                "background 0.3s, color 0.3s",
+                            }}
+                          >
+                            <span
+                              className="audit-loader__bullet"
+                              style={{
+                                width: 7,
+                                height: 7,
+                                borderRadius: "50%",
+                                background: isDone
+                                  ? "var(--accent-green)"
+                                  : isActive
+                                  ? "var(--accent-violet)"
+                                  : "rgba(255,255,255,0.18)",
+                                boxShadow: isActive
+                                  ? "0 0 10px rgba(167,139,250,0.8)"
+                                  : "none",
+                                transition:
+                                  "background 0.3s, box-shadow 0.3s",
+                              }}
+                            />
+                            <span>{p.name}</span>
+                            <span
+                              style={{
+                                fontSize: 9.5,
+                                letterSpacing: "0.18em",
+                                textTransform: "uppercase",
+                                color: "var(--ink-faint)",
+                              }}
+                            >
+                              {isDone
+                                ? "done"
+                                : isActive
+                                ? "running"
+                                : "queued"}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  </>
+                )}
               </div>
             </motion.div>
           )}
@@ -2323,6 +2245,96 @@ export default function Dashboard() {
                       {appealStatus.phase === "error" && (
                         <div style={{ marginTop: 14, fontSize: 12, color: "var(--accent-rose)" }}>
                           ⚠ {appealStatus.message}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Submit-to-insurer panel — wires through the payer
+                        adapter (stub today; Stedi/Availity/Change/FHIR slot
+                        in identically once credentials are configured). */}
+                    <div
+                      className="proof-card"
+                      style={{ marginTop: 18, borderColor: "var(--accent-violet)" }}
+                    >
+                      <div className="panel-label">Submit to insurer</div>
+                      <p style={{ color: "var(--ink-dim)", fontSize: 13, margin: "8px 0 14px", lineHeight: 1.6 }}>
+                        File the dispute with the insurance payer or clearinghouse via X12 837 (claim) or
+                        FHIR R4. Today this routes through a <strong>stubbed</strong> adapter — the
+                        request shape is the production shape; swap{" "}
+                        <code style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>LETHE_PAYER_ADAPTER</code>{" "}
+                        from <code>stub</code> to <code>stedi</code> /{" "}
+                        <code>availity</code> / <code>ch</code> / <code>fhir</code> when sandbox creds are wired.
+                      </p>
+                      <div style={{ display: "flex", gap: 8, alignItems: "stretch", flexWrap: "wrap" }}>
+                        <input
+                          type="text"
+                          value={payerId}
+                          onChange={(e) => setPayerId(e.target.value)}
+                          placeholder="payer id (stedi-test)"
+                          disabled={payerStatus.phase === "submitting"}
+                          style={{
+                            flex: "1 1 200px",
+                            padding: "8px 12px",
+                            border: "1px solid var(--line-strong)",
+                            borderRadius: 4,
+                            fontFamily: "var(--font-jetbrains-mono), monospace",
+                            fontSize: 13,
+                            background: "var(--paper)",
+                            color: "var(--ink)",
+                          }}
+                        />
+                        <input
+                          type="text"
+                          value={memberId}
+                          onChange={(e) => setMemberId(e.target.value)}
+                          placeholder="member id (optional)"
+                          disabled={payerStatus.phase === "submitting"}
+                          style={{
+                            flex: "1 1 200px",
+                            padding: "8px 12px",
+                            border: "1px solid var(--line-strong)",
+                            borderRadius: 4,
+                            fontFamily: "var(--font-jetbrains-mono), monospace",
+                            fontSize: 13,
+                            background: "var(--paper)",
+                            color: "var(--ink)",
+                          }}
+                        />
+                        <button
+                          className="btn-sm solid"
+                          onClick={onSubmitToPayer}
+                          disabled={payerStatus.phase === "submitting" || !payerId.trim()}
+                        >
+                          {payerStatus.phase === "submitting" ? "Submitting…" :
+                           payerStatus.phase === "submitted" ? "Resubmit" :
+                           "Submit claim"}
+                        </button>
+                      </div>
+
+                      {payerStatus.phase === "submitted" && (
+                        <div style={{ marginTop: 14, fontSize: 12, fontFamily: "var(--font-jetbrains-mono), monospace", lineHeight: 1.7 }}>
+                          <div style={{ color: payerStatus.result.live ? "var(--accent-green)" : "var(--accent-amber)" }}>
+                            adapter · {payerStatus.result.adapter}
+                            {payerStatus.result.live ? " · live submission" : " · stub mode"}
+                          </div>
+                          {payerStatus.result.claim_id && (
+                            <div style={{ color: "var(--ink)" }}>
+                              claim id · <span style={{ color: "var(--accent-violet)" }}>{payerStatus.result.claim_id}</span>
+                              {" · "}
+                              {payerStatus.result.disputed_count} disputed code{payerStatus.result.disputed_count === 1 ? "" : "s"}
+                            </div>
+                          )}
+                          {payerStatus.result.stub_note && (
+                            <div style={{ color: "var(--ink-faint)", fontSize: 11, fontStyle: "italic", marginTop: 6 }}>
+                              {payerStatus.result.stub_note}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {payerStatus.phase === "error" && (
+                        <div style={{ marginTop: 14, fontSize: 12, color: "var(--accent-rose)" }}>
+                          ⚠ {payerStatus.message}
                         </div>
                       )}
                     </div>

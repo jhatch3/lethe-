@@ -82,6 +82,28 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("LETHE_STORAGE_INDEX_ADDRESS", "STORAGE_INDEX_ADDRESS"),
     )
+    # Provider reputation contract — public dispute rate per NPI hash.
+    # Records `recordAudit(npiHash, billHash, verdict, agreeCount, totalAgents,
+    # flaggedCents)` after every audit when an NPI is extractable from the bill.
+    # Stays a stub when blank.
+    provider_reputation_address: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_PROVIDER_REPUTATION_ADDRESS", "PROVIDER_REPUTATION_ADDRESS"),
+    )
+    # NCCI Rulebook contract — versioned medical-coding rules on-chain so
+    # agents can query the active ruleset at audit time. Owner-gated for
+    # writes. Stays a stub when blank.
+    ncci_rulebook_address: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_NCCI_RULEBOOK_ADDRESS", "NCCI_RULEBOOK_ADDRESS"),
+    )
+    # Payer integration adapter — "stub" (default), "stedi", "availity", "ch",
+    # or "fhir". Today only stub is wired; the others are scaffolded but
+    # require sandbox credentials + per-payer mapping work.
+    payer_adapter: str = Field(
+        default="stub",
+        validation_alias=AliasChoices("LETHE_PAYER_ADAPTER", "PAYER_ADAPTER"),
+    )
 
     # === KeeperHub mirror anchor (Sepolia) ===
     keeperhub_api_key: str = Field(

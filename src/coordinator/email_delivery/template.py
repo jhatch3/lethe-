@@ -60,8 +60,9 @@ def build_appeal_email_html(
     """Compose the HTML body. `proof` is the receipt dict from the pipeline.
     `public_url` is the Lethe dashboard root, used to build the verify link.
     """
-    sha = bill_sha256[:64] if bill_sha256.startswith("0x") else bill_sha256
-    sha_disp = sha if sha.startswith("0x") else "0x" + sha
+    hex64 = bill_sha256[2:] if bill_sha256.startswith("0x") else bill_sha256
+    hex64 = hex64[:64]
+    sha_disp = "0x" + hex64
     verify_url = f"{public_url.rstrip('/')}/verify?sha={sha_disp}"
 
     # Convert the drafted letter to safe HTML (preserve linebreaks).

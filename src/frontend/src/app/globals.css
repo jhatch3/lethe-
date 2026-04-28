@@ -1698,6 +1698,93 @@ button.cta:hover { background: var(--ink); color: #000; border-color: var(--ink)
   color: var(--accent-green);
 }
 
+/* === CENTERED AUDIT LOADER (modern glass card during processing) === */
+.audit-loader-halo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(167, 139, 250, 0.18), transparent 55%),
+    radial-gradient(circle at 50% 60%, rgba(103, 232, 249, 0.10), transparent 60%);
+  filter: blur(40px);
+  animation: audit-loader-halo 6s ease-in-out infinite alternate;
+}
+@keyframes audit-loader-halo {
+  0%   { opacity: 0.7; transform: scale(0.96); }
+  100% { opacity: 1;   transform: scale(1.04); }
+}
+
+.audit-loader__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+}
+.audit-loader__ring--outer {
+  border-top-color: var(--accent-violet);
+  border-right-color: rgba(167, 139, 250, 0.35);
+  animation: audit-loader-spin 1.4s linear infinite;
+  box-shadow: 0 0 22px rgba(167, 139, 250, 0.35);
+}
+.audit-loader__ring--inner {
+  inset: 8px;
+  border-top-color: var(--accent-cyan);
+  border-left-color: rgba(103, 232, 249, 0.3);
+  animation: audit-loader-spin 1.0s linear infinite reverse;
+}
+.audit-loader__core {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-violet);
+  box-shadow: 0 0 14px rgba(167, 139, 250, 0.9);
+  animation: audit-loader-core 1.6s ease-in-out infinite;
+}
+@keyframes audit-loader-spin { to { transform: rotate(360deg); } }
+@keyframes audit-loader-core {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.6); }
+}
+
+.audit-loader__progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: audit-loader-shimmer 1.8s linear infinite;
+  pointer-events: none;
+}
+@keyframes audit-loader-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%);  }
+}
+
+.audit-loader__error-title {
+  font-family: var(--font-fraunces), serif;
+  font-size: 28px;
+  color: var(--accent-rose);
+}
+.audit-loader__error-msg {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-dim);
+  max-width: 420px;
+}
+@media (max-width: 540px) {
+  .audit-loader { padding: 32px 20px !important; }
+  .audit-loader__stage { font-size: 28px !important; }
+}
+
 /* mesh + terminals */
 .proc-right {
   display: flex;

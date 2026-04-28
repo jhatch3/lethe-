@@ -192,7 +192,7 @@ flowchart TB
 
 ---
 
-## 🎯 Features (as of April 27, 2026)
+## 🎯 Features (as of April 28, 2026)
 
 <table>
 <tr>
@@ -246,8 +246,36 @@ The three agents don't just vote in isolation — they **talk**. Round 1 runs in
 </td>
 <td width="50%" valign="top">
 
-### 💚 KeeperHub — two distinct workflows
-Every audit fires KH **twice**: a **mirror anchor** writes the same SHA-256 + verdict to a Sepolia `BillRegistry`, *and* on `dispute` consensus a second KH execution calls `recordDispute(billHash, reason, note)` on a configurable `DisputeRegistry`. Different contracts, different methods, different verdict gates — KH is doing real workflow orchestration. Both REST and MCP transports implemented; "already anchored" duplicates are detected and the receipt links the original tx via Sepolia event lookup, not "pending".
+### 💚 KeeperHub — three distinct workflows
+Every audit fires KH **twice** (mirror anchor + dispute filing on `dispute`) and a **third** time when the user clicks "Send appeal" (appeal-sent attestation). Different contracts, different methods, different gates — KH is doing real workflow orchestration. Both REST and MCP transports implemented; "already anchored" duplicates are detected and the receipt links the original tx via Sepolia event lookup, not "pending".
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🏥 Insurance payer submission
+Once consensus lands on `dispute`, a panel on the dashboard lets the patient file the same disputed-codes packet directly with the insurance payer or clearinghouse. `POST /api/payer/submit` builds an X12 837 / FHIR Claim payload from the consensus findings + member info and dispatches through a pluggable adapter table. Five adapters are registered today: **stub** (default — generates a deterministic mock claim id and returns success, so the full flow is demoable end-to-end without sandbox creds), **stedi** (X12 837 over Stedi REST), **availity** (Availity FHIR R4 + Web Services), **change healthcare** (clearinghouse SOAP/REST), and **fhir** (direct payer FHIR endpoint). The adapter is selected by `LETHE_PAYER_ADAPTER` and the dashboard surfaces `live submission` vs `stub mode` in the response. Member ID, plan ID, and DOB are passed through to the adapter and never persisted.
+
+</td>
+<td width="50%" valign="top">
+
+### 🩺 On-chain provider reputation
+Each audit's NPI is extracted from the bill, salted-SHA-256 hashed, and written to a deployed `ProviderReputation` contract. Anyone can hit `/providers/<npi>` to see that provider's running stats — total audits, dispute rate, total flagged dollars — read directly from chain. The aggregate is keyed by NPI hash so individual bills aren't linkable, but a provider's overall pattern is. The page also links straight to the chainscan address for the reputation registry so the count is independently verifiable.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 📜 Versioned NCCI rulebook on chain
+Coding rules (CPT bundling pairs, modifier-required pairings, units-per-day caps, time-overlap conflicts) live in a deployed `NCCIRulebook` contract with **versioned** publish-bumps so an upgrade is a single tx, not a redeploy. The `/rules` page reads the active version's rule set live from chain. The agents pull this rulebook into their priors so all three start from the same authoritative reference, and changes propagate without redeploying the coordinator.
+
+</td>
+<td width="50%" valign="top">
+
+### 👛 Wallet connect + per-wallet audit history
+Connect MetaMask (or any EIP-1193 wallet) and the dashboard remembers the audits you ran. `/my-audits` lists every bill SHA, verdict, and chain tx the connected wallet has produced — pulled from local storage, scoped per wallet address, never sent to a server. Switch wallets and the list rescopes. The wallet itself isn't required to run an audit; it's strictly an opt-in personal index so you can find your prior receipts later.
 
 </td>
 </tr>
@@ -312,10 +340,12 @@ Every Lethe audit produces records on two independent blockchains. Anyone with a
 | `DisputeRegistry` (KH workflow #2 target) | Ethereum Sepolia | `0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290) |
 | `AppealRegistry` (KH workflow #3 target) | Ethereum Sepolia | `0x69166ACC4718a0062540673F5Cae26997BaB064e` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0x69166ACC4718a0062540673F5Cae26997BaB064e) |
 | `StorageIndex` (0G Storage pointer) | 0G Galileo testnet | `0xc435991e2aC242E7692f88c5cD78741B6dD5E614` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xc435991e2aC242E7692f88c5cD78741B6dD5E614) |
+| `ProviderReputation` (NPI-hashed audit history) | 0G Galileo testnet | `0xef66dA1Ca3476F868B94E53EACbbc3FA843be8d1` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xef66dA1Ca3476F868B94E53EACbbc3FA843be8d1) |
+| `NCCIRulebook` (versioned coding rules) | 0G Galileo testnet | `0xF062969fe7828277Cf27895848213742e2bA9b34` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xF062969fe7828277Cf27895848213742e2bA9b34) |
 
 In addition, every audit's full anonymized record is uploaded to **0G Storage** with a merkle root + commitment tx, and the `(billHash → storageRoot)` pointer is recorded on `StorageIndex` so future audits can pull blobs back as **richer agent priors** (full code strings, voter agent names — vs the truncated bytes32 fields in `PatternRegistry` events). The Storage layer is genuinely bidirectional: agents both write to it and read from it.
 
-Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`PatternRegistry.sol`](./src/contracts/src/PatternRegistry.sol), [`DisputeRegistry.sol`](./src/contracts/src/DisputeRegistry.sol), [`AppealRegistry.sol`](./src/contracts/src/AppealRegistry.sol), [`StorageIndex.sol`](./src/contracts/src/StorageIndex.sol). Deploy script (`py-solc-x` + `web3.py`, no Foundry): [`src/contracts/deploy.py`](./src/contracts/deploy.py).
+Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`PatternRegistry.sol`](./src/contracts/src/PatternRegistry.sol), [`DisputeRegistry.sol`](./src/contracts/src/DisputeRegistry.sol), [`AppealRegistry.sol`](./src/contracts/src/AppealRegistry.sol), [`StorageIndex.sol`](./src/contracts/src/StorageIndex.sol), [`ProviderReputation.sol`](./src/contracts/src/ProviderReputation.sol), [`NCCIRulebook.sol`](./src/contracts/src/NCCIRulebook.sol). Deploy script (`py-solc-x` + `web3.py`, no Foundry): [`src/contracts/deploy.py`](./src/contracts/deploy.py).
 
 ---
 
@@ -396,21 +426,23 @@ Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`
 lethe-/
 ├── src/
 │   ├── frontend/              # Next.js 16 dashboard (App Router, TS, Tailwind v4)
-│   │   └── src/app/{dashboard,axl,patterns,verify,tech-stack}/page.tsx
+│   │   └── src/app/{dashboard,axl,patterns,verify,my-audits,providers/[npi],rules,tech-stack}/page.tsx
 │   ├── coordinator/           # FastAPI orchestrator
 │   │   ├── main.py            # app entry + CORS + sweeper + AXL-off startup banner
-│   │   ├── routers/           # jobs, samples, status, verify, appeal (email + KH workflow #3)
+│   │   ├── routers/           # jobs · samples · status · verify · appeal · providers · rules · payer
 │   │   ├── pipeline/          # runner, parser, redactor, consensus, dispute drafter
 │   │   ├── agents/            # audit_{openai,anthropic,google,0g}, drafter, transport_axl, prompts
 │   │   ├── chain/             # zerog (anchor) · zerog_storage (PatternRegistry) · zerog_blob (0G Storage)
-│   │   │                      # storage_priors (StorageIndex pointer + read-back) · patterns (chain priors)
+│   │   │                      # storage_priors (StorageIndex) · patterns (chain priors)
+│   │   │                      # provider_reputation (NPI-hashed stats) · ncci_rulebook (versioned rules)
 │   │   │                      # keeperhub (REST · 3 workflows) · keeperhub_mcp (MCP transport)
+│   │   ├── payer/             # X12 837 / FHIR adapter dispatch — stub · stedi · availity · ch · fhir
 │   │   ├── email_delivery/    # sender (resend / smtp / stub) + HTML template builder
 │   │   ├── scripts/           # Node helpers — provision:0g · headers:0g · storage:0g · check:0g
-│   │   ├── samples/           # 5 example bills used by the dashboard chips
+│   │   ├── samples/           # example bills used by the dashboard chips
 │   │   └── store/             # in-memory job store + sweeper, rolling stats
-│   └── contracts/             # BillRegistry · PatternRegistry · DisputeRegistry
-│                              # AppealRegistry · StorageIndex
+│   └── contracts/             # BillRegistry · PatternRegistry · DisputeRegistry · AppealRegistry
+│                              # StorageIndex · ProviderReputation · NCCIRulebook
 │                              # deployed via deploy.py (py-solc-x + web3.py, no Foundry)
 ├── infra/
 │   └── axl/                   # Dockerfile, configs/{alpha,beta,gamma}.json, keys/peer_ids.json

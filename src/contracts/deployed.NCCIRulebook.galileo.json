@@ -1,0 +1,356 @@
+{
+  "network": "galileo",
+  "chain_id": 16602,
+  "contract": "NCCIRulebook",
+  "address": "0xF062969fe7828277Cf27895848213742e2bA9b34",
+  "deploy_tx": "0x4d444a8e0ca78cb517abcce0077c6077cd708fd4ad12297691039e1678765276",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        }
+      ],
+      "name": "OwnerTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "id",
+          "type": "uint16"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "version",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum NCCIRulebook.RuleKind",
+          "name": "kind",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "cptA",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "cptB",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes16",
+          "name": "mod_",
+          "type": "bytes16"
+        }
+      ],
+      "name": "RuleAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "version",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint16",
+          "name": "ruleCount",
+          "type": "uint16"
+        }
+      ],
+      "name": "VersionPublished",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum NCCIRulebook.RuleKind",
+          "name": "kind",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "cptA",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "cptB",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes16",
+          "name": "mod_",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "uint32",
+          "name": "unitsCapPerDay",
+          "type": "uint32"
+        },
+        {
+          "internalType": "string",
+          "name": "citation",
+          "type": "string"
+        }
+      ],
+      "name": "addRule",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "id",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentVersion",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "id",
+          "type": "uint16"
+        }
+      ],
+      "name": "getRule",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint16",
+              "name": "id",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "version",
+              "type": "uint16"
+            },
+            {
+              "internalType": "enum NCCIRulebook.RuleKind",
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "cptA",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "cptB",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes16",
+              "name": "mod",
+              "type": "bytes16"
+            },
+            {
+              "internalType": "uint32",
+              "name": "unitsCapPerDay",
+              "type": "uint32"
+            },
+            {
+              "internalType": "string",
+              "name": "citation",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct NCCIRulebook.Rule",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nextRuleId",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "publishVersion",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "version",
+          "type": "uint16"
+        }
+      ],
+      "name": "ruleCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "ruleIdsByVersion",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "name": "rules",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "id",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint16",
+          "name": "version",
+          "type": "uint16"
+        },
+        {
+          "internalType": "enum NCCIRulebook.RuleKind",
+          "name": "kind",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "cptA",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "cptB",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes16",
+          "name": "mod",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "uint32",
+          "name": "unitsCapPerDay",
+          "type": "uint32"
+        },
+        {
+          "internalType": "string",
+          "name": "citation",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

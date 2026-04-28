@@ -36,6 +36,7 @@ from chain import keeperhub
 from chain import keeperhub_mcp
 from chain import patterns as chain_patterns
 from chain import storage_priors
+from chain import provider_reputation
 
 log = logging.getLogger("lethe.pipeline")
 
@@ -107,6 +108,22 @@ async def run(job_id: str) -> None:
             "redact",
             redactor_mod.redact(parsed, settings.stage_delays_ms["redact"]),
         )
+
+        # NPI is public registry data (CMS NPPES), not PHI. Snag it from the
+        # parsed text BEFORE we nuke `parsed` so we can record this audit
+        # against the provider's hashed NPI on-chain (provider reputation).
+        npi_extracted_text = ""
+        try:
+            if isinstance(parsed, dict):
+                # Concatenate any string fields we can reasonably scan.
+                npi_extracted_text = " ".join(
+                    str(v) for v in parsed.values() if isinstance(v, (str, int, float))
+                )
+            elif isinstance(parsed, str):
+                npi_extracted_text = parsed
+        except Exception:
+            npi_extracted_text = ""
+
         # discard the parsed (still un-redacted) snapshot
         parsed = None  # noqa: F841
 
@@ -567,6 +584,25 @@ async def run(job_id: str) -> None:
                     executor=sx_proof.get("executor"),
                 )
         proof["patterns"] = patterns
+
+        # 6.75 ProviderReputation — record this audit against the provider's
+        # hashed NPI so the public dispute-rate page reflects every audit.
+        # Stub-falls-back when contract isn't configured or NPI isn't found.
+        rep_proof = await provider_reputation.record_audit(
+            bill_text=npi_extracted_text,
+            bill_hash_hex=job.sha256,
+            consensus=verdict,
+        )
+        proof["provider_reputation"] = rep_proof
+        if rep_proof.get("live"):
+            await _emit(
+                job_id,
+                "provider.recorded",
+                tx=rep_proof.get("tx"),
+                npi=rep_proof.get("npi_extracted"),
+                npi_hash=rep_proof.get("npi_hash"),
+                executor=rep_proof.get("executor"),
+            )
 
         # 7. Draft dispute letter (own stage so timing is captured)
         async def _draft():
