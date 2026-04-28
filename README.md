@@ -116,11 +116,9 @@ flowchart TB
         Round1["Round 1 · 3 independent agents<br/><sub>α GPT-4o · β Claude · γ Gemini or 0G Compute</sub>"]
         AXL["Gensyn AXL P2P mesh<br/><sub>POST /send · GET /recv</sub>"]
         Round2["Round 2 · reflect on peer findings"]
+        ZGC["🧠 0G Compute provider<br/><sub>γ optional · headers sidecar :8787</sub>"]
         Round1 -->|broadcast findings| AXL --> Round2
-    end
-
-    subgraph DInf["🧠 Decentralized inference"]
-        ZGC["0G Compute provider<br/><sub>via headers sidecar :8787</sub>"]
+        Round1 <-.->|γ inference| ZGC
     end
 
     subgraph Persist["💾 0G persistence"]
@@ -153,27 +151,21 @@ flowchart TB
     Round2 ==>|revised votes| Tally
     Drafter ==>|letter shown| User
 
-    %% === γ optional decentralized inference ===
-    Round1 -.->|γ optional| ZGC
-    ZGC -.-> Round1
-
-    %% === Persistence fan-out from Tally ===
+    %% === Persistence fan-out from Tally (single edge per destination) ===
     Tally ==> ZGChain
     Tally ==> ZGStorage
-    Tally ==> KH
+    Tally ==>|"anchor + (if dispute) file"| KH
     KH ==> SepMirror
-    Tally -.->|on dispute| KH
     KH -.-> SepDispute
 
     %% === User-initiated appeal send ===
     User -.->|click Send| Email
-    User -.->|after send| KH
+    Email -.->|after send| KH
     KH -.-> SepAppeal
 
     classDef tierFE      fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
     classDef tierBE      fill:#022c22,stroke:#34d399,stroke-width:2px,color:#fff
     classDef tierMesh    fill:#1c1303,stroke:#fbbf24,stroke-width:2px,color:#fff
-    classDef tierCompute fill:#082f3a,stroke:#22d3ee,stroke-width:2px,color:#fff
     classDef tierChain   fill:#2a0d1f,stroke:#f472b6,stroke-width:2px,color:#fff
     classDef tierExec    fill:#0a2818,stroke:#22c55e,stroke-width:2px,color:#fff
     classDef tierMail    fill:#2a1505,stroke:#f97316,stroke-width:2px,color:#fff
@@ -181,7 +173,6 @@ flowchart TB
     class FE tierFE
     class BE tierBE
     class Mesh tierMesh
-    class DInf tierCompute
     class Persist,Sep tierChain
     class Exec tierExec
     class Mail tierMail
