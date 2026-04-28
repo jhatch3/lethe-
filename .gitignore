@@ -20,3 +20,27 @@ yarn-debug.log*
 yarn-error.log*
 
 # Per-subproject ignores live in frontend/.gitignore and coordinator/.gitignore
+
+# Node
+node_modules/
+**/node_modules/
+*.tsbuildinfo
+**/dist/
+**/.next/
+**/build/
+package-lock.json.tmp
+
+# Python
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Claude Code local-only settings (may contain personal MCP endpoints + tokens)
+.claude/settings.local.json
+
+# OS / editor
+*.bak
+*.tmp
