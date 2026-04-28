@@ -13,8 +13,8 @@
 </p>
 
 <p>
-  <a href="./SETUP.md"><img src="https://img.shields.io/badge/Setup-22c55e?style=for-the-badge&logoColor=white" alt="Setup Guide" /></a>
-  <a href="./whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-0b6cda?style=for-the-badge&logoColor=white" alt="Whitepaper" /></a>
+  <a href="./docs/setup.md"><img src="https://img.shields.io/badge/Setup-22c55e?style=for-the-badge&logoColor=white" alt="Setup Guide" /></a>
+  <a href="./docs/contracts.md"><img src="https://img.shields.io/badge/Contracts-0b6cda?style=for-the-badge&logoColor=white" alt="Contract Reference" /></a>
   <a href="https://github.com/jhatch3/lethe-"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
 </p>
 
@@ -46,6 +46,7 @@
 - [🎯 Features](#-features-as-of-april-27-2026)
 - [🛠️ Built with](#%EF%B8%8F-built-with)
 - [⛓️ On-chain artifacts](#%EF%B8%8F-on-chain-artifacts)
+- [📘 Contract reference](#-contract-reference)
 - [🏆 Hackathon tracks](#-hackathon-tracks)
 - [🎬 Demo](#-demo)
 - [📁 Repository structure](#-repository-structure)
@@ -53,7 +54,7 @@
 - [🙏 Acknowledgments](#-acknowledgments)
 - [📄 License](#-license)
 
-> Setup, env vars, and verification: **[SETUP.md](./SETUP.md)**.
+> Setup, env vars, and verification: **[setup.md](./docs/setup.md)**.
 
 ---
 
@@ -144,22 +145,21 @@ flowchart TB
     %% === Subgraph: Persistence ===
     subgraph Persist["💾 0G Persistence"]
         direction TB
-        ZGChain["0G Chain · Galileo<br><sub>BillRegistry + PatternRegistry</sub>"]
-        ZGStorage["0G Storage<br><sub>via storage sidecar :8788</sub>"]
-        SXIndex["StorageIndex<br><sub>billHash → storageRoot pointer</sub>"]
+        ZGChain["LetheRegistry · Galileo<br><sub>anchor + Finding events + provider stats + rulebook pointer</sub>"]
+        ZGStorage["0G Storage<br><sub>audit blob + rulebook JSON · via sidecar :8788</sub>"]
     end
 
     %% === Subgraph: Execution Layer ===
-    subgraph Exec["🔁 KeeperHub · Workflow Execution"]
+    subgraph Exec["🔁 KeeperHub · 3 Workflows"]
         KH["Direct Execution REST + MCP Transport"]
     end
 
     %% === Subgraph: Ethereum ===
-    subgraph Sep["⛓️ Ethereum Sepolia"]
+    subgraph Sep["⛓️ Ethereum Sepolia · LetheRegistry"]
         direction TB
-        SepMirror["BillRegistry Mirror · WF #1"]
-        SepDispute["DisputeRegistry · WF #2"]
-        SepAppeal["AppealRegistry · WF #3"]
+        SepAnchor["anchor() · WF #1"]
+        SepDispute["recordDispute() · WF #2"]
+        SepAppeal["recordAppealSent() · WF #3"]
     end
 
     %% === Subgraph: Mail ===
@@ -179,9 +179,9 @@ flowchart TB
 
     %% === Persistence fan-out from Tally ===
     Tally ==> ZGChain & ZGStorage
-    ZGStorage ==>|"merkle root"| SXIndex
-    SXIndex -.->|"read-back priors"| Round1
-    Tally ==>|"Anchor + (if dispute) File"| KH ==> SepMirror
+    ZGStorage ==>|"merkle root in anchor"| ZGChain
+    ZGChain -.->|"read-back priors"| Round1
+    Tally ==>|"Anchor + (if dispute) File"| KH ==> SepAnchor
     KH -.-> SepDispute & SepAppeal
 
     %% === User-initiated appeal send ===
@@ -205,7 +205,7 @@ flowchart TB
 ```
 
 
-> 📐 **Setup, env vars, and verification commands** are in [`SETUP.md`](./SETUP.md).
+> 📐 **Setup, env vars, and verification commands** are in [`docs/setup.md`](./docs/setup.md).
 
 ---
 
@@ -244,7 +244,7 @@ Every audit hits the full 0G stack: **0G Chain** anchors the SHA-256 + verdict t
 <td width="50%" valign="top">
 
 ### 🧠 Read-back pattern loop
-Before each new audit, the coordinator queries `eth_getLogs` on the `PatternRegistry` and formats prior dispute / clarify rates per code into the agents' system prompts. The next run's reasoning shifts based on what previous runs found. A pre-seed script (`data-gen/scripts/seed_patterns.py`) bootstraps ~20 historical patterns so the very first demo audit shows real on-chain priors firing.
+Before each new audit, the coordinator scans `LetheRegistry`'s `Finding` events via `eth_getLogs` (cached 120s) and formats prior dispute / clarify rates per code into the agents' system prompts. The next run's reasoning shifts based on what previous runs found. A pre-seed script bootstraps ~20 historical findings so the very first demo audit shows real on-chain priors firing.
 
 </td>
 <td width="50%" valign="top">
@@ -286,7 +286,7 @@ Each audit's NPI is extracted from the bill, salted-SHA-256 hashed, and written 
 <td width="50%" valign="top">
 
 ### 📜 Versioned NCCI rulebook on chain
-Coding rules (CPT bundling pairs, modifier-required pairings, units-per-day caps, time-overlap conflicts) live in a deployed `NCCIRulebook` contract with **versioned** publish-bumps so an upgrade is a single tx, not a redeploy. The `/rules` page reads the active version's rule set live from chain. The agents pull this rulebook into their priors so all three start from the same authoritative reference, and changes propagate without redeploying the coordinator.
+Coding rules (CPT bundling pairs, modifier-required pairings, units-per-day caps, time-overlap conflicts) live as a JSON manifest in **0G Storage**; the per-version manifest hash is anchored on-chain via `LetheRegistry.publishRulebook(version, manifestRoot)`. Bumping a version is one tx, no contract redeploy. The `/rules` page reads the manifest pointer from chain and pulls the JSON via the storage sidecar. Every audit ties to a specific `rulebookVersion` written into its anchor record.
 
 </td>
 <td width="50%" valign="top">
@@ -347,22 +347,33 @@ Connect MetaMask (or any EIP-1193 wallet) and the dashboard remembers the audits
 
 ## ⛓️ On-chain artifacts
 
-Every Lethe audit produces records on two independent blockchains. Anyone with a bill's SHA-256 can verify the audit from either explorer using just the public address.
+One contract per chain — `LetheRegistry` consolidates the anchor, finding events, dispute filings, appeal-sent attestations, provider stats, and rulebook manifest pointer onto a single deployed address. KeeperHub fires three workflows that hit three different methods on the Sepolia instance.
 
-| Contract | Network | Address | Explorer |
-|----------|---------|---------|----------|
-| `BillRegistry` (canonical anchor) | 0G Galileo testnet (chain id 16602) | `0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457) |
-| `PatternRegistry` (priors index) | 0G Galileo testnet | `0x7665c9692b1c4e6ef90495a584288604b735e23f` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0x7665c9692b1c4e6ef90495a584288604b735e23f) |
-| `BillRegistry` (Sepolia mirror) | Ethereum Sepolia | `0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457) |
-| `DisputeRegistry` (KH workflow #2 target) | Ethereum Sepolia | `0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290) |
-| `AppealRegistry` (KH workflow #3 target) | Ethereum Sepolia | `0x69166ACC4718a0062540673F5Cae26997BaB064e` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0x69166ACC4718a0062540673F5Cae26997BaB064e) |
-| `StorageIndex` (0G Storage pointer) | 0G Galileo testnet | `0xc435991e2aC242E7692f88c5cD78741B6dD5E614` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xc435991e2aC242E7692f88c5cD78741B6dD5E614) |
-| `ProviderReputation` (NPI-hashed audit history) | 0G Galileo testnet | `0xef66dA1Ca3476F868B94E53EACbbc3FA843be8d1` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xef66dA1Ca3476F868B94E53EACbbc3FA843be8d1) |
-| `NCCIRulebook` (versioned coding rules) | 0G Galileo testnet | `0xF062969fe7828277Cf27895848213742e2bA9b34` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xF062969fe7828277Cf27895848213742e2bA9b34) |
+| Contract | Network | Address | Status | Explorer |
+|----------|---------|---------|--------|----------|
+| `LetheRegistry` (canonical) | 0G Galileo testnet (chain id 16602) | _pending wallet funding_ | ⏳ deploy queued | — |
+| `LetheRegistry` (Sepolia mirror · 3 KH workflows) | Ethereum Sepolia (chain id 11155111) | `0x93D691801FE81Fe3aC7187fe1F394f40a045973E` | ✅ deployed | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0x93D691801FE81Fe3aC7187fe1F394f40a045973E) |
 
-In addition, every audit's full anonymized record is uploaded to **0G Storage** with a merkle root + commitment tx, and the `(billHash → storageRoot)` pointer is recorded on `StorageIndex` so future audits can pull blobs back as **richer agent priors** (full code strings, voter agent names — vs the truncated bytes32 fields in `PatternRegistry` events). The Storage layer is genuinely bidirectional: agents both write to it and read from it.
+The full anonymized audit record is uploaded to **0G Storage** with a merkle root + commitment tx, and the merkle root is recorded as a field on `LetheRegistry.anchor()` so future audits scan `BillAnchored` events for recent roots and pull blobs back via the storage sidecar's `GET /download` endpoint — agents read priors that are strictly richer than the bytes32-truncated chain events. The NCCI rulebook lives in 0G Storage too; only the per-version manifest hash is anchored on-chain via `LetheRegistry.publishRulebook`.
 
-Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`PatternRegistry.sol`](./src/contracts/src/PatternRegistry.sol), [`DisputeRegistry.sol`](./src/contracts/src/DisputeRegistry.sol), [`AppealRegistry.sol`](./src/contracts/src/AppealRegistry.sol), [`StorageIndex.sol`](./src/contracts/src/StorageIndex.sol), [`ProviderReputation.sol`](./src/contracts/src/ProviderReputation.sol), [`NCCIRulebook.sol`](./src/contracts/src/NCCIRulebook.sol). Deploy script (`py-solc-x` + `web3.py`, no Foundry): [`src/contracts/deploy.py`](./src/contracts/deploy.py).
+Solidity source: [`LetheRegistry.sol`](./src/contracts/src/LetheRegistry.sol). Deploy script (`py-solc-x` + `web3.py`, no Foundry): [`src/contracts/deploy.py`](./src/contracts/deploy.py).
+
+---
+
+## 📘 Contract reference
+
+Full ABI — every method, every event, with inputs, outputs, gates, and runnable web3.py examples — lives in [`docs/contracts.md`](./docs/contracts.md).
+
+At a glance:
+
+| Surface | Methods |
+|---|---|
+| **Write** | `anchor` · `indexFindings` · `recordDispute` · `recordAppealSent` · `publishRulebook` (owner) · `transferOwnership` (owner) |
+| **Read** | `anchors` · `isAnchored` · `providerStats` · `disputeRateBps` · `rulebookManifest` · `currentRulebookVersion` · `owner` |
+| **Events** | `BillAnchored` · `Finding` · `DisputeFiled` · `AppealSent` · `RulebookPublished` · `OwnerTransferred` |
+
+If you don't want to write web3 code, the coordinator exposes `GET /api/verify/<sha>`, `GET /api/providers/<npi>`, and `GET /api/rules` as JSON wrappers over the read paths.
+
 
 ---
 
@@ -388,7 +399,7 @@ Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`
 
 **How we use 0G — three pillars:** Lethe is a 3-agent swarm (GPT-4o · Claude · Gemini) that uses **the entire 0G stack**:
 
-- **0G Chain.** `BillRegistry` anchors SHA-256 + verdict for every audited bill. `PatternRegistry` indexes anonymized findings (canonical code · action · severity · amount · voters) as on-chain events. The coordinator reads these back via `eth_getLogs` (cached 120s) and feeds aggregate dispute/clarify rates into agent prompts as priors. **Each new audit gets smarter via on-chain shared memory.**
+- **0G Chain.** `LetheRegistry` is one contract that owns the full audit surface — anchor record (SHA-256, verdict, NPI hash, storage root, rulebook version), `Finding` events for each consensus finding, aggregate provider stats updated atomically inside `anchor()`, and the rulebook manifest pointer. The coordinator reads `Finding` events back via `eth_getLogs` (cached 120s) and feeds aggregate dispute/clarify rates into agent prompts as priors. **Each new audit gets smarter via on-chain shared memory — and there's exactly one address to verify.**
 - **0G Storage — bidirectional.** Every audit's full anonymized record is uploaded as a JSON blob via `@0glabs/0g-ts-sdk` (through a local Node sidecar) — returns a merkle root + on-chain commitment tx. The `(billHash → storageRoot)` pointer is *also* written to a deployed `StorageIndex` contract on Galileo, so future audits query `eth_getLogs` for recent roots and pull blobs back via the sidecar's `GET /download?root=R` endpoint. **The agents read priors from Storage** when blobs are available (full code strings + voter agent names) — strictly richer than the `bytes32`-truncated `PatternRegistry` events. Storage isn't cold archive; it's the primary memory layer.
 - **0G Compute.** Agent γ can run on a **decentralized inference node** instead of Google Gemini. The coordinator routes through a Node sidecar that signs each request body hash via the broker SDK — 0G Compute auth is per-request, not a static bearer token. The factory probes the sidecar at startup and silently falls back to Gemini if unreachable, so `/api/status` always honestly reports γ's actual provider.
 
@@ -406,9 +417,11 @@ Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`
 
 **How we use KeeperHub — three distinct workflows.** KeeperHub is the execution platform that turns one consensus into multiple chain-verifiable side effects:
 
-1. **Sepolia mirror anchor (every audit).** KH Direct Execution writes the SHA-256 + verdict to a Sepolia `BillRegistry` mirror via `POST /api/execute/contract-call`. Same record as 0G Galileo, two independent chains. Already-anchored duplicates are detected and the receipt links the original tx via Sepolia event lookup, not "pending".
-2. **Dispute auto-file (consensus = `dispute`).** A second KH execution fires against [`DisputeRegistry`](https://sepolia.etherscan.io/address/0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290), calling `recordDispute(billHash, reason, note)` with a redacted findings summary. Different contract, different method, different verdict gate.
-3. **Appeal-sent attestation (user click).** When the user types a provider email and clicks **Send appeal**, the coordinator emails the appeal letter + chain verification table, then a third KH execution fires against [`AppealRegistry`](https://sepolia.etherscan.io/address/0x69166ACC4718a0062540673F5Cae26997BaB064e), calling `recordAppealSent(billHash, recipientHash)`. Recipient address is keccak-hashed before going on-chain.
+All three workflows hit the **same** `LetheRegistry` contract on Sepolia ([`0x93D6…973E`](https://sepolia.etherscan.io/address/0x93D691801FE81Fe3aC7187fe1F394f40a045973E)) — three different methods, three different gates, one address.
+
+1. **Mirror anchor (every audit).** `LetheRegistry.anchor()` via KH Direct Execution `POST /api/execute/contract-call`. Same record as 0G Galileo, written by KH's managed wallet. Already-anchored duplicates are detected and the receipt links the original tx via Sepolia event lookup, not "pending".
+2. **Dispute filing (consensus = `dispute`).** A second KH execution fires `LetheRegistry.recordDispute(billHash, reason, note)` with a redacted findings summary. Same contract; different method gated on `verdict == Dispute`.
+3. **Appeal-sent attestation (user click).** When the user types a provider email and clicks **Send appeal**, the coordinator emails the appeal letter + chain verification table, then a third KH execution fires `LetheRegistry.recordAppealSent(billHash, recipientHash)`. Recipient address is keccak-hashed before going on-chain.
 
 **Two integration vectors implemented:**
 - **Direct Execution REST API** (default for all three workflows)
@@ -425,7 +438,7 @@ Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`
 | 🎥 **Demo video** | [Watch on YouTube →](#) |
 | 🌐 **Live demo** | [lethe-demo.vercel.app](#) |
 | 📜 **Pitch deck** | [View slides →](#) |
-| 📐 **Setup & verification** | [SETUP.md](./SETUP.md) |
+| 📐 **Setup & verification** | [setup.md](./docs/setup.md) |
 
 <div align="center">
   <img src="https://placehold.co/600x340/0f172a/4ade80/png?text=Upload+Flow" alt="Upload" width="49%" />
@@ -449,23 +462,22 @@ lethe-/
 │   │   ├── routers/           # jobs · samples · status · verify · appeal · providers · rules · payer
 │   │   ├── pipeline/          # runner, parser, redactor, consensus, dispute drafter
 │   │   ├── agents/            # audit_{openai,anthropic,google,0g}, drafter, transport_axl, prompts
-│   │   ├── chain/             # zerog (anchor) · zerog_storage (PatternRegistry) · zerog_blob (0G Storage)
-│   │   │                      # storage_priors (StorageIndex) · patterns (chain priors)
-│   │   │                      # provider_reputation (NPI-hashed stats) · ncci_rulebook (versioned rules)
-│   │   │                      # keeperhub (REST · 3 workflows) · keeperhub_mcp (MCP transport)
+│   │   ├── chain/             # lethe_registry (unified anchor + findings + provider stats + rulebook pointer)
+│   │   │                      # zerog_blob (0G Storage uploads · audit blobs + rulebook JSON)
+│   │   │                      # patterns (chain-event priors fallback)
+│   │   │                      # keeperhub (REST · 3 workflows on LetheRegistry/Sepolia) · keeperhub_mcp (MCP transport)
 │   │   ├── payer/             # X12 837 / FHIR adapter dispatch — stub · stedi · availity · ch · fhir
 │   │   ├── email_delivery/    # sender (resend / smtp / stub) + HTML template builder
 │   │   ├── scripts/           # Node helpers — provision:0g · headers:0g · storage:0g · check:0g
 │   │   ├── samples/           # example bills used by the dashboard chips
 │   │   └── store/             # in-memory job store + sweeper, rolling stats
-│   └── contracts/             # BillRegistry · PatternRegistry · DisputeRegistry · AppealRegistry
-│                              # StorageIndex · ProviderReputation · NCCIRulebook
+│   └── contracts/             # LetheRegistry — single contract per chain
 │                              # deployed via deploy.py (py-solc-x + web3.py, no Foundry)
 ├── infra/
 │   └── axl/                   # Dockerfile, configs/{alpha,beta,gamma}.json, keys/peer_ids.json
-├── data-gen/                  # Bill PDF generator + PatternRegistry pre-seed script
+├── data-gen/                  # Bill PDF generator + Finding-event pre-seed script
 ├── docker-compose.yml         # axl-alpha, axl-beta, axl-gamma, coordinator, frontend
-├── SETUP.md                   # Full setup + verification guide
+├── docs/                      # setup.md · contracts.md · roadmap.md · draft-writeup.md
 └── README.md
 ```
 

@@ -299,7 +299,7 @@ The architecture is auditable, but the system is hackathon-scale. Real-world dep
 
 The hackathon submission is in. The repo is open at [github.com/jhatch3/lethe-](https://github.com/jhatch3/lethe-). The contracts are deployed and verifiable on the explorers linked above. The dashboard is functional and the SSE pipeline streams every stage of an audit live during a run.
 
-If you want to try it, clone the repo, fill in the env vars per `SETUP.md`, and `docker compose up`. Sample bills under `src/coordinator/samples/` will run end-to-end without you needing to upload anything personal.
+If you want to try it, clone the repo, fill in the env vars per [`setup.md`](./setup.md), and `docker compose up`. Sample bills under `src/coordinator/samples/` will run end-to-end without you needing to upload anything personal.
 
 Lethe was built at ETHGlobal OpenAgents in April 2026 by Justin Hatch and Drew Manley, with support from the Oregon Blockchain Group at the University of Oregon. Thanks to 0G Labs, Gensyn, and KeeperHub for the infrastructure that makes this possible.
 

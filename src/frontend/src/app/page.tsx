@@ -99,7 +99,8 @@ export default function Home() {
           <span><b>3</b> independent LLMs</span>
           <span><b>2-round</b> AXL P2P consensus</span>
           <span><b>0G</b>: Chain · Storage · Compute</span>
-          <span><b>KH</b>: 2 workflows</span>
+          <span><b>KH</b>: 3 workflows</span>
+          <span><b>1</b> contract per chain</span>
         </motion.div>
       </section>
 
@@ -189,17 +190,17 @@ export default function Home() {
             </div>
             <div className="feat rose">
               <div className="label">Verifiable on-chain</div>
-              <h3>Two chains, same hash.</h3>
+              <h3>One registry, two chains.</h3>
               <p>
-                Every audit&apos;s SHA-256 + verdict is anchored on two independent blockchains — one canonical record, one mirror. When consensus lands on dispute, the decision is filed to a separate on-chain registry. Anyone with the bill&apos;s hash can verify what was analyzed and what was decided from either explorer, forever.
+                Every audit&apos;s SHA-256, verdict, finding events, provider stats, and storage pointer are anchored on a single deployed contract per chain — canonical on 0G Galileo, mirrored to Ethereum Sepolia. Three workflow methods (anchor, dispute filing, appeal-sent attestation) on the same address. Anyone with the bill&apos;s hash can verify the full audit trail from either explorer, forever.
               </p>
-              <div className="tick">— canonical + mirror · audit-proof</div>
+              <div className="tick">— LetheRegistry · canonical + mirror</div>
             </div>
             <div className="feat cyan">
               <div className="label">Smarter every audit</div>
               <h3>Memory that compounds.</h3>
               <p>
-                Anonymized patterns from past audits — which billing codes were flagged and what action they triggered — live on-chain and feed forward as priors into the next audit&apos;s reasoning. The system gets sharper at spotting common errors over time, without ever knowing whose bills produced the patterns.
+                Anonymized findings from past audits live on-chain as Finding events; the full schema-versioned audit blob lives in 0G Storage with the merkle root anchored alongside the bill. Future runs query both layers and feed dispute / clarify rates per code into the agents&apos; priors. The system gets sharper without ever knowing whose bills produced the patterns.
               </p>
               <div className="tick">— learn from past · zero PHI</div>
             </div>
@@ -210,6 +211,38 @@ export default function Home() {
                 When consensus lands on dispute, a separate model drafts a formal appeal letter with regulatory citations. You review it, edit it, choose who to send it to — Lethe never auto-submits to an insurer. The letter plus full chain verification can be emailed to the provider&apos;s billing department directly from the dashboard.
               </p>
               <div className="tick">— draft → review → send when you&apos;re ready</div>
+            </div>
+            <div className="feat amber">
+              <div className="label">On-chain provider reputation</div>
+              <h3>Patterns by NPI, not by patient.</h3>
+              <p>
+                Each audit&apos;s provider NPI is salted-hashed and rolled into a public dispute-rate aggregate on the same contract. Visit <code>/providers/&lt;npi&gt;</code> for any provider&apos;s running stats — total audits, dispute rate, total flagged dollars — read directly from chain. Individual bills aren&apos;t linkable; the pattern is.
+              </p>
+              <div className="tick">— salted NPI hash · per-provider stats</div>
+            </div>
+            <div className="feat green">
+              <div className="label">File with the insurer</div>
+              <h3>One click, structured claim.</h3>
+              <p>
+                After consensus, the dashboard can dispatch the disputed-codes packet directly to the insurance payer or clearinghouse via X12 837 / FHIR Claim. Five adapters registered (Stedi · Availity · Change Healthcare · direct FHIR · stub). The provider gets the appeal letter; the payer gets a formal claim — both with the same on-chain receipt.
+              </p>
+              <div className="tick">— X12 837 · FHIR · pluggable adapters</div>
+            </div>
+            <div className="feat violet">
+              <div className="label">Audit history, your wallet</div>
+              <h3>Every receipt, scoped to you.</h3>
+              <p>
+                Connect a wallet (any EIP-1193 — MetaMask, Rabby, Coinbase) and the dashboard remembers every audit you&apos;ve run. Bill SHA, verdict, chain tx, and timestamp persist locally per wallet address — never sent to a server, switchable across wallets, removable on disconnect. Strictly opt-in personal index.
+              </p>
+              <div className="tick">— EIP-1193 · localStorage · zero-server</div>
+            </div>
+            <div className="feat pink">
+              <div className="label">Versioned coding rules</div>
+              <h3>NCCI rulebook, anchored.</h3>
+              <p>
+                CMS&apos;s NCCI coding rules (bundling pairs, modifier requirements, units caps) live as a JSON manifest in 0G Storage; the manifest hash is anchored on-chain so every audit ties to a specific rules version. The rules update once per quarter via one tx — no contract redeploy, no coordinator restart.
+              </p>
+              <div className="tick">— rules JSON in 0G Storage · manifest hash on-chain</div>
             </div>
           </motion.div>
         </div>
@@ -413,15 +446,16 @@ export default function Home() {
             <Link href="/dashboard">Dashboard</Link>
             <Link href="/verify">Verify a bill</Link>
             <Link href="/patterns">Patterns</Link>
-            <Link href="/tech-stack">Tech</Link>
+            <Link href="/my-audits">My audits</Link>
+            <Link href="/rules">Rulebook</Link>
             <a onClick={scrollTo("features")}>Features</a>
             <a onClick={scrollTo("infrastructure")}>Infrastructure</a>
           </div>
           <div className="foot-col">
             <h4>Resources</h4>
-            <a href="/whitepaper.pdf" target="_blank" rel="noopener noreferrer">Whitepaper</a>
             <a href="https://github.com/jhatch3/lethe-" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a onClick={scrollTo("sources")}>Sources</a>
+            <Link href="/axl">AXL mesh</Link>
+            <Link href="/tech-stack">Tech stack</Link>
           </div>
           <div className="foot-col">
             <h4>Infrastructure</h4>

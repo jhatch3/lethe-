@@ -32,25 +32,13 @@ CONTRACTS_DIR = Path(__file__).parent / "src"
 SOLC_VERSION = "0.8.24"
 
 CONTRACTS = {
-    "BillRegistry":    CONTRACTS_DIR / "BillRegistry.sol",
-    "PatternRegistry": CONTRACTS_DIR / "PatternRegistry.sol",
-    "DisputeRegistry": CONTRACTS_DIR / "DisputeRegistry.sol",
-    "AppealRegistry":  CONTRACTS_DIR / "AppealRegistry.sol",
-    "StorageIndex":    CONTRACTS_DIR / "StorageIndex.sol",
-    "ProviderReputation": CONTRACTS_DIR / "ProviderReputation.sol",
-    "NCCIRulebook":    CONTRACTS_DIR / "NCCIRulebook.sol",
+    "LetheRegistry":   CONTRACTS_DIR / "LetheRegistry.sol",
 }
 
 # Contract name -> .env variable to paste the address into. The Sepolia
 # suffix is appended automatically when --network sepolia is selected.
 ENV_KEYS = {
-    "BillRegistry":    "BILL_REGISTRY_ADDRESS",
-    "PatternRegistry": "PATTERN_REGISTRY_ADDRESS",
-    "DisputeRegistry": "LETHE_DISPUTE_REGISTRY_ADDRESS",
-    "AppealRegistry":  "LETHE_APPEAL_REGISTRY_ADDRESS",
-    "StorageIndex":    "LETHE_STORAGE_INDEX_ADDRESS",
-    "ProviderReputation": "LETHE_PROVIDER_REPUTATION_ADDRESS",
-    "NCCIRulebook":    "LETHE_NCCI_RULEBOOK_ADDRESS",
+    "LetheRegistry":   "LETHE_REGISTRY_ADDRESS",
 }
 
 

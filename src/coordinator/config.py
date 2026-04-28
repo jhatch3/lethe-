@@ -61,6 +61,14 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("LETHE_BILL_REGISTRY_ADDRESS", "BILL_REGISTRY_ADDRESS"),
     )
+    # Consolidated registry (Galileo). Replaces the 5-contract surface
+    # (BillRegistry + PatternRegistry + StorageIndex + ProviderReputation +
+    # NCCIRulebook) with one address. When unset, code paths fall back to the
+    # legacy bill_registry_address so the cutover can be staged.
+    lethe_registry_address: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_REGISTRY_ADDRESS"),
+    )
     pattern_registry_address: str = Field(
         default="",
         validation_alias=AliasChoices("LETHE_PATTERN_REGISTRY_ADDRESS", "PATTERN_REGISTRY_ADDRESS"),
@@ -131,6 +139,13 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices(
             "LETHE_BILL_REGISTRY_ADDRESS_SEPOLIA", "BILL_REGISTRY_ADDRESS_SEPOLIA",
         ),
+    )
+    # Consolidated registry on Sepolia. Same source as lethe_registry_address
+    # (Galileo) but a separate deployment. KH workflows on Sepolia target this
+    # contract's anchor / recordDispute / recordAppealSent methods.
+    lethe_registry_address_sepolia: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_REGISTRY_ADDRESS_SEPOLIA"),
     )
     # Public Sepolia RPC. Used to look up the original Anchored tx hash when
     # KeeperHub reports "already anchored" (KH itself doesn't surface the
@@ -212,7 +227,7 @@ class Settings(BaseSettings):
     # === 0G Compute Network (decentralized inference) ===
     # When set, agent γ runs on 0G Compute instead of Google Gemini —
     # demonstrating real use of 0G's inference layer (not just 0G Chain).
-    # Provision via the TypeScript `0g-compute-cli` — see SETUP.md.
+    # Provision via the TypeScript `0g-compute-cli` — see docs/setup.md.
     # Providers expose OpenAI-compatible /v1/proxy endpoints, so we use the
     # stock `openai` Python SDK with a custom base_url + bearer token.
     zg_compute_endpoint: str = Field(

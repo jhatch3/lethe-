@@ -63,27 +63,45 @@ const STAGES: StageRow[] = [
   },
   {
     step: "8 · anchor",
-    what: "Write SHA-256 + verdict to BillRegistry on 0G Galileo (canonical). Mirror the same record to a Sepolia BillRegistry via KeeperHub Direct Execution (REST or MCP transport, configurable).",
+    what: "Write SHA-256, verdict, salted NPI hash, 0G Storage merkle root, and rulebook version to LetheRegistry.anchor() on 0G Galileo (canonical). Mirror the same call to LetheRegistry on Sepolia via KeeperHub Direct Execution (REST or MCP transport, configurable). Provider stats roll up atomically inside the same tx.",
     tool: "web3.py · KeeperHub Direct Execution · MCP",
-    out: "two on-chain tx hashes",
+    out: "two on-chain tx hashes (one per chain)",
   },
   {
-    step: "8.5 · file dispute",
-    what: "On consensus = dispute, fire a SECOND KeeperHub workflow against a configurable Sepolia DisputeRegistry — recordDispute(billHash, reason, note). Different contract, different method, different verdict gate.",
+    step: "8.5 · index findings",
+    what: "Emit a Finding event on LetheRegistry for each consensus finding (code, action, severity, amount, voter bitmask). Replaces the old separate PatternRegistry — same indexer, one less contract.",
+    tool: "LetheRegistry.indexFindings on 0G Chain",
+    out: "one tx with N Finding events",
+  },
+  {
+    step: "8.6 · file dispute",
+    what: "On consensus = dispute, fire a SECOND KeeperHub workflow against the same LetheRegistry on Sepolia — recordDispute(billHash, reason, note). Same contract, different method, different verdict gate.",
     tool: "KeeperHub Direct Execution (workflow #2)",
-    out: "third on-chain tx (dispute filing)",
+    out: "DisputeFiled event on Sepolia",
   },
   {
-    step: "9 · patterns + storage",
-    what: "Index anonymized findings to PatternRegistry on 0G Chain AND upload the full schema-versioned audit blob to 0G Storage AND record the (billHash → storageRoot) pointer to StorageIndex on 0G Chain — all in one stage. Future audits query StorageIndex for recent roots and pull blobs back via the sidecar's GET /download endpoint, giving agents richer-than-chain priors.",
-    tool: "PatternRegistry + StorageIndex events on 0G Chain · @0glabs/0g-ts-sdk via Node sidecar",
-    out: "PatternRegistry tx + storage merkle root + commitment tx + StorageIndex tx",
+    step: "9 · storage upload",
+    what: "Upload the full schema-versioned audit blob to 0G Storage via the Node sidecar; the merkle root returned was already recorded inside step 8's anchor call. Future audits query LetheRegistry's BillAnchored events for recent storage roots and pull blobs back via the sidecar's GET /download endpoint, giving agents richer-than-chain priors.",
+    tool: "@0glabs/0g-ts-sdk via Node sidecar (port 8788)",
+    out: "storage merkle root + commitment tx",
   },
   {
     step: "10 · draft",
     what: "A fourth agent writes a formal appeal letter from the consensus findings, with regulatory citations.",
     tool: "Claude Sonnet 4.5 (drafter)",
     out: "appeal letter + receipt PDF",
+  },
+  {
+    step: "11 · payer submit (optional)",
+    what: "When the user clicks 'File with insurer', the disputed-codes packet is built into an X12 837 / FHIR Claim payload and dispatched through a pluggable adapter (Stedi · Availity · Change Healthcare · direct FHIR · stub). PHI never persisted on the payer side either — DOB / member ID pass through, not stored.",
+    tool: "payer adapter dispatch",
+    out: "claim id from selected adapter",
+  },
+  {
+    step: "12 · appeal-sent attestation",
+    what: "When the user clicks 'Send appeal', the coordinator emails the letter via Resend then KeeperHub workflow #3 calls LetheRegistry.recordAppealSent(billHash, recipientHash) on Sepolia. Recipient address is keccak-hashed before going on-chain.",
+    tool: "KeeperHub Direct Execution (workflow #3) · Resend",
+    out: "AppealSent event on Sepolia",
   },
 ];
 
@@ -140,11 +158,11 @@ const STACK: StackEntry[] = [
   {
     layer: "0G — Chain",
     items: [
-      { name: "Solidity", role: "BillRegistry · PatternRegistry · StorageIndex contracts" },
+      { name: "Solidity 0.8.24", role: "LetheRegistry — single contract replaces 5 (Bill · Pattern · StorageIndex · ProviderReputation · NCCIRulebook)" },
       { name: "web3.py + eth-account", role: "EVM RPC + wallet signing for writes" },
       { name: "py-solc-x", role: "compile + deploy contracts (no Foundry)" },
-      { name: "0G Galileo testnet (chain id 16602)", role: "canonical anchor + pattern index + storage pointer" },
-      { name: "StorageIndex contract", role: "0xc435…E614 — (billHash → storageRoot) pointer, queried via eth_getLogs for read-back" },
+      { name: "0G Galileo testnet (chain id 16602)", role: "canonical: anchor + Finding events + provider stats + rulebook manifest pointer" },
+      { name: "BillAnchored / Finding / DisputeFiled / AppealSent / RulebookPublished events", role: "5 indexed events replace 5 separate contracts; same data, one address" },
     ],
   },
   {
@@ -154,7 +172,8 @@ const STACK: StackEntry[] = [
       { name: "Node storage sidecar", role: "POST /upload → merkle root + commitment tx · GET /download?root=R → bytes (port 8788)" },
       { name: "Indexer turbo endpoint", role: "indexer-storage-testnet-turbo.0g.ai — selects replication nodes" },
       { name: "Schema lethe.audit.pattern.v1", role: "anonymized full-resolution audit blob format · 4 KB padded for flow contract compat" },
-      { name: "Read-back loop", role: "StorageIndex eth_getLogs → sidecar GET /download → richer-than-chain agent priors" },
+      { name: "NCCI rulebook manifest", role: "JSON in 0G Storage; manifest hash anchored via LetheRegistry.publishRulebook" },
+      { name: "Read-back loop", role: "BillAnchored event scan → sidecar GET /download → richer-than-chain agent priors" },
       { name: "Circuit breaker", role: "after 2 consecutive flow contract reverts, short-circuits to stub for the rest of the session" },
     ],
   },
@@ -170,11 +189,30 @@ const STACK: StackEntry[] = [
   {
     layer: "KeeperHub — execution",
     items: [
-      { name: "Direct Execution REST", role: "workflow #1: Sepolia BillRegistry mirror anchor" },
-      { name: "Direct Execution REST (workflow #2)", role: "DisputeRegistry recordDispute on consensus = dispute" },
-      { name: "MCP server transport", role: "alternate path for the mirror anchor" },
+      { name: "Direct Execution REST (workflow #1)", role: "LetheRegistry.anchor on Sepolia — mirror of the Galileo canonical record" },
+      { name: "Direct Execution REST (workflow #2)", role: "LetheRegistry.recordDispute on consensus = dispute" },
+      { name: "Direct Execution REST (workflow #3)", role: "LetheRegistry.recordAppealSent on user-clicked send" },
+      { name: "MCP server transport", role: "alternate path for the mirror anchor (mcp Python SDK)" },
       { name: "Sepolia event lookup", role: "publicnode RPC fallback to find original tx for 'already anchored' duplicates" },
-      { name: "Ethereum Sepolia", role: "secondary verifiability via etherscan" },
+      { name: "Ethereum Sepolia", role: "secondary verifiability via etherscan — all 3 workflows hit the same address" },
+    ],
+  },
+  {
+    layer: "Insurance · payer dispatch",
+    items: [
+      { name: "Adapter dispatch", role: "X12 837 / FHIR Claim built from consensus findings; LETHE_PAYER_ADAPTER selects target" },
+      { name: "Stub adapter", role: "deterministic claim id; demo end-to-end without sandbox creds" },
+      { name: "Stedi · Availity · Change Healthcare · direct FHIR", role: "scaffolded adapters; require per-payer creds + endpoint mapping" },
+      { name: "PHI passthrough only", role: "DOB / member ID / plan ID forwarded to adapter, never persisted on the Lethe side" },
+    ],
+  },
+  {
+    layer: "Wallet · client",
+    items: [
+      { name: "EIP-1193 (window.ethereum)", role: "MetaMask / Rabby / Coinbase / any injected provider — zero dependency, no WalletConnect" },
+      { name: "localStorage audit log", role: "per-wallet history scoped to the connected address; never sent to a server" },
+      { name: "/my-audits", role: "lists every audit run from the connected wallet with verdict + chain tx + timestamp" },
+      { name: "/providers/<npi>", role: "provider dispute stats read directly from LetheRegistry.providerStats(npiHash)" },
     ],
   },
   {
@@ -205,19 +243,19 @@ const PRIVACY_RULES = [
     detail: "What crosses the Gensyn mesh is either the redacted payload or each agent's findings — both PHI-free by construction.",
   },
   {
-    label: "0G BillRegistry",
-    state: "hash + verdict only",
-    detail: "Stores SHA-256 of the bill plus consensus verdict. Pre-image is impossible to recover from the hash alone.",
+    label: "LetheRegistry anchor",
+    state: "hash + verdict + storage root",
+    detail: "Stores SHA-256, consensus verdict, salted NPI hash, 0G Storage merkle root, and rulebook version. Pre-image is impossible to recover from the hash alone; NPI hash is salted so the registry doesn't expose plaintext provider IDs.",
   },
   {
-    label: "0G PatternRegistry",
+    label: "Finding events",
     state: "anonymized findings",
-    detail: "Code · action · severity · amount only — no patient identifiers, no descriptions, no bill content. Read back as priors for future audits.",
+    detail: "Code · action · severity · amount · voter bitmask only — no patient identifiers, no descriptions, no bill content. Read back as priors for future audits.",
   },
   {
     label: "Sepolia mirror",
-    state: "same hash + verdict",
-    detail: "Identical record to 0G, written via KeeperHub Direct Execution. Provides cross-chain verifiability without expanding what's stored.",
+    state: "same record, same address",
+    detail: "Identical anchor written via KeeperHub Direct Execution to LetheRegistry on Sepolia. Three workflows (anchor · dispute · appeal-sent) hit different methods on the same contract.",
   },
   {
     label: "Model providers",
@@ -245,9 +283,10 @@ export default function TechStackPage() {
 
           <motion.p className="dash-sub" {...reveal(0.12)}>
             Lethe is one Next.js dashboard, one FastAPI coordinator, three AXL
-            sidecars, two Solidity contracts, and a careful refusal to keep
-            anyone&apos;s bill on disk. This page lays out every stage, every tool,
-            and every privacy invariant — in the order they fire on a real audit.
+            sidecars, one Solidity contract per chain, and a careful refusal to
+            keep anyone&apos;s bill on disk. This page lays out every stage, every
+            tool, and every privacy invariant — in the order they fire on a real
+            audit.
           </motion.p>
         </section>
 
@@ -365,20 +404,20 @@ export default function TechStackPage() {
               <div className="df-row">
                 <div className="df-box chain">
                   <div className="df-label">Canonical</div>
-                  <div className="df-name">0G Galileo</div>
+                  <div className="df-name">LetheRegistry · 0G Galileo</div>
                   <div className="df-detail">
-                    BillRegistry (anchor)
+                    anchor + Finding events
                     <br />
-                    PatternRegistry (priors for next audit)
+                    provider stats + rulebook manifest
                   </div>
                 </div>
                 <div className="df-box chain">
-                  <div className="df-label">Mirror</div>
-                  <div className="df-name">KeeperHub → Sepolia</div>
+                  <div className="df-label">Mirror · 3 workflows</div>
+                  <div className="df-name">KeeperHub → LetheRegistry · Sepolia</div>
                   <div className="df-detail">
-                    Same SHA-256 + verdict
+                    anchor · recordDispute · recordAppealSent
                     <br />
-                    Cross-chain verifiability
+                    same address, three methods
                   </div>
                 </div>
               </div>
