@@ -209,6 +209,19 @@ class GoogleAuditAgent:
 
 
 def _factory() -> AgentClient:
+    # Preference order for γ:
+    #   1. 0G Compute (decentralized inference — Track 2 boost)
+    #   2. Google Gemini (default real LLM)
+    #   3. Stub (when no provider is configured)
+    if settings.zg_compute_endpoint and settings.zg_compute_token:
+        from agents.audit_0g import ZGComputeAgent
+        return ZGComputeAgent(
+            endpoint=settings.zg_compute_endpoint,
+            token=settings.zg_compute_token,
+            model=settings.zg_compute_model,
+            provider_address=settings.zg_compute_provider_address,
+            via_sidecar=settings.zg_compute_sidecar,
+        )
     if settings.google_api_key:
         return GoogleAuditAgent(settings.google_api_key)
     return StubAuditAgent("gamma")

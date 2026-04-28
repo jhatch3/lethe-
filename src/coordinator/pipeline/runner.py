@@ -14,7 +14,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from typing import List
+from typing import Any, Dict, List
 
 import agents  # noqa: F401  — import side-effects: registers all agents
 from agents import transport_axl
@@ -31,12 +31,18 @@ from pipeline import redactor as redactor_mod
 from pipeline.events import Event, bus
 from chain import zerog
 from chain import zerog_storage
+from chain import zerog_blob
 from chain import keeperhub
+from chain import keeperhub_mcp
 from chain import patterns as chain_patterns
 
 log = logging.getLogger("lethe.pipeline")
 
-STAGE_ORDER = ["parse", "redact", "broadcast", "reason", "exchange", "reflect", "consensus", "anchor"]
+STAGE_ORDER = [
+    "parse", "redact", "broadcast", "reason",
+    "exchange", "reflect",
+    "consensus", "anchor", "patterns", "draft",
+]
 
 
 def _short(job_id: str) -> str:
@@ -387,12 +393,30 @@ async def run(job_id: str) -> None:
                 agree_count=int(verdict.get("agree_count", 3)),
                 total_agents=int(verdict.get("total_agents", 3)),
             ))
-            kh_task = asyncio.create_task(keeperhub.anchor_via_keeperhub(
-                job.sha256,
-                verdict=str(verdict.get("verdict", "dispute")),
-                agree_count=int(verdict.get("agree_count", 3)),
-                total_agents=int(verdict.get("total_agents", 3)),
-            ))
+            # Prefer KeeperHub MCP when LETHE_KEEPERHUB_USE_MCP=true (Track 3 strict
+            # qualification). Fall back to REST automatically if MCP returns a stub.
+            async def _kh_call() -> Dict[str, Any]:
+                if settings.keeperhub_use_mcp:
+                    mcp_result = await keeperhub_mcp.anchor_via_keeperhub_mcp(
+                        job.sha256,
+                        verdict=str(verdict.get("verdict", "dispute")),
+                        agree_count=int(verdict.get("agree_count", 3)),
+                        total_agents=int(verdict.get("total_agents", 3)),
+                    )
+                    if mcp_result.get("live"):
+                        return mcp_result
+                    log.warning(
+                        "keeperhub MCP returned stub (%s) — falling back to REST",
+                        mcp_result.get("executor", "unknown"),
+                    )
+                return await keeperhub.anchor_via_keeperhub(
+                    job.sha256,
+                    verdict=str(verdict.get("verdict", "dispute")),
+                    agree_count=int(verdict.get("agree_count", 3)),
+                    total_agents=int(verdict.get("total_agents", 3)),
+                )
+
+            kh_task = asyncio.create_task(_kh_call())
             zg_proof, kh_proof = await asyncio.gather(zg_task, kh_task)
             zg_proof["mirror"] = kh_proof
             return zg_proof
@@ -414,9 +438,43 @@ async def run(job_id: str) -> None:
                 executor=proof["mirror"].get("executor"),
             )
 
-        # 6.5 Index anonymized patterns on PatternRegistry (cheap event log on 0G).
+        # 6.25. Dispute auto-file via KeeperHub (Track 3 — second workflow execution).
+        # When consensus is "dispute", fire a SECOND KH Direct Execution against
+        # the configurable dispute registry. Demonstrates KH as an execution
+        # platform — not just a single mirror call. Stub-fallback when no
+        # registry is configured, so the receipt always shows the code path.
+        if str(verdict.get("verdict", "")).lower() == "dispute":
+            findings_summary = " · ".join(
+                f"{f.get('code', '?')}:{f.get('action', '?')}"
+                for f in (verdict.get("findings") or [])[:6]
+            ) or "no canonical codes"
+            dispute_proof = await keeperhub.file_dispute_via_keeperhub(
+                job.sha256,
+                findings_summary=findings_summary,
+                reason="dispute",
+            )
+            proof["dispute_filing"] = dispute_proof
+            if dispute_proof.get("live"):
+                await _emit(
+                    job_id,
+                    "dispute.filed",
+                    tx_hash=dispute_proof.get("tx_hash"),
+                    network=dispute_proof.get("network"),
+                    executor=dispute_proof.get("executor"),
+                    function_name=dispute_proof.get("function_name"),
+                )
+
+        # 6.5 Index anonymized patterns on PatternRegistry (event log on 0G Chain)
+        # AND upload the full anonymized record to 0G Storage. Two 0G layers,
+        # one stage. The chain event is cheap + indexable; the storage blob
+        # carries the full structured record (full code strings, voter agent
+        # names, etc.) that bytes32/16/8 fields can't fit.
         async def _patterns():
-            return await zerog_storage.index_patterns(verdict, job.sha256)
+            chain_task = asyncio.create_task(zerog_storage.index_patterns(verdict, job.sha256))
+            blob_task = asyncio.create_task(zerog_blob.upload_pattern_blob(verdict, job.sha256))
+            chain_result, blob_result = await asyncio.gather(chain_task, blob_task)
+            chain_result["storage"] = blob_result
+            return chain_result
 
         patterns = await _stage(job, "patterns", _patterns())
         await _emit(
@@ -426,6 +484,16 @@ async def run(job_id: str) -> None:
             tx=patterns.get("tx"),
             executor=patterns.get("executor", "stub"),
         )
+        storage_proof = patterns.get("storage") or {}
+        if storage_proof.get("live"):
+            await _emit(
+                job_id,
+                "storage.uploaded",
+                root_hash=storage_proof.get("root_hash"),
+                tx_hash=storage_proof.get("tx_hash"),
+                bytes=storage_proof.get("bytes"),
+                executor=storage_proof.get("executor"),
+            )
         proof["patterns"] = patterns
 
         # 7. Draft dispute letter (own stage so timing is captured)

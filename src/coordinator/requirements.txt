@@ -10,3 +10,10 @@ google-generativeai==0.8.3
 pdfplumber==0.11.7
 web3>=6.20.0
 eth-account>=0.13.0
+mcp>=1.2.0
+# Email delivery for appeal letters. Resend SDK is optional — SMTP path works
+# with stdlib smtplib only. Stub fallback when neither is configured.
+resend>=2.0.0
+# email-validator backs pydantic's EmailStr — required at uvicorn startup
+# because routers/appeal.py declares `recipient_email: EmailStr`.
+email-validator>=2.2.0

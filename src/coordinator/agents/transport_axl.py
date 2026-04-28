@@ -25,14 +25,34 @@ import asyncio
 import json
 import logging
 import time
+from collections import deque
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Deque, Dict, List, Optional
 
 import httpx
 
 from config import settings
 
 log = logging.getLogger("lethe.axl")
+
+
+# Ring buffer of recent AXL messages — feeds the frontend's /axl live-log panel.
+# Each entry: {ts, kind: "send"|"recv", from_agent, to_agent, from_peer_id,
+# to_peer_id, bytes, latency_ms (send only), ok, job_id, finding_count}.
+# Bounded to 200 so memory stays flat across long-running coordinators.
+_MESSAGE_LOG: Deque[Dict[str, Any]] = deque(maxlen=200)
+
+
+def _record_message(entry: Dict[str, Any]) -> None:
+    entry["ts"] = time.time()
+    _MESSAGE_LOG.append(entry)
+
+
+def recent_messages(limit: int = 50) -> List[Dict[str, Any]]:
+    """Most-recent-first slice of the AXL message ring buffer."""
+    snapshot = list(_MESSAGE_LOG)
+    snapshot.reverse()
+    return snapshot[:limit]
 
 
 # Public-key map: agent name → ed25519 hex (the peer ID).
@@ -98,9 +118,13 @@ async def broadcast_payload(from_agent: str, payload: Dict[str, Any]) -> Dict[st
     sent_to = []
     errors = []
 
+    job_id = payload.get("job_id") if isinstance(payload, dict) else None
+    finding_count = len(payload.get("findings", [])) if isinstance(payload, dict) else 0
+
     async with httpx.AsyncClient() as client:
         for target in targets:
             peer_pubkey = PEER_IDS[target]
+            send_started = time.perf_counter()
             try:
                 r = await client.post(
                     f"{src_url}/send",
@@ -111,12 +135,50 @@ async def broadcast_payload(from_agent: str, payload: Dict[str, Any]) -> Dict[st
                     },
                     timeout=6.0,
                 )
+                latency_ms = int((time.perf_counter() - send_started) * 1000)
                 if r.status_code == 200:
                     sent_to.append(target)
+                    _record_message({
+                        "kind": "send",
+                        "from_agent": from_agent,
+                        "to_agent": target,
+                        "from_peer_id": PEER_IDS.get(from_agent),
+                        "to_peer_id": peer_pubkey,
+                        "bytes": len(body),
+                        "latency_ms": latency_ms,
+                        "ok": True,
+                        "job_id": job_id,
+                        "finding_count": finding_count,
+                    })
                 else:
                     errors.append({"target": target, "status": r.status_code, "body": r.text[:80]})
+                    _record_message({
+                        "kind": "send",
+                        "from_agent": from_agent,
+                        "to_agent": target,
+                        "from_peer_id": PEER_IDS.get(from_agent),
+                        "to_peer_id": peer_pubkey,
+                        "bytes": len(body),
+                        "latency_ms": latency_ms,
+                        "ok": False,
+                        "error": f"http {r.status_code}",
+                        "job_id": job_id,
+                        "finding_count": finding_count,
+                    })
             except Exception as e:
                 errors.append({"target": target, "error": f"{type(e).__name__}: {str(e)[:80]}"})
+                _record_message({
+                    "kind": "send",
+                    "from_agent": from_agent,
+                    "to_agent": target,
+                    "from_peer_id": PEER_IDS.get(from_agent),
+                    "to_peer_id": peer_pubkey,
+                    "bytes": len(body),
+                    "ok": False,
+                    "error": f"{type(e).__name__}",
+                    "job_id": job_id,
+                    "finding_count": finding_count,
+                })
 
     return {
         "sent": len(sent_to) > 0,
@@ -161,11 +223,23 @@ async def poll_inbox(agent: str, max_msgs: int = 8, per_call_timeout: float = 1.
                 parsed = json.loads(body) if body else None
             except Exception:
                 parsed = None
+            from_agent = pubkey_to_name.get(from_peer, "unknown")
             msgs.append({
                 "from_peer_id": from_peer,
-                "from_agent": pubkey_to_name.get(from_peer, "unknown"),
+                "from_agent": from_agent,
                 "body_bytes": len(body),
                 "json": parsed,
+            })
+            _record_message({
+                "kind": "recv",
+                "from_agent": from_agent,
+                "to_agent": agent,
+                "from_peer_id": from_peer,
+                "to_peer_id": PEER_IDS.get(agent),
+                "bytes": len(body),
+                "ok": True,
+                "job_id": (parsed or {}).get("job_id") if isinstance(parsed, dict) else None,
+                "finding_count": len((parsed or {}).get("findings", [])) if isinstance(parsed, dict) else 0,
             })
     return msgs
 
@@ -173,7 +247,7 @@ async def poll_inbox(agent: str, max_msgs: int = 8, per_call_timeout: float = 1.
 async def gather_topology() -> Dict[str, Any]:
     """One topology call per agent — for /api/status."""
     if not PEER_IDS:
-        return {"enabled": False, "reason": "no peer_ids.json"}
+        return {"enabled": False, "reason": "no peer_ids.json", "messages": recent_messages()}
     results = await asyncio.gather(*(topology(a) for a in PEER_IDS), return_exceptions=False)
     return {
         "enabled": is_enabled(),
@@ -185,4 +259,5 @@ async def gather_topology() -> Dict[str, Any]:
             }
             for i, (name, pubkey) in enumerate(PEER_IDS.items())
         },
+        "messages": recent_messages(),
     }

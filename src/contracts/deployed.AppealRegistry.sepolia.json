@@ -1,0 +1,117 @@
+{
+  "network": "sepolia",
+  "chain_id": 11155111,
+  "contract": "AppealRegistry",
+  "address": "0x69166ACC4718a0062540673F5Cae26997BaB064e",
+  "deploy_tx": "0x64b62d070eaf7e8de02cf7804d0b66cf36dae9fdab1902142bf08d58b7606c06",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "recipientHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "sentAt",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sentBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealIndex",
+          "type": "uint256"
+        }
+      ],
+      "name": "AppealSent",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "appealCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "appeals",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "recipientHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint64",
+          "name": "sentAt",
+          "type": "uint64"
+        },
+        {
+          "internalType": "address",
+          "name": "sentBy",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "recipientHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "recordAppealSent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

@@ -34,6 +34,17 @@ SOLC_VERSION = "0.8.24"
 CONTRACTS = {
     "BillRegistry":    CONTRACTS_DIR / "BillRegistry.sol",
     "PatternRegistry": CONTRACTS_DIR / "PatternRegistry.sol",
+    "DisputeRegistry": CONTRACTS_DIR / "DisputeRegistry.sol",
+    "AppealRegistry":  CONTRACTS_DIR / "AppealRegistry.sol",
+}
+
+# Contract name -> .env variable to paste the address into. The Sepolia
+# suffix is appended automatically when --network sepolia is selected.
+ENV_KEYS = {
+    "BillRegistry":    "BILL_REGISTRY_ADDRESS",
+    "PatternRegistry": "PATTERN_REGISTRY_ADDRESS",
+    "DisputeRegistry": "LETHE_DISPUTE_REGISTRY_ADDRESS",
+    "AppealRegistry":  "LETHE_APPEAL_REGISTRY_ADDRESS",
 }
 
 
@@ -140,8 +151,7 @@ def main() -> None:
     print(f" Tx:       {explorer}/tx/0x{tx_hex}")
     print(f" Saved:    {out_path.relative_to(REPO_ROOT)}")
     print()
-    env_key = (args.contract == "BillRegistry" and "BILL_REGISTRY_ADDRESS"
-               or "PATTERN_REGISTRY_ADDRESS")
+    env_key = ENV_KEYS.get(args.contract, args.contract.upper() + "_ADDRESS")
     if args.network == "sepolia":
         env_key += "_SEPOLIA"
     print(f" Now paste into .env:")

@@ -1,0 +1,23 @@
+{
+  "name": "lethe-coordinator-scripts",
+  "private": true,
+  "version": "0.0.0",
+  "description": "One-off provisioning scripts for the Lethe coordinator (0G Compute, etc.)",
+  "scripts": {
+    "provision:0g": "tsx provision.ts",
+    "headers:0g": "tsx headers_sidecar.ts",
+    "storage:0g": "tsx storage_sidecar.ts",
+    "check:0g": "tsx check.ts"
+  },
+  "dependencies": {
+    "@0glabs/0g-serving-broker": "^0.7.3",
+    "@0glabs/0g-ts-sdk": "^0.3.3",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

@@ -71,6 +71,12 @@ async def status():
                 if settings.zg_private_key and settings.pattern_registry_address
                 else "stub"
             ),
+            "pattern_storage": (
+                "0g-storage-sidecar"
+                if settings.zg_storage_sidecar_url
+                else "stub"
+            ),
+            "zg_storage_sidecar_url": settings.zg_storage_sidecar_url or None,
         },
         "timing": timing,
         "ttl": {
@@ -83,6 +89,20 @@ async def status():
             "openai_configured": bool(settings.openai_api_key),
             "anthropic_configured": bool(settings.anthropic_api_key),
             "google_configured": bool(settings.google_api_key),
+            "zg_compute_configured": bool(
+                settings.zg_compute_endpoint and settings.zg_compute_token
+            ),
+            "zg_compute_model": settings.zg_compute_model if (
+                settings.zg_compute_endpoint and settings.zg_compute_token
+            ) else None,
+            "zg_compute_transport": (
+                "sidecar"
+                if settings.zg_compute_endpoint and settings.zg_compute_sidecar
+                else "direct"
+                if settings.zg_compute_endpoint and settings.zg_compute_token
+                else None
+            ),
+            "zg_compute_provider": settings.zg_compute_provider_address or None,
             "zg_private_key_len": len(settings.zg_private_key),
             "zg_chain_id": settings.zg_chain_id,
             "zg_rpc_url": settings.zg_rpc_url,
@@ -90,6 +110,26 @@ async def status():
             "pattern_registry_address": settings.pattern_registry_address,
             "bill_registry_address_sepolia": settings.bill_registry_address_sepolia,
             "keeperhub_configured": bool(settings.keeperhub_api_key),
+            "keeperhub_transport": "mcp" if settings.keeperhub_use_mcp else "rest",
+            "keeperhub_mcp_url": settings.keeperhub_mcp_url if settings.keeperhub_use_mcp else None,
+            "keeperhub_dispute_filer": (
+                "live"
+                if settings.keeperhub_api_key and settings.dispute_registry_address_sepolia
+                else "stub"
+            ),
+            "dispute_registry_address_sepolia": settings.dispute_registry_address_sepolia or None,
+            "dispute_function_name": settings.dispute_function_name,
+            "keeperhub_appeal_attestor": (
+                "live"
+                if settings.keeperhub_api_key and settings.appeal_registry_address_sepolia
+                else "stub"
+            ),
+            "appeal_registry_address_sepolia": settings.appeal_registry_address_sepolia or None,
+            "email_provider": settings.email_provider,
+            "email_configured": bool(
+                (settings.email_provider == "resend" and settings.email_resend_api_key)
+                or (settings.email_provider == "smtp" and settings.email_smtp_host and settings.email_smtp_user)
+            ),
         },
     }
 

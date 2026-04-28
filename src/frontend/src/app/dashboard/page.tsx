@@ -24,6 +24,7 @@ const PIPELINE = [
   { id: "reflect", name: "Reflect", detail: "round-2 with peer input" },
   { id: "consensus", name: "Consensus", detail: "tallying votes" },
   { id: "anchor", name: "Anchor", detail: "0G chain · sha-256" },
+  { id: "patterns", name: "Patterns", detail: "indexing on PatternRegistry" },
   { id: "draft", name: "Draft", detail: "writing appeal letter" },
 ] as const;
 
@@ -102,6 +103,16 @@ type BackendResult = {
       block_number?: number;
       registry_address?: string;
       gas_used?: number;
+      storage?: {
+        executor: string;
+        live: boolean;
+        network?: string;
+        root_hash?: string | null;
+        tx_hash?: string | null;
+        tx_link?: string | null;
+        bytes?: number;
+        schema?: string;
+      };
     };
     mirror?: {
       executor: string;
@@ -113,6 +124,20 @@ type BackendResult = {
       tx_hash?: string | null;
       tx_link?: string | null;
       registry_address?: string;
+      block_number?: number | null;
+      note?: string;
+    };
+    dispute_filing?: {
+      executor: string;
+      live: boolean;
+      network?: string;
+      chain_id?: number;
+      execution_id?: string;
+      status?: string;
+      tx_hash?: string | null;
+      tx_link?: string | null;
+      registry_address?: string;
+      function_name?: string;
     };
   } | null;
   stage_timings_ms: Record<string, number>;
@@ -508,7 +533,40 @@ export default function Dashboard() {
   const [editing, setEditing] = useState(false);
   const [draftLetter, setDraftLetter] = useState("");
   const [hashCopied, setHashCopied] = useState(false);
-  const [submitState, setSubmitState] = useState<"idle" | "submitted">("idle");
+
+  // Appeal-to-provider email submission state
+  const [providerEmail, setProviderEmail] = useState("");
+  const [appealStatus, setAppealStatus] = useState<
+    | { phase: "idle" }
+    | { phase: "sending" }
+    | { phase: "sent"; email: { sent: boolean; provider: string; error?: string | null }; attestation: { live: boolean; tx_hash?: string | null; tx_link?: string | null; executor: string } }
+    | { phase: "error"; message: string }
+  >({ phase: "idle" });
+
+  const onSendAppeal = useCallback(async () => {
+    if (!jobId || !providerEmail.trim()) return;
+    setAppealStatus({ phase: "sending" });
+    try {
+      const r = await fetch(`${API_URL}/api/appeal/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ job_id: jobId, recipient_email: providerEmail.trim() }),
+      });
+      if (!r.ok) {
+        const txt = await r.text();
+        setAppealStatus({ phase: "error", message: `HTTP ${r.status}: ${txt.slice(0, 160)}` });
+        return;
+      }
+      const data = await r.json();
+      setAppealStatus({
+        phase: "sent",
+        email: data.email,
+        attestation: data.attestation,
+      });
+    } catch (e) {
+      setAppealStatus({ phase: "error", message: e instanceof Error ? e.message : String(e) });
+    }
+  }, [jobId, providerEmail]);
 
   const onEditStart = useCallback(() => {
     setDraftLetter(letter);
@@ -552,11 +610,6 @@ export default function Dashboard() {
     const safe = (filename || "bill").replace(/[^a-z0-9._-]/gi, "_");
     doc.save(`lethe-dispute-${safe}.pdf`);
   }, [letter, hash, filename]);
-
-  const onApproveSubmit = useCallback(() => {
-    setSubmitState("submitted");
-    setTimeout(() => setSubmitState("idle"), 2400);
-  }, []);
 
   const onDownloadReceipt = useCallback(async () => {
     if (!result) return;
@@ -665,6 +718,9 @@ export default function Dashboard() {
     if (p?.anchor_tx) {
       lines.push("tx hash");
       lines.push(`  ${p.anchor_tx}`);
+      const tx = p.anchor_tx.startsWith("0x") ? p.anchor_tx : `0x${p.anchor_tx}`;
+      lines.push("verify on chainscan:");
+      lines.push(`  https://chainscan-galileo.0g.ai/tx/${tx}`);
     }
     if (p?.block_number != null) lines.push(row("block", `#${p.block_number}`));
     if (oc) {
@@ -688,14 +744,39 @@ export default function Dashboard() {
       if (p.patterns.tx) {
         lines.push("index tx");
         lines.push(`  ${p.patterns.tx}`);
+        const tx = p.patterns.tx.startsWith("0x") ? p.patterns.tx : `0x${p.patterns.tx}`;
+        lines.push("verify on chainscan:");
+        lines.push(`  https://chainscan-galileo.0g.ai/tx/${tx}`);
       }
       if (p.patterns.block_number != null) lines.push(row("block", `#${p.patterns.block_number}`));
       lines.push("");
     }
 
-    if (p?.mirror?.live && p.mirror.tx_hash) {
+    const st = p?.patterns?.storage;
+    if (st?.live && st.root_hash) {
       lines.push(RULE);
-      lines.push(center("SEPOLIA MIRROR (KeeperHub)"));
+      lines.push(center("0G STORAGE (anonymized record)"));
+      lines.push(RULE);
+      lines.push(row("executor", st.executor));
+      if (st.schema) lines.push(row("schema", st.schema));
+      if (typeof st.bytes === "number") lines.push(row("bytes", String(st.bytes)));
+      lines.push("merkle root");
+      lines.push(`  ${st.root_hash}`);
+      if (st.tx_hash) {
+        lines.push("commitment tx");
+        lines.push(`  ${st.tx_hash}`);
+      }
+      if (st.tx_link) {
+        lines.push("verify on chainscan:");
+        lines.push(`  ${st.tx_link}`);
+      }
+      lines.push("");
+    }
+
+    if (p?.mirror?.live) {
+      const isDup = p.mirror.status === "duplicate";
+      lines.push(RULE);
+      lines.push(center(isDup ? "SEPOLIA MIRROR (already anchored)" : "SEPOLIA MIRROR (KeeperHub)"));
       lines.push(RULE);
       lines.push(row("network", `${p.mirror.network} (${p.mirror.chain_id ?? "?"})`));
       lines.push(row("executor", p.mirror.executor));
@@ -704,12 +785,43 @@ export default function Dashboard() {
         lines.push("registry");
         lines.push(`  ${p.mirror.registry_address}`);
       }
-      lines.push("mirror tx");
-      lines.push(`  ${p.mirror.tx_hash}`);
-      lines.push("verify on etherscan:");
-      const tx = p.mirror.tx_hash.startsWith("0x") ? p.mirror.tx_hash : `0x${p.mirror.tx_hash}`;
-      lines.push(`  https://sepolia.etherscan.io/tx/${tx}`);
+      if (p.mirror.tx_hash) {
+        lines.push(isDup ? "original mirror tx" : "mirror tx");
+        lines.push(`  ${p.mirror.tx_hash}`);
+        lines.push("verify on etherscan:");
+        const tx = p.mirror.tx_hash.startsWith("0x") ? p.mirror.tx_hash : `0x${p.mirror.tx_hash}`;
+        lines.push(`  https://sepolia.etherscan.io/tx/${tx}`);
+      } else if (isDup && p.mirror.registry_address) {
+        lines.push("verify via registry events:");
+        lines.push(`  https://sepolia.etherscan.io/address/${p.mirror.registry_address}#events`);
+      }
+      if (p.mirror.note) {
+        lines.push(`  (${p.mirror.note})`);
+      }
       if (p.mirror.execution_id) lines.push(row("kh exec id", p.mirror.execution_id));
+      lines.push("");
+    }
+
+    const df = p?.dispute_filing;
+    if (df?.live && df.tx_hash) {
+      lines.push(RULE);
+      lines.push(center("DISPUTE FILED (KeeperHub workflow #2)"));
+      lines.push(RULE);
+      lines.push(row("executor", df.executor));
+      lines.push(row("status", df.status ?? "?"));
+      if (df.network) lines.push(row("network", `${df.network} (${df.chain_id ?? "?"})`));
+      if (df.function_name) lines.push(row("function", df.function_name));
+      if (df.registry_address) {
+        lines.push("dispute registry");
+        lines.push(`  ${df.registry_address}`);
+      }
+      lines.push("filing tx");
+      lines.push(`  ${df.tx_hash}`);
+      if (df.tx_link) {
+        lines.push("verify on etherscan:");
+        lines.push(`  ${df.tx_link}`);
+      }
+      if (df.execution_id) lines.push(row("kh exec id", df.execution_id));
       lines.push("");
     }
 
@@ -1242,8 +1354,27 @@ export default function Dashboard() {
 
               <div className="proc-shell">
                 <motion.div className="hash-stage" {...reveal(0)}>
-                  <span className="hash-label">computing sha-256 · zero-retention proof</span>
+                  <span className="hash-label">
+                    <span className="hash-pulse" />
+                    computing sha-256 · zero-retention proof
+                  </span>
                   <span className="hash-text">{hash}</span>
+                  <div className="hash-progress">
+                    <div
+                      className="hash-progress-bar"
+                      style={{
+                        width: `${Math.min(100, Math.round((step / Math.max(1, PIPELINE.length - 1)) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="hash-status">
+                    <span className="hash-stage-name">
+                      {step < PIPELINE.length
+                        ? `stage ${String(step + 1).padStart(2, "0")} / ${PIPELINE.length} · ${PIPELINE[step]?.name ?? ""}`
+                        : "finalizing"}
+                    </span>
+                    <span className="hash-eta">analysis can take up to 3 minutes</span>
+                  </div>
                   <div className="hash-meta">
                     <span>network <b>0g galileo</b></span>
                     <span>executor <b>keeperhub</b></span>
@@ -1582,13 +1713,6 @@ export default function Dashboard() {
                             </>
                           ) : (
                             <>
-                              <button
-                                className={`btn-sm solid${submitState === "submitted" ? " flashed" : ""}`}
-                                onClick={onApproveSubmit}
-                                disabled={submitState === "submitted"}
-                              >
-                                {submitState === "submitted" ? "Submitted ✓" : "Submit"}
-                              </button>
                               <button className="btn-sm" onClick={onEditStart}>
                                 Edit draft
                               </button>
@@ -1704,32 +1828,79 @@ export default function Dashboard() {
                           </div>
                         </>
                       )}
-                      {result?.proof?.mirror?.live && result.proof.mirror.tx_hash && (
-                        <>
+                      {(() => {
+                        const m = result?.proof?.mirror;
+                        const isDuplicate = m?.live && m?.status === "duplicate";
+                        const hasFreshTx = m?.live && m?.tx_hash && !isDuplicate;
+                        const hasOriginalTx = isDuplicate && m?.tx_hash;
+                        if (hasFreshTx || hasOriginalTx) {
+                          const tx = m!.tx_hash!;
+                          const link = m!.tx_link ?? `https://sepolia.etherscan.io/tx/${tx}`;
+                          return (
+                            <>
+                              <div className="proof-row">
+                                <span className="k">Sepolia mirror</span>
+                                <span className="v">
+                                  <a
+                                    href={link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      color: "var(--accent-amber)",
+                                      borderBottom: "1px dotted var(--ink-faint)",
+                                    }}
+                                  >
+                                    {isDuplicate ? "✓ already anchored ↗" : "via KeeperHub ↗"}
+                                  </a>
+                                </span>
+                              </div>
+                              <div className="proof-row">
+                                <span className="k">{isDuplicate ? "Original mirror tx" : "Mirror tx"}</span>
+                                <span className="v dim" style={{ wordBreak: "break-all", fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: 11 }}>
+                                  {tx}
+                                </span>
+                              </div>
+                              {isDuplicate && m?.note && (
+                                <div className="proof-row">
+                                  <span className="k"></span>
+                                  <span className="v dim" style={{ fontSize: 11, fontStyle: "italic" }}>
+                                    {m.note}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          );
+                        }
+                        if (isDuplicate && !m?.tx_hash) {
+                          return (
+                            <div className="proof-row">
+                              <span className="k">Sepolia mirror</span>
+                              <span className="v">
+                                <a
+                                  href={m?.tx_link ?? `https://sepolia.etherscan.io/address/${m?.registry_address ?? ""}#events`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ color: "var(--accent-amber)", borderBottom: "1px dotted var(--ink-faint)" }}
+                                >
+                                  ✓ already anchored — view registry events ↗
+                                </a>
+                              </span>
+                            </div>
+                          );
+                        }
+                        const exec = m?.executor ?? "";
+                        const isStub = !m?.live;
+                        return (
                           <div className="proof-row">
                             <span className="k">Sepolia mirror</span>
-                            <span className="v">
-                              <a
-                                href={result.proof.mirror.tx_link ?? `https://sepolia.etherscan.io/tx/${result.proof.mirror.tx_hash}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                  color: "var(--accent-amber)",
-                                  borderBottom: "1px dotted var(--ink-faint)",
-                                }}
-                              >
-                                via KeeperHub ↗
-                              </a>
+                            <span className="v dim" style={{ fontSize: 12, fontStyle: "italic" }}>
+                              {isStub
+                                ? `via KeeperHub — not yet wired (${exec || "stub"})`
+                                : `via KeeperHub — ${exec || "in flight"}`}
                             </span>
                           </div>
-                          <div className="proof-row">
-                            <span className="k">Mirror tx</span>
-                            <span className="v dim" style={{ wordBreak: "break-all", fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: 11 }}>
-                              {result.proof.mirror.tx_hash}
-                            </span>
-                          </div>
-                        </>
-                      )}
+                        );
+                      })()}
                       <div className="proof-actions">
                         <a
                           className="btn-sm"
@@ -1746,6 +1917,90 @@ export default function Dashboard() {
                           {hashCopied ? "Copied ✓" : "Copy hash"}
                         </button>
                       </div>
+                    </div>
+
+                    {/* Appeal submission — send the drafted letter + chain
+                        verification to the provider's email. Fires the third
+                        KeeperHub workflow on success (records on-chain that
+                        the appeal was sent). */}
+                    <div
+                      className="proof-card"
+                      style={{ marginTop: 18, borderColor: "var(--accent-amber)" }}
+                    >
+                      <div className="panel-label">Send to provider</div>
+                      <p style={{ color: "var(--ink-dim)", fontSize: 13, margin: "8px 0 14px", lineHeight: 1.6 }}>
+                        Email the drafted appeal letter <em>plus</em> every chain-verifiable artifact
+                        (Galileo anchor, pattern index, Storage commitment, Sepolia mirror, dispute
+                        filing) to the provider's billing department. After delivery, KeeperHub
+                        records the send on-chain — recipient address is keccak-hashed, never
+                        plaintext.
+                      </p>
+                      <div style={{ display: "flex", gap: 8, alignItems: "stretch", flexWrap: "wrap" }}>
+                        <input
+                          type="email"
+                          value={providerEmail}
+                          onChange={(e) => setProviderEmail(e.target.value)}
+                          placeholder="billing@provider.example"
+                          disabled={appealStatus.phase === "sending" || appealStatus.phase === "sent"}
+                          style={{
+                            flex: "1 1 280px",
+                            padding: "8px 12px",
+                            border: "1px solid var(--line-strong)",
+                            borderRadius: 4,
+                            fontFamily: "var(--font-jetbrains-mono), monospace",
+                            fontSize: 13,
+                            background: "var(--paper)",
+                            color: "var(--ink)",
+                          }}
+                        />
+                        <button
+                          className="btn-sm solid"
+                          onClick={onSendAppeal}
+                          disabled={
+                            !providerEmail.trim() ||
+                            appealStatus.phase === "sending" ||
+                            appealStatus.phase === "sent"
+                          }
+                        >
+                          {appealStatus.phase === "sending" ? "Sending…" :
+                           appealStatus.phase === "sent" ? "Sent ✓" :
+                           "Send appeal"}
+                        </button>
+                      </div>
+
+                      {appealStatus.phase === "sent" && (
+                        <div style={{ marginTop: 14, fontSize: 12, fontFamily: "var(--font-jetbrains-mono), monospace", lineHeight: 1.7 }}>
+                          <div style={{ color: appealStatus.email.sent ? "var(--accent-green)" : "var(--accent-amber)" }}>
+                            email · {appealStatus.email.provider}
+                            {appealStatus.email.sent ? " · delivered" : " · stub (no provider configured)"}
+                            {appealStatus.email.error && (
+                              <span style={{ color: "var(--accent-rose)" }}> · {appealStatus.email.error}</span>
+                            )}
+                          </div>
+                          <div style={{ color: appealStatus.attestation.live ? "var(--accent-green)" : "var(--ink-faint)" }}>
+                            keeperhub workflow #3 · {appealStatus.attestation.executor}
+                            {appealStatus.attestation.live && appealStatus.attestation.tx_hash && (
+                              <>
+                                {" · "}
+                                <a
+                                  href={appealStatus.attestation.tx_link ?? `https://sepolia.etherscan.io/tx/${appealStatus.attestation.tx_hash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ color: "var(--accent-amber)", borderBottom: "1px dotted var(--ink-faint)" }}
+                                >
+                                  {appealStatus.attestation.tx_hash.slice(0, 14)}…{appealStatus.attestation.tx_hash.slice(-8)} ↗
+                                </a>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {appealStatus.phase === "error" && (
+                        <div style={{ marginTop: 14, fontSize: 12, color: "var(--accent-rose)" }}>
+                          ⚠ {appealStatus.message}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.section>

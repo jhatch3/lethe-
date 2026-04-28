@@ -99,7 +99,8 @@ export default function Home() {
           <span><b>Zero</b> retention</span>
           <span><b>3</b> independent LLMs</span>
           <span><b>2-round</b> AXL P2P consensus</span>
-          <span>Dual-anchor: <b>0G</b> + <b>Sepolia</b></span>
+          <span><b>0G</b>: Chain · Storage · Compute</span>
+          <span><b>KH</b>: 2 workflows</span>
         </motion.div>
       </section>
 
@@ -188,18 +189,26 @@ export default function Home() {
               <div className="tick">— round 1 → axl exchange → round 2</div>
             </div>
             <div className="feat rose">
-              <div className="label">Dual-chain anchor</div>
-              <h3>0G + Sepolia, same hash.</h3>
+              <div className="label">Three pillars on 0G</div>
+              <h3>Chain · Storage · Compute.</h3>
               <p>
-                Every audit anchors the SHA-256 + verdict to a BillRegistry on 0G Galileo (canonical) and mirrors the same record to Sepolia via KeeperHub Direct Execution. Two chains, one truth — verifiable from either explorer.
+                Every audit hits the full 0G stack: <strong>Chain</strong> anchors the SHA-256 + verdict to BillRegistry and indexes findings to PatternRegistry. <strong>Storage</strong> holds the full schema-versioned audit blob with merkle root + commitment tx in the receipt. <strong>Compute</strong> (optional) runs agent γ on decentralized inference via the broker SDK with per-request signed headers.
               </p>
-              <div className="tick">— sha-256 · 0g · keeperhub</div>
+              <div className="tick">— 0g chain · 0g storage · 0g compute</div>
             </div>
             <div className="feat cyan">
+              <div className="label">KeeperHub — two workflows</div>
+              <h3>Mirror anchor + dispute filing.</h3>
+              <p>
+                Every audit fires KH twice: a <strong>mirror anchor</strong> writes the SHA-256 + verdict to a Sepolia BillRegistry, and on consensus = dispute a <strong>second</strong> KH execution calls <code>recordDispute</code> on a configurable DisputeRegistry. Both REST and MCP transports are implemented; "already anchored" duplicates are detected and the receipt links the original tx, not "pending".
+              </p>
+              <div className="tick">— mirror · dispute · rest + mcp</div>
+            </div>
+            <div className="feat ink">
               <div className="label">Pattern read-back</div>
               <h3>Each audit is smarter than the last.</h3>
               <p>
-                Anonymized findings (code · action · severity · amount) are written to a PatternRegistry contract on 0G. Before each new audit, the coordinator queries <code>eth_getLogs</code> and feeds prior dispute / clarify rates into agent prompts as priors.
+                Anonymized findings are written to PatternRegistry on 0G Chain in parallel with uploading the full record to 0G Storage. Before each new audit, the coordinator queries <code>eth_getLogs</code> and feeds prior dispute / clarify rates into agent prompts as priors. A pre-seed script bootstraps ~20 historical patterns so the very first demo audit shows the priors loop firing.
               </p>
               <div className="tick">— learn from past · zero PHI</div>
             </div>
@@ -229,9 +238,9 @@ export default function Home() {
           <motion.div className="tracks" {...reveal}>
             <div className="track a">
               <div className="role">/ track · 01</div>
-              <div className="name">0G — <em>memory</em></div>
+              <div className="name">0G — <em>chain · storage · compute</em></div>
               <p>
-                Two contracts on 0G Galileo: <code>BillRegistry</code> anchors the SHA-256 of every audited bill plus its verdict; <code>PatternRegistry</code> indexes anonymized findings. Each new audit reads back priors via <code>eth_getLogs</code> so future agents see past patterns.
+                Three pillars on 0G: <strong>Chain</strong> (BillRegistry anchors + PatternRegistry events on Galileo, chain 16602), <strong>Storage</strong> (full schema-versioned audit blob via <code>@0glabs/0g-ts-sdk</code>, merkle root in receipt), and <strong>Compute</strong> (γ-agent on decentralized inference with per-request signed headers via <code>@0glabs/0g-serving-broker</code>).
               </p>
               <p className="pitch">
                 Ephemeral PHI, persistent learning — agents get smarter without anyone&apos;s records being recoverable.
@@ -249,9 +258,9 @@ export default function Home() {
             </div>
             <div className="track c">
               <div className="role">/ track · 03</div>
-              <div className="name">KeeperHub — <em>execution</em></div>
+              <div className="name">KeeperHub — <em>workflow execution</em></div>
               <p>
-                Every BillRegistry anchor on 0G Galileo is mirrored via KeeperHub&apos;s Direct Execution API to a separate Sepolia <code>BillRegistry</code> — same SHA-256, two independent chains. Receipts include both transaction hashes for cross-chain verifiability.
+                Two distinct KH workflows fire per audit: a <strong>mirror anchor</strong> writes the SHA-256 + verdict to a Sepolia BillRegistry, and on consensus = dispute a <strong>second</strong> KH execution calls <code>recordDispute</code> on a configurable DisputeRegistry. Both REST and MCP transports implemented.
               </p>
               <p className="pitch">
                 If one chain falls, the proof still lives on the other.

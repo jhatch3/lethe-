@@ -160,9 +160,24 @@ export default function PatternsPage() {
                 textAlign: "center",
                 fontFamily: "var(--font-jetbrains-mono), monospace",
                 fontSize: 13,
+                lineHeight: 1.7,
               }}
             >
-              registry empty — run a few audits in the dashboard to populate the index.
+              <div style={{ color: "var(--accent-amber)", marginBottom: 12 }}>
+                first audit · no on-chain history yet
+              </div>
+              <div>
+                The "smarter than the last" loop reads <code>PatternRegistry</code> events as
+                priors for each agent. A fresh deploy has no events to read back, so the very
+                first audit runs without on-chain priors — agents reason from scratch.
+              </div>
+              <div style={{ marginTop: 12 }}>
+                Either run a few audits from the dashboard to populate the index, or
+                pre-seed it with synthetic history:
+              </div>
+              <pre style={{ marginTop: 10, color: "var(--ink-dim)", whiteSpace: "pre-wrap" }}>
+{`python data-gen/scripts/seed_patterns.py --count 20`}
+              </pre>
             </div>
           )}
 

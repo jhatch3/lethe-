@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -X POST https://evmrpc-testnet.0g.ai*)",
+      "Bash(curl -s http://localhost:8000/*)",
+      "Bash(curl -s -o /dev/null -w *)",
+      "Bash(until curl *)",
+      "Bash(npx --no-install tsc *)",
+      "Bash(timeout 90 npx tsc *)",
+      "Bash(npm view *)",
+      "Bash(npm run check:0g)",
+      "Bash(npm run provision:0g)",
+      "Bash(npm run headers:0g)",
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)"
+    ]
+  }
+}

@@ -39,8 +39,8 @@ const STAGES: StageRow[] = [
   },
   {
     step: "4 · reason",
-    what: "Three LLM agents reason in parallel over the redacted payload, each streaming prose tokens back to the dashboard.",
-    tool: "GPT-4o · Claude Sonnet 4.5 · Gemini Flash",
+    what: "Three LLM agents reason in parallel over the redacted payload, each streaming prose tokens back to the dashboard. γ optionally runs on 0G Compute via decentralized inference instead of Gemini.",
+    tool: "GPT-4o · Claude Sonnet 4.5 · Gemini Flash · (optional) 0G Compute",
     out: "round-1 votes + findings",
   },
   {
@@ -63,15 +63,21 @@ const STAGES: StageRow[] = [
   },
   {
     step: "8 · anchor",
-    what: "Write SHA-256 + verdict to BillRegistry on 0G Galileo (canonical). Mirror the same record to a Sepolia BillRegistry via KeeperHub Direct Execution.",
-    tool: "web3.py · KeeperHub API",
+    what: "Write SHA-256 + verdict to BillRegistry on 0G Galileo (canonical). Mirror the same record to a Sepolia BillRegistry via KeeperHub Direct Execution (REST or MCP transport, configurable).",
+    tool: "web3.py · KeeperHub Direct Execution · MCP",
     out: "two on-chain tx hashes",
   },
   {
-    step: "9 · patterns",
-    what: "Index anonymized findings (code · action · severity · amount) to PatternRegistry on 0G. Future audits read these back as priors.",
-    tool: "PatternRegistry events on 0G",
-    out: "indexed event log",
+    step: "8.5 · file dispute",
+    what: "On consensus = dispute, fire a SECOND KeeperHub workflow against a configurable Sepolia DisputeRegistry — recordDispute(billHash, reason, note). Different contract, different method, different verdict gate.",
+    tool: "KeeperHub Direct Execution (workflow #2)",
+    out: "third on-chain tx (dispute filing)",
+  },
+  {
+    step: "9 · patterns + storage",
+    what: "Index anonymized findings (code · action · severity · amount) to PatternRegistry on 0G Chain in parallel with uploading the full schema-versioned audit blob to 0G Storage. Two pillars, one stage. Future audits read patterns back as priors.",
+    tool: "PatternRegistry events on 0G Chain · @0glabs/0g-ts-sdk via Node sidecar",
+    out: "indexed event log + storage merkle root + commitment tx",
   },
   {
     step: "10 · draft",
@@ -108,7 +114,8 @@ const STACK: StackEntry[] = [
       { name: "sse-starlette", role: "Server-Sent Events for live pipeline" },
       { name: "pdfplumber", role: "deterministic PDF text extraction" },
       { name: "pydantic-settings", role: "12-factor env config" },
-      { name: "httpx", role: "async HTTP — talks to AXL sidecars + KeeperHub" },
+      { name: "httpx", role: "async HTTP — talks to AXL sidecars, KH, 0G Storage sidecar" },
+      { name: "mcp (Python SDK)", role: "KeeperHub MCP client (Track 3 strict reading)" },
     ],
   },
   {
@@ -116,7 +123,8 @@ const STACK: StackEntry[] = [
     items: [
       { name: "OpenAI GPT-4o", role: "agent α + the redactor sweep" },
       { name: "Anthropic Claude Sonnet 4.5", role: "agent β + the appeal-letter drafter" },
-      { name: "Google Gemini Flash", role: "agent γ" },
+      { name: "Google Gemini Flash", role: "agent γ (default)" },
+      { name: "0G Compute Network", role: "agent γ (optional) — decentralized inference, OpenAI-compatible" },
     ],
   },
   {
@@ -126,25 +134,52 @@ const STACK: StackEntry[] = [
       { name: "Yggdrasil mesh", role: "encrypted overlay network" },
       { name: "ed25519", role: "agent peer identity (one keypair each)" },
       { name: "socat", role: "container-internal port forwarder for the AXL HTTP API" },
+      { name: "Live message ring buffer", role: "200-entry server-side log of every send/recv with pubkeys + latency, surfaced on /axl" },
     ],
   },
   {
-    layer: "Chain",
+    layer: "0G — Chain",
     items: [
       { name: "Solidity", role: "BillRegistry + PatternRegistry contracts" },
-      { name: "web3.py", role: "EVM RPC calls from Python" },
-      { name: "eth-account", role: "wallet signing for 0G writes" },
+      { name: "web3.py + eth-account", role: "EVM RPC + wallet signing for writes" },
       { name: "py-solc-x", role: "compile + deploy contracts (no Foundry)" },
-      { name: "0G Galileo testnet (chain id 16602)", role: "canonical anchor + pattern index" },
-      { name: "KeeperHub Direct Execution", role: "reliable Sepolia mirror anchor" },
-      { name: "Ethereum Sepolia", role: "secondary verifiability" },
+      { name: "0G Galileo testnet (chain id 16602)", role: "canonical anchor + pattern index + storage commitments" },
+    ],
+  },
+  {
+    layer: "0G — Storage",
+    items: [
+      { name: "@0glabs/0g-ts-sdk", role: "Node SDK for 0G Storage uploads (Python SDK is broken upstream)" },
+      { name: "Node storage sidecar", role: "POST /upload → merkle root + on-chain commitment tx (port 8788)" },
+      { name: "Indexer turbo endpoint", role: "indexer-storage-testnet-turbo.0g.ai — selects replication nodes" },
+      { name: "Schema lethe.audit.pattern.v1", role: "anonymized full-resolution audit blob format" },
+    ],
+  },
+  {
+    layer: "0G — Compute",
+    items: [
+      { name: "@0glabs/0g-serving-broker", role: "Node SDK for 0G Compute provisioning + per-request signing" },
+      { name: "Node headers sidecar", role: "OpenAI-compatible proxy that signs each request body hash (port 8787)" },
+      { name: "ethers v6", role: "wallet signer for ledger deposits + provider acknowledgement" },
+      { name: "Provisioning scripts", role: "provision:0g · headers:0g · check:0g · storage:0g (in src/coordinator/scripts/)" },
+    ],
+  },
+  {
+    layer: "KeeperHub — execution",
+    items: [
+      { name: "Direct Execution REST", role: "workflow #1: Sepolia BillRegistry mirror anchor" },
+      { name: "Direct Execution REST (workflow #2)", role: "DisputeRegistry recordDispute on consensus = dispute" },
+      { name: "MCP server transport", role: "alternate path for the mirror anchor (Track 3 strict reading)" },
+      { name: "Sepolia event lookup", role: "publicnode RPC fallback to find original tx for 'already anchored' duplicates" },
+      { name: "Ethereum Sepolia", role: "secondary verifiability via etherscan" },
     ],
   },
   {
     layer: "Infra",
     items: [
-      { name: "Docker Compose", role: "orchestrates 5 services" },
+      { name: "Docker Compose", role: "orchestrates 5+ services" },
       { name: "Multi-stage Dockerfile", role: "builds AXL Go binary on Linux for Windows hosts" },
+      { name: "tsx + TypeScript", role: "runs Node sidecars without a build step" },
       { name: "GitHub", role: "source + collaboration" },
     ],
   },

@@ -21,6 +21,13 @@ You will also need:
 - **0G Galileo testnet wallet + funded private key** — get test tokens at [docs.0g.ai](https://docs.0g.ai). You need a small balance to pay gas for `BillRegistry` and `PatternRegistry` writes (chain ID `16602`).
 - **KeeperHub account + API key + project ID** — sign up at [keeperhub.com](https://keeperhub.com). Used for the Sepolia mirror anchor.
 
+### Optional sponsor-track upgrades
+
+These two are off by default and the system falls back gracefully when they're not configured. Enable them to satisfy the **strict** reading of each sponsor track's qualification criteria:
+
+- **0G Compute** (Track 2 boost) — runs agent γ on 0G's decentralized inference network instead of Google Gemini. Requires Node.js (for the one-time `0g-compute-cli` provisioning). See **§7. Optional: 0G Compute** below.
+- **KeeperHub MCP** (Track 3 strict-qualification) — routes the Sepolia mirror anchor through KeeperHub's MCP server instead of the Direct Execution REST API. Requires `pip install -r requirements.txt` (which now includes the `mcp` package). See **§8. Optional: KeeperHub MCP** below.
+
 ---
 
 ## 2. Clone + configure environment
@@ -198,7 +205,184 @@ Either `KEEPERHUB_API_KEY` is missing/wrong, `BILL_REGISTRY_ADDRESS_SEPOLIA` is 
 
 ---
 
-## 7. Project commands cheatsheet
+## 7. Optional: 0G Compute (decentralized inference for agent γ)
+
+Off by default. When configured, agent γ runs on **0G Compute** (default model `GLM-5-FP8`) instead of Google Gemini. This proves real use of 0G's inference layer, not just 0G Chain.
+
+### Prerequisites
+- Node.js 20+
+- A funded EVM wallet with native 0G tokens. **Empirically the on-chain `MinimumDepositRequired` is 0.1 OG** (some 0G docs claim 3 OG; that's outdated). Plan for ≥0.105 OG.
+
+### One-time provisioning
+
+The package on npm is **`@0glabs/0g-serving-broker`** (NOT `@0glabs/0g-compute-cli`, which doesn't exist). The broker's CLI is bundled inside it. We use it via a small TypeScript wrapper in `src/coordinator/scripts/`:
+
+```bash
+cd src/coordinator/scripts
+npm install                  # installs broker + ethers + tsx
+
+# Set your wallet env (use a dedicated wallet, never your mainnet)
+export ZG_PRIVATE_KEY=0x...
+
+# Read-only sanity check — wallet balance, ledger state, provider metadata
+npm run check:0g
+
+# Provisioning: picks a provider, deposits 0.1 OG to ledger, acknowledges
+# TEE signer, funds sub-account, prints the env vars to paste into .env
+npm run provision:0g
+
+# Long-running header-signing sidecar (each request signed against body hash —
+# 0G Compute does NOT use static bearer tokens, so a sidecar is required)
+npm run headers:0g           # leave running on :8787
+```
+
+After `provision:0g` prints the env vars, paste them into `.env` — but point the endpoint at the **sidecar**, not the raw provider URL:
+
+```ini
+LETHE_0G_COMPUTE_ENDPOINT=http://localhost:8787/v1
+LETHE_0G_COMPUTE_TOKEN=sidecar-handles-auth     # any non-empty string
+LETHE_0G_COMPUTE_MODEL=GLM-5-FP8                # or whatever provision printed
+LETHE_0G_COMPUTE_PROVIDER=0xPROVIDER_ADDRESS_HERE
+LETHE_0G_COMPUTE_SIDECAR=true                   # cosmetic — /api/status reports "via sidecar"
+```
+
+Faucet status: `https://faucet.0g.ai/` 301-redirects to `https://hub.0g.ai/faucet` which gates on X login (account 30+ days, 10+ followers). Working alternatives: [Google Cloud Web3 Faucet](https://cloud.google.com/application/web3/faucet/0g/galileo) (Google account only), [Faucet.trade](https://faucet.trade/), [Chainlink Faucet](https://faucets.chain.link/0g-testnet-galileo).
+
+### Verify
+
+Restart uvicorn (in another terminal — leave `npm run headers:0g` running) and run:
+
+```bash
+curl localhost:8000/api/status
+```
+
+`config.zg_compute_configured` should be `true` and `config.zg_compute_transport` should be `"sidecar"`. The `agents.audit[]` entry for `gamma` should show `provider: "0g-compute"` and `model: "GLM-5-FP8 · 0g compute · sidecar · 0xABCDEF12…"`. Run a sample audit; the γ terminal will stream tokens from your 0G provider.
+
+If anything goes wrong (provider down, ledger empty, bad endpoint, sidecar offline), γ silently falls back to Google Gemini — the pipeline never breaks.
+
+---
+
+## 7b. Optional: 0G Storage (full anonymized record)
+
+Off by default. When enabled, every audit's anonymized pattern record is uploaded to **0G Storage** in parallel with the on-chain `PatternRegistry` write. The chain event is cheap and indexable; the storage blob carries the full structured JSON record (full code strings, voter agent names, schema-versioned) that bytes32/16/8 chain fields can't fit. Together: 0G Chain + 0G Storage = three pillars including 0G Compute.
+
+The official 0G Storage Python SDK on PyPI is broken (relative-import issues). The TS SDK works, so we run a tiny Node sidecar.
+
+### Setup
+
+```bash
+cd src/coordinator/scripts
+# (deps already installed if you ran npm run provision:0g earlier)
+npm run storage:0g           # leave running on :8788
+```
+
+In `.env`:
+```ini
+LETHE_0G_STORAGE_SIDECAR_URL=http://localhost:8788
+```
+
+### Verify
+
+`/api/status.chain.pattern_storage` flips to `"0g-storage-sidecar"`. After running an audit, the `storage.uploaded` SSE event includes the merkle `root_hash` and on-chain commitment `tx_hash`. The dashboard receipt's `0G STORAGE (anonymized record)` block shows both.
+
+---
+
+## 7c. Optional: Pre-seed PatternRegistry for the demo
+
+The "each audit gets smarter via on-chain shared memory" claim only fires once `PatternRegistry` has events to read back. On a fresh deploy, there are no priors. To make the very first demo audit show real on-chain priors influencing agent reasoning, pre-seed the registry with synthetic historical patterns:
+
+```bash
+# Dry run first — shows what would be written, no tx
+python data-gen/scripts/seed_patterns.py --dry-run --count 20
+
+# Real run — costs gas (~0.001 OG per audit × 20 = ~0.02 OG)
+python data-gen/scripts/seed_patterns.py --count 20
+
+# Verify
+curl localhost:8000/api/patterns | jq '.total_observations'
+```
+
+The seed pool is in `data-gen/scripts/seed_patterns.py:SEED_PATTERNS` — anonymized billing-error patterns (CPT 99213/99214 downcodes, 74177 unbundling, J3490 modifier, etc.) with realistic dispute / clarify / approve mixes. No PHI; codes are public taxonomy.
+
+---
+
+## 8. Optional: KeeperHub MCP (Track 3 strict qualification)
+
+Off by default. When enabled, the Sepolia mirror anchor goes through KeeperHub's MCP server instead of the REST API. The KeeperHub track's prize text specifies "MCP server or CLI" as the integration vector — this flag satisfies the strict reading.
+
+### Setup
+
+`mcp` is now in `requirements.txt`. Reinstall to pick it up:
+
+```powershell
+cd C:\Users\Justin\lethe-\src\coordinator
+.venv\Scripts\activate
+pip install -r requirements.txt
+python -c "import mcp; print('mcp', mcp.__version__)"
+```
+
+Then flip the flag in `.env`:
+
+```ini
+LETHE_KEEPERHUB_USE_MCP=true
+LETHE_KEEPERHUB_MCP_URL=https://app.keeperhub.com/mcp
+```
+
+Restart uvicorn.
+
+### How it falls back
+
+The runner attempts MCP first. If the hosted MCP endpoint rejects header auth (KeeperHub may require browser OAuth on the hosted endpoint, in which case header-based bearer auth won't work), or any other MCP error fires, the runner **automatically falls back to the existing REST path** with a warning in the uvicorn log:
+
+```
+WARNING  keeperhub MCP returned stub (...) — falling back to REST
+```
+
+The audit still completes — the Sepolia tx still gets written. You just won't get the MCP-strict qualification credit for that run.
+
+### Verify
+
+`/api/status.config.keeperhub_transport` reports `"mcp"` when the flag is on. After a successful real audit, the `mirror.confirmed` SSE event has `executor: "keeperhub-mcp"` (not `"keeperhub"`).
+
+If header auth doesn't work on the hosted endpoint, the alternative is to run a **local KeeperHub MCP Docker container** with `KEEPERHUB_API_KEY` as an env var, then point `LETHE_KEEPERHUB_MCP_URL` at `http://localhost:<port>/mcp`. See [KeeperHub MCP docs](https://docs.keeperhub.com/ai-tools).
+
+---
+
+## 8b. Optional: Dispute auto-file (KeeperHub workflow #2)
+
+When consensus = `dispute`, a **second** KeeperHub Direct Execution fires against a configurable Sepolia `DisputeRegistry` contract. This is a different contract, different method, different verdict gate from the mirror anchor — it demonstrates KH as an *execution platform*, not a single hardcoded API call.
+
+By default the dispute filer is stubbed (no contract address configured), so it appears in `/api/status` as `keeperhub_dispute_filer: "stub"` and the receipt skips the dispute block. To go live:
+
+### 1. Deploy a `DisputeRegistry` contract on Sepolia
+
+Any contract exposing `recordDispute(bytes32 billHash, uint8 reason, string note)` works. A minimal stub:
+
+```solidity
+contract DisputeRegistry {
+    event DisputeFiled(bytes32 indexed billHash, uint8 reason, string note, address indexed by, uint256 ts);
+    function recordDispute(bytes32 billHash, uint8 reason, string calldata note) external {
+        emit DisputeFiled(billHash, reason, note, msg.sender, block.timestamp);
+    }
+}
+```
+
+Deploy via your preferred path (Remix, Foundry, `src/contracts/deploy.py` extension). Funded Sepolia EOA needed; KeeperHub's auto-provisioned wallet at `0xC33E920102d53Bf2B4286361c23E63D93FeB02ee` will be the `msg.sender` after deploy if you choose to wire it.
+
+### 2. Configure the env
+
+```ini
+LETHE_DISPUTE_REGISTRY_ADDRESS_SEPOLIA=0xYOUR_DEPLOYED_DISPUTE_REGISTRY
+LETHE_DISPUTE_FUNCTION_NAME=recordDispute        # change if your contract uses a different name
+```
+
+### Verify
+
+`/api/status.config.keeperhub_dispute_filer` flips to `"live"`. Run an audit on `samples/general-hospital-er/run` (planted disputes). The pipeline emits a `dispute.filed` SSE event with the Sepolia tx hash, and the receipt's `DISPUTE FILED (KeeperHub workflow #2)` block links to etherscan.
+
+---
+
+## 9. Project commands cheatsheet
 
 | Where | Command | What it does |
 |-------|---------|--------------|

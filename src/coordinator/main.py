@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from routers import jobs, samples, status, verify
+from routers import appeal, jobs, samples, status, verify
 from store.memory import sweeper_loop
 
 # Surface the pipeline's structured events in the uvicorn terminal.
@@ -23,6 +23,26 @@ logging.getLogger("lethe.pipeline").setLevel(logging.INFO)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     sweeper_task = asyncio.create_task(sweeper_loop(interval_seconds=5))
+    # Loud startup banner — if AXL is disabled, judges/users running the
+    # coordinator without `docker compose up axl-*` get an unmissable hint.
+    # Track 1's cross-node-communication claim depends on AXL being live.
+    try:
+        from agents import transport_axl
+        if not transport_axl.is_enabled():
+            log = logging.getLogger("lethe.startup")
+            if not settings.axl_enabled:
+                reason = "LETHE_AXL_ENABLED=false"
+            elif not transport_axl.PEER_IDS:
+                reason = "infra/axl/keys/peer_ids.json missing"
+            else:
+                reason = "missing axl_*_url settings"
+            log.warning("=" * 72)
+            log.warning("AXL DISABLED · using in-process asyncio.gather (%s)", reason)
+            log.warning("Track 1 (Gensyn AXL) cross-node claim is INACTIVE in this state.")
+            log.warning("To enable: `docker compose up -d axl-alpha axl-beta axl-gamma` then restart.")
+            log.warning("=" * 72)
+    except Exception:
+        pass
     try:
         yield
     finally:
@@ -43,6 +63,7 @@ app.include_router(jobs.router)
 app.include_router(samples.router)
 app.include_router(status.router)
 app.include_router(verify.router)
+app.include_router(appeal.router)
 
 
 @app.get("/")

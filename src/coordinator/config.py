@@ -36,6 +36,8 @@ class Settings(BaseSettings):
         "reflect": 0,
         "consensus": 700,
         "anchor": 900,
+        "patterns": 0,
+        "draft": 0,
     }
 
     stats_window: int = 50
@@ -63,6 +65,15 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("LETHE_PATTERN_REGISTRY_ADDRESS", "PATTERN_REGISTRY_ADDRESS"),
     )
+    # 0G Storage sidecar URL — the Node service in src/coordinator/scripts/
+    # that wraps `@0glabs/0g-ts-sdk` (Python SDK is broken upstream). When set,
+    # every audit's anonymized pattern record is also uploaded to 0G Storage,
+    # giving us a third 0G pillar (Chain + Storage + optional Compute).
+    # Stays a stub when blank, so the pipeline runs unchanged without it.
+    zg_storage_sidecar_url: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_0G_STORAGE_SIDECAR_URL", "ZG_STORAGE_SIDECAR_URL"),
+    )
 
     # === KeeperHub mirror anchor (Sepolia) ===
     keeperhub_api_key: str = Field(
@@ -73,19 +84,134 @@ class Settings(BaseSettings):
         default="https://app.keeperhub.com",
         validation_alias=AliasChoices("LETHE_KEEPERHUB_BASE_URL", "KEEPERHUB_BASE_URL"),
     )
+    # When true, the mirror anchor goes through KeeperHub's MCP server instead
+    # of the Direct Execution REST API. Strict reading of the prize description
+    # ("MCP server or CLI") wants MCP. Falls back to REST if MCP fails.
+    keeperhub_use_mcp: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("LETHE_KEEPERHUB_USE_MCP", "KEEPERHUB_USE_MCP"),
+    )
+    # Hosted MCP HTTP endpoint. Override only if running a self-hosted MCP server.
+    keeperhub_mcp_url: str = Field(
+        default="https://app.keeperhub.com/mcp",
+        validation_alias=AliasChoices("LETHE_KEEPERHUB_MCP_URL", "KEEPERHUB_MCP_URL"),
+    )
     bill_registry_address_sepolia: str = Field(
         default="",
         validation_alias=AliasChoices(
             "LETHE_BILL_REGISTRY_ADDRESS_SEPOLIA", "BILL_REGISTRY_ADDRESS_SEPOLIA",
         ),
     )
+    # Public Sepolia RPC. Used to look up the original Anchored tx hash when
+    # KeeperHub reports "already anchored" (KH itself doesn't surface the
+    # original tx for duplicates). Defaults to publicnode — no key required.
+    sepolia_rpc_url: str = Field(
+        default="https://ethereum-sepolia-rpc.publicnode.com",
+        validation_alias=AliasChoices("LETHE_SEPOLIA_RPC_URL", "SEPOLIA_RPC_URL"),
+    )
+    # Optional second KeeperHub workflow: when consensus = "dispute", KH fires
+    # a Direct Execution against this contract to record the dispute filing.
+    # When blank, the dispute filer is a stub (still surfaces in the receipt
+    # so judges see the code path). Wire to any Sepolia contract exposing
+    # `recordDispute(bytes32 billHash, uint8 reason, string note)` — or change
+    # `dispute_function_name` to match your contract.
+    dispute_registry_address_sepolia: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            "LETHE_DISPUTE_REGISTRY_ADDRESS_SEPOLIA", "DISPUTE_REGISTRY_ADDRESS_SEPOLIA",
+        ),
+    )
+    dispute_function_name: str = Field(
+        default="recordDispute",
+        validation_alias=AliasChoices(
+            "LETHE_DISPUTE_FUNCTION_NAME", "DISPUTE_FUNCTION_NAME",
+        ),
+    )
+    # Third KH workflow: when the user clicks "Send to provider" in the
+    # dashboard, KH calls `recordAppealSent(billHash, recipientHash)` on this
+    # contract on Sepolia after the email is dispatched. Stub-fallback when
+    # the address is blank (still emits the SSE event and tries the email).
+    appeal_registry_address_sepolia: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            "LETHE_APPEAL_REGISTRY_ADDRESS_SEPOLIA", "APPEAL_REGISTRY_ADDRESS_SEPOLIA",
+        ),
+    )
+
+    # === Email delivery (appeal letter to provider) ===
+    # Provider switch — `resend` (recommended), `smtp`, or `stub` (default).
+    # Stub mode logs the email body but doesn't send, so demo flow still works
+    # without email creds.
+    email_provider: str = Field(
+        default="stub",
+        validation_alias=AliasChoices("LETHE_EMAIL_PROVIDER", "EMAIL_PROVIDER"),
+    )
+    email_from: str = Field(
+        default="Lethe <noreply@lethe.local>",
+        validation_alias=AliasChoices("LETHE_EMAIL_FROM", "EMAIL_FROM"),
+    )
+    email_resend_api_key: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_RESEND_API_KEY", "RESEND_API_KEY"),
+    )
+    email_smtp_host: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_SMTP_HOST", "SMTP_HOST"),
+    )
+    email_smtp_port: int = Field(
+        default=587,
+        validation_alias=AliasChoices("LETHE_SMTP_PORT", "SMTP_PORT"),
+    )
+    email_smtp_user: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_SMTP_USER", "SMTP_USER"),
+    )
+    email_smtp_password: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_SMTP_PASSWORD", "SMTP_PASSWORD"),
+    )
+
+    # === 0G Compute Network (decentralized inference) ===
+    # When set, agent γ runs on 0G Compute instead of Google Gemini —
+    # demonstrating real use of 0G's inference layer (not just 0G Chain).
+    # Provision via the TypeScript `0g-compute-cli` — see SETUP.md.
+    # Providers expose OpenAI-compatible /v1/proxy endpoints, so we use the
+    # stock `openai` Python SDK with a custom base_url + bearer token.
+    zg_compute_endpoint: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_0G_COMPUTE_ENDPOINT", "ZG_COMPUTE_ENDPOINT"),
+    )
+    zg_compute_token: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_0G_COMPUTE_TOKEN", "ZG_COMPUTE_TOKEN"),
+    )
+    zg_compute_model: str = Field(
+        default="GLM-5-FP8",
+        validation_alias=AliasChoices("LETHE_0G_COMPUTE_MODEL", "ZG_COMPUTE_MODEL"),
+    )
+    zg_compute_provider_address: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_0G_COMPUTE_PROVIDER", "ZG_COMPUTE_PROVIDER"),
+    )
+    # 0G Compute auth headers are signed per-request, not a static bearer.
+    # When true, /api/status reports γ as "via sidecar" so judges/users know
+    # auth is being signed locally by src/coordinator/scripts/headers_sidecar.ts.
+    zg_compute_sidecar: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("LETHE_0G_COMPUTE_SIDECAR", "ZG_COMPUTE_SIDECAR"),
+    )
 
     # === Gensyn AXL P2P transport ===
     # When enabled, every agent's redacted_payload is broadcast across the
     # AXL mesh via its local sidecar before the LLM call. The coordinator
     # checks topology of each sidecar at startup to confirm 3 distinct peers.
+    # Default true so a judge running `uvicorn main:app` without a .env file
+    # still gets the AXL transport when sidecars are up. Even with this true,
+    # transport_axl.is_enabled() additionally requires non-empty PEER_IDS and
+    # all three sidecar URLs reachable — so it fails closed when sidecars are
+    # absent rather than silently falling back to asyncio.gather.
     axl_enabled: bool = Field(
-        default=False,
+        default=True,
         validation_alias=AliasChoices("LETHE_AXL_ENABLED", "AXL_ENABLED"),
     )
     axl_alpha_url: str = Field(

@@ -16,10 +16,26 @@ type AxlPeer = {
   };
 };
 
+type AxlMessage = {
+  ts: number;
+  kind: "send" | "recv";
+  from_agent: string;
+  to_agent: string;
+  from_peer_id?: string;
+  to_peer_id?: string;
+  bytes: number;
+  latency_ms?: number;
+  ok: boolean;
+  error?: string;
+  job_id?: string | null;
+  finding_count?: number;
+};
+
 type AxlResponse = {
   enabled: boolean;
   reason?: string;
   peers?: Record<"alpha" | "beta" | "gamma", AxlPeer>;
+  messages?: AxlMessage[];
 };
 
 const reveal = (delay = 0) => ({
@@ -220,6 +236,89 @@ function MeshDiagram({
   );
 }
 
+function MessageLog({ messages }: { messages: AxlMessage[] }) {
+  if (messages.length === 0) {
+    return (
+      <div
+        style={{
+          padding: 20,
+          border: "1px dashed var(--line-strong)",
+          borderRadius: 6,
+          fontFamily: "var(--font-jetbrains-mono), monospace",
+          fontSize: 11,
+          color: "var(--ink-faint)",
+          textAlign: "center",
+        }}
+      >
+        no AXL traffic yet · run an audit on /dashboard
+      </div>
+    );
+  }
+  return (
+    <div
+      style={{
+        border: "1px solid var(--line-strong)",
+        borderRadius: 6,
+        background: "rgba(0,0,0,0.02)",
+        fontFamily: "var(--font-jetbrains-mono), monospace",
+        fontSize: 11,
+        maxHeight: 320,
+        overflowY: "auto",
+      }}
+    >
+      {messages.map((m, i) => {
+        const arrow = m.kind === "send" ? "→" : "←";
+        const accent = m.kind === "send" ? "var(--accent-violet)" : "var(--accent-green)";
+        const status = m.ok
+          ? { color: "var(--accent-green)", label: "ok" }
+          : { color: "var(--accent-rose)", label: m.error ?? "fail" };
+        const ts = new Date(m.ts * 1000).toLocaleTimeString(undefined, {
+          hour12: false,
+          minute: "2-digit",
+          second: "2-digit",
+        });
+        const pubkeyShort = (k?: string) => (k ? `${k.slice(0, 8)}…` : "?");
+        return (
+          <div
+            key={`${m.ts}-${i}`}
+            style={{
+              padding: "8px 14px",
+              borderBottom: i === messages.length - 1 ? "none" : "1px solid var(--line)",
+              display: "grid",
+              gridTemplateColumns: "60px 60px 1fr auto auto",
+              gap: 12,
+              alignItems: "center",
+              color: "var(--ink-dim)",
+            }}
+          >
+            <span style={{ color: "var(--ink-faint)" }}>{ts}</span>
+            <span style={{ color: accent, fontWeight: 600 }}>
+              {m.kind === "send" ? "send" : "recv"}
+            </span>
+            <span>
+              <span style={{ color: "var(--ink)" }}>{m.from_agent}</span>
+              <span style={{ color: "var(--ink-faint)" }}> · ed25519:{pubkeyShort(m.from_peer_id)}</span>
+              <span style={{ color: accent, margin: "0 6px" }}>{arrow}</span>
+              <span style={{ color: "var(--ink)" }}>{m.to_agent}</span>
+              <span style={{ color: "var(--ink-faint)" }}> · ed25519:{pubkeyShort(m.to_peer_id)}</span>
+            </span>
+            <span style={{ color: "var(--ink-faint)" }}>
+              {m.bytes}B
+              {typeof m.finding_count === "number" && m.finding_count > 0 && (
+                <span> · {m.finding_count} finding{m.finding_count === 1 ? "" : "s"}</span>
+              )}
+              {typeof m.latency_ms === "number" && (
+                <span> · {m.latency_ms}ms</span>
+              )}
+            </span>
+            <span style={{ color: status.color }}>{status.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function AxlPage() {
   const [data, setData] = useState<AxlResponse | null>(null);
   const [busy, setBusy] = useState(false);
@@ -348,6 +447,18 @@ LETHE_AXL_ENABLED=true
               <PeerNode variant="gamma" peer={data.peers["gamma" as "alpha"]} enabled={enabled} />
             </motion.div>
           )}
+
+          <motion.div {...reveal(0.55)} style={{ marginBottom: 28 }}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
+              <h2 className="panel-title" style={{ margin: 0 }}>
+                Live message log <em>· last {data?.messages?.length ?? 0}</em>
+              </h2>
+              <span style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: 11, color: "var(--ink-faint)" }}>
+                ring buffer · 200 max
+              </span>
+            </div>
+            <MessageLog messages={data?.messages ?? []} />
+          </motion.div>
 
           <div
             style={{

@@ -17,6 +17,33 @@ own port, and peers with the public Gensyn bootstrap nodes via Yggdrasil.
 AXL needs Go 1.25.5 + gVisor + openssl. Native-Windows builds fight the gVisor
 userspace TCP stack. Building inside a Linux container sidesteps that.
 
+## Bootstrap peers
+
+Each sidecar's `configs/{alpha,beta,gamma}.json` lists two `Peers` entries:
+
+```
+"tls://34.46.48.224:9001"
+"tls://136.111.135.206:9001"
+```
+
+These are the public Gensyn-operated AXL bootstrap nodes that the upstream
+`gensyn-ai/axl` reference docs and the Gensyn Discord ship as the default
+mesh entry points. They serve the same role as Bitcoin DNS seeds or libp2p
+bootstrap peers — a known starting set so a fresh node can discover the
+wider mesh via Yggdrasil routing.
+
+To verify a sidecar actually peered with one of them after `docker compose up`:
+
+```bash
+curl -s localhost:9002/topology | jq '.peers[] | select(.addr | startswith("tls://34.46.48"))'
+```
+
+For an offline-only mesh (no public bootstrap, three sidecars peering with
+each other), replace the `Peers` list in each config with
+`tls://axl-{other}:7002` entries pointing at the sibling docker services.
+The mesh still satisfies the cross-node-comms qualification but loses the
+public-mesh provenance.
+
 ## Run them
 
 ```bash
