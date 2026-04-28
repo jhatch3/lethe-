@@ -99,12 +99,6 @@ When consensus lands on `dispute`, KeeperHub fires a **second** workflow recordi
 ---
 config:
   layout: elk
-  look: handDrawn
-  theme: neutral
-  flowchart:
-    curve: basis
-    nodeSpacing: 40
-    rankSpacing: 60
 ---
 flowchart TB
     %% === Subgraph: Frontend ===
@@ -154,34 +148,32 @@ flowchart TB
     subgraph Mail["📧 Appeal Delivery"]
         direction TB
         Email["Resend / SMTP / Stub"]
-        Provider@{ label: "Provider’s Billing Inbox", shape: rect }
+        Provider@{ label: "Provider's Billing Inbox", shape: rect }
     end
 
-    %% === Relationships ===
-    User == Upload PDF ==> API
-    API --> Parse
-    Parse == Redacted Payload ==> Round1
-    Round1 -- Broadcast Findings --> AXL
-    AXL --> Round2
-    Round1 <-. γ Inference .-> ZGC
-    Round2 == Revised Votes ==> Tally
-    Tally --> Drafter
-    Drafter == Letter Shown ==> User
+    %% === Main pipeline (single chain along the spine) ===
+    User ==>|Upload PDF| API ==> Parse ==>|Redacted Payload| Round1
+    Round1 ==>|Broadcast Findings| AXL ==> Round2 ==>|Revised Votes| Tally
+    Tally ==> Drafter ==>|Letter Shown| User
+
+    %% === γ optional decentralized inference ===
+    Round1 <-.->|γ Inference| ZGC
+
+    %% === Persistence fan-out from Tally ===
     Tally ==> ZGChain & ZGStorage
-    Tally == Anchor + (if dispute) File ==> KH
-    KH ==> SepMirror
+    Tally ==>|"Anchor + (if dispute) File"| KH ==> SepMirror
     KH -.-> SepDispute & SepAppeal
-    User -. Click Send .-> Email
-    Email --> Provider
-    Email -. After Send .-> KH
+
+    %% === User-initiated appeal send ===
+    User -.->|Click Send| Email --> Provider
+    Email -.->|After Send| KH
 
     %% === Styling ===
     class FE tierFE
     class BE tierBE
     class Mesh tierMesh
-    class Persist tierChain
+    class Persist,Sep tierChain
     class Exec tierExec
-    class Sep tierChain
     class Mail tierMail
 
     classDef tierFE      fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1e1b4b
@@ -191,6 +183,7 @@ flowchart TB
     classDef tierExec    fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#052e16
     classDef tierMail    fill:#fefce8,stroke:#facc15,stroke-width:2px,color:#422006
 ```
+
 
 > 📐 **Setup, env vars, and verification commands** are in [`SETUP.md`](./SETUP.md).
 
