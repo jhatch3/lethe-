@@ -102,7 +102,7 @@ flowchart TB
     end
 
     subgraph BE["⚙️ Backend · FastAPI Coordinator"]
-        direction TB
+        direction LR
         API["API gateway + SSE event bus"]
         Parse["Parse + redact PHI<br/><sub>parser → regex → LLM sweep</sub>"]
         Tally["Consensus tally · 2-of-3 quorum"]
