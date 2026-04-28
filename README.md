@@ -99,6 +99,12 @@ When consensus lands on `dispute`, KeeperHub fires a **second** workflow recordi
 ---
 config:
   layout: elk
+  look: handDrawn
+  theme: neutral
+  flowchart:
+    curve: basis
+    nodeSpacing: 40
+    rankSpacing: 60
 ---
 flowchart TB
     %% === Subgraph: Frontend ===
