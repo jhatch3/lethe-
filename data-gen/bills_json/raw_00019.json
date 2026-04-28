@@ -1,0 +1,133 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "psychiatry",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "99215 (high-complexity E&M) billed for an established patient follow-up at a rural psychiatric clinic. The documented visit involves medication management for stable depression with no change in treatment plan, no complex MDM, and a 20-minute face-to-face encounter \u2014 consistent with 99213 (low-complexity, 20 min) at most. 99215 requires high MDM or 40+ minutes total time.",
+        "expected_savings_usd": 142.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to 99215 on the same date as 90833 (psychotherapy add-on), but the E&M and psychotherapy overlap substantially in content and time. The E&M was not a separately identifiable, significant service beyond the psychotherapy add-on performed during the same session. The combined billing inflates the visit level without distinct documentation supporting a separate E&M decision-making process.",
+        "expected_savings_usd": 89.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Bayou Pines Behavioral Health Clinic",
+    "npi": "1472938501",
+    "tax_id": "72-4839201",
+    "address": {
+      "street": "318 Longleaf Pine Rd",
+      "city": "Ferriday",
+      "state": "LA",
+      "zip": "71334"
+    },
+    "phone": "318-555-0174",
+    "specialty_taxonomy": "2084P0800X"
+  },
+  "patient": {
+    "name": "Marcus Dwayne Thibodaux",
+    "dob": "2006-03-14",
+    "sex": "M",
+    "account_number": "BPB-2024-08847",
+    "address": {
+      "street": "47 Cypress Creek Ln",
+      "city": "Vidalia",
+      "state": "LA",
+      "zip": "71373"
+    },
+    "insurance_id": "LBC9934710228"
+  },
+  "insurance": {
+    "payer_name": "Louisiana Blue Cross Community Health",
+    "plan_type": "Medicaid Managed Care",
+    "group_number": "MCM-LA-4471",
+    "subscriber_id": "LBC9934710228"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "F32.1",
+      "description": "Major depressive disorder, single episode, moderate"
+    },
+    {
+      "pointer": "B",
+      "icd10": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z79.899",
+      "description": "Other long-term (current) drug therapy"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office or other outpatient visit, established patient, high medical decision making complexity"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "90833",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 118.0,
+      "line_charge": 118.0,
+      "description": "Psychotherapy, 30 minutes, with patient when performed with E&M service (add-on)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "96127",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 28.0,
+      "line_charge": 28.0,
+      "description": "Brief emotional/behavioral assessment (PHQ-9 depression screen)"
+    }
+  ],
+  "totals": {
+    "total_charges": 431.0,
+    "insurance_payment": 198.0,
+    "patient_responsibility": 233.0,
+    "amount_due": 233.0
+  }
+}

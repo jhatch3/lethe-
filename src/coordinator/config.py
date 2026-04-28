@@ -74,6 +74,14 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("LETHE_0G_STORAGE_SIDECAR_URL", "ZG_STORAGE_SIDECAR_URL"),
     )
+    # On-chain pointer: the StorageIndex contract on Galileo records every
+    # (billHash → storageRoot) pairing emitted by the storage sidecar. Lets
+    # the coordinator query recent roots via eth_getLogs and pull blobs back
+    # for richer agent priors. Stays a stub if the contract isn't deployed.
+    storage_index_address: str = Field(
+        default="",
+        validation_alias=AliasChoices("LETHE_STORAGE_INDEX_ADDRESS", "STORAGE_INDEX_ADDRESS"),
+    )
 
     # === KeeperHub mirror anchor (Sepolia) ===
     keeperhub_api_key: str = Field(
@@ -136,6 +144,14 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices(
             "LETHE_APPEAL_REGISTRY_ADDRESS_SEPOLIA", "APPEAL_REGISTRY_ADDRESS_SEPOLIA",
         ),
+    )
+
+    # Public-facing URL of the Lethe dashboard. Used by outbound emails to
+    # construct the "verify this audit" link that goes to /verify?sha=...
+    # Defaults to localhost so dev demos work; override in production.
+    public_url: str = Field(
+        default="http://localhost:3000",
+        validation_alias=AliasChoices("LETHE_PUBLIC_URL", "PUBLIC_URL"),
     )
 
     # === Email delivery (appeal letter to provider) ===

@@ -129,6 +129,7 @@ flowchart TB
         direction TB
         ZGChain["0G Chain · Galileo<br><sub>BillRegistry + PatternRegistry</sub>"]
         ZGStorage["0G Storage<br><sub>via storage sidecar :8788</sub>"]
+        SXIndex["StorageIndex<br><sub>billHash → storageRoot pointer</sub>"]
     end
 
     %% === Subgraph: Execution Layer ===
@@ -161,6 +162,8 @@ flowchart TB
 
     %% === Persistence fan-out from Tally ===
     Tally ==> ZGChain & ZGStorage
+    ZGStorage ==>|"merkle root"| SXIndex
+    SXIndex -.->|"read-back priors"| Round1
     Tally ==>|"Anchor + (if dispute) File"| KH ==> SepMirror
     KH -.-> SepDispute & SepAppeal
 
@@ -308,10 +311,11 @@ Every Lethe audit produces records on two independent blockchains. Anyone with a
 | `BillRegistry` (Sepolia mirror) | Ethereum Sepolia | `0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0xf6B4C9CA2e8C8a3CE2DE77baa119004d6B51B457) |
 | `DisputeRegistry` (KH workflow #2 target) | Ethereum Sepolia | `0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290) |
 | `AppealRegistry` (KH workflow #3 target) | Ethereum Sepolia | `0x69166ACC4718a0062540673F5Cae26997BaB064e` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0x69166ACC4718a0062540673F5Cae26997BaB064e) |
+| `StorageIndex` (0G Storage pointer) | 0G Galileo testnet | `0xc435991e2aC242E7692f88c5cD78741B6dD5E614` | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai/address/0xc435991e2aC242E7692f88c5cD78741B6dD5E614) |
 
-In addition, every audit's full anonymized record is uploaded to **0G Storage**, which returns a merkle root + on-chain commitment tx. Both are surfaced in the dashboard receipt next to the chain anchors.
+In addition, every audit's full anonymized record is uploaded to **0G Storage** with a merkle root + commitment tx, and the `(billHash → storageRoot)` pointer is recorded on `StorageIndex` so future audits can pull blobs back as **richer agent priors** (full code strings, voter agent names — vs the truncated bytes32 fields in `PatternRegistry` events). The Storage layer is genuinely bidirectional: agents both write to it and read from it.
 
-Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`PatternRegistry.sol`](./src/contracts/src/PatternRegistry.sol), [`DisputeRegistry.sol`](./src/contracts/src/DisputeRegistry.sol), [`AppealRegistry.sol`](./src/contracts/src/AppealRegistry.sol). Deploy script (`py-solc-x` + `web3.py`, no Foundry): [`src/contracts/deploy.py`](./src/contracts/deploy.py).
+Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`PatternRegistry.sol`](./src/contracts/src/PatternRegistry.sol), [`DisputeRegistry.sol`](./src/contracts/src/DisputeRegistry.sol), [`AppealRegistry.sol`](./src/contracts/src/AppealRegistry.sol), [`StorageIndex.sol`](./src/contracts/src/StorageIndex.sol). Deploy script (`py-solc-x` + `web3.py`, no Foundry): [`src/contracts/deploy.py`](./src/contracts/deploy.py).
 
 ---
 
@@ -338,8 +342,8 @@ Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`
 **How we use 0G — three pillars:** Lethe is a 3-agent swarm (GPT-4o · Claude · Gemini) that uses **the entire 0G stack**:
 
 - **0G Chain.** `BillRegistry` anchors SHA-256 + verdict for every audited bill. `PatternRegistry` indexes anonymized findings (canonical code · action · severity · amount · voters) as on-chain events. The coordinator reads these back via `eth_getLogs` (cached 120s) and feeds aggregate dispute/clarify rates into agent prompts as priors. **Each new audit gets smarter via on-chain shared memory.**
-- **0G Storage.** Every audit's full anonymized record is written as a JSON blob via `@0glabs/0g-ts-sdk` (through a local Node sidecar) — returns a merkle root + on-chain commitment tx, both surfaced in the receipt next to the chain anchors.
-- **0G Compute.** Agent γ can run on a **decentralized inference node** instead of Google Gemini. The coordinator routes through a Node sidecar that signs each request body hash via the broker SDK — 0G Compute auth is per-request, not a static bearer token. `/api/status` reports `zg_compute_transport: "sidecar"` when this path is live.
+- **0G Storage — bidirectional.** Every audit's full anonymized record is uploaded as a JSON blob via `@0glabs/0g-ts-sdk` (through a local Node sidecar) — returns a merkle root + on-chain commitment tx. The `(billHash → storageRoot)` pointer is *also* written to a deployed `StorageIndex` contract on Galileo, so future audits query `eth_getLogs` for recent roots and pull blobs back via the sidecar's `GET /download?root=R` endpoint. **The agents read priors from Storage** when blobs are available (full code strings + voter agent names) — strictly richer than the `bytes32`-truncated `PatternRegistry` events. Storage isn't cold archive; it's the primary memory layer.
+- **0G Compute.** Agent γ can run on a **decentralized inference node** instead of Google Gemini. The coordinator routes through a Node sidecar that signs each request body hash via the broker SDK — 0G Compute auth is per-request, not a static bearer token. The factory probes the sidecar at startup and silently falls back to Gemini if unreachable, so `/api/status` always honestly reports γ's actual provider.
 
 **Swarm coordination:**
 - Three independent LLM agents reason in parallel during round 1 (different SDKs, different keys, different system prompts).
@@ -347,7 +351,7 @@ Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`
 - Round-2 reflection per agent with peer findings as context — agents may revise verdict, add findings, downgrade contested ones.
 - 2-of-3 quorum on canonical billing code; 1-1-1 splits resolve to "clarify" (no silent registration-order tiebreak).
 
-**Code:** [`chain/zerog.py`](./src/coordinator/chain/zerog.py) (anchor writes), [`chain/zerog_storage.py`](./src/coordinator/chain/zerog_storage.py) (pattern indexer), [`chain/zerog_blob.py`](./src/coordinator/chain/zerog_blob.py) (0G Storage uploader), [`chain/patterns.py`](./src/coordinator/chain/patterns.py) (read-back + caching), [`agents/audit_0g.py`](./src/coordinator/agents/audit_0g.py) (γ on 0G Compute), [`scripts/storage_sidecar.ts`](./src/coordinator/scripts/storage_sidecar.ts) and [`scripts/headers_sidecar.ts`](./src/coordinator/scripts/headers_sidecar.ts) (Node bridges to 0G TS SDKs).
+**Code:** [`chain/zerog.py`](./src/coordinator/chain/zerog.py) (anchor writes), [`chain/zerog_storage.py`](./src/coordinator/chain/zerog_storage.py) (PatternRegistry indexer), [`chain/zerog_blob.py`](./src/coordinator/chain/zerog_blob.py) (0G Storage uploader · 4 KB padding · circuit breaker), [`chain/storage_priors.py`](./src/coordinator/chain/storage_priors.py) (StorageIndex pointer write + read-back loop), [`chain/patterns.py`](./src/coordinator/chain/patterns.py) (chain-event priors fallback), [`agents/audit_0g.py`](./src/coordinator/agents/audit_0g.py) (γ on 0G Compute), [`agents/audit_google.py`](./src/coordinator/agents/audit_google.py) (γ factory · auto-fallback to Gemini), [`scripts/storage_sidecar.ts`](./src/coordinator/scripts/storage_sidecar.ts) and [`scripts/headers_sidecar.ts`](./src/coordinator/scripts/headers_sidecar.ts) (Node bridges to 0G TS SDKs).
 
 ---
 
@@ -398,13 +402,15 @@ lethe-/
 │   │   ├── routers/           # jobs, samples, status, verify, appeal (email + KH workflow #3)
 │   │   ├── pipeline/          # runner, parser, redactor, consensus, dispute drafter
 │   │   ├── agents/            # audit_{openai,anthropic,google,0g}, drafter, transport_axl, prompts
-│   │   ├── chain/             # zerog (anchor) · zerog_storage (patterns) · zerog_blob (0G Storage)
-│   │   │                      # keeperhub (REST) · keeperhub_mcp (MCP transport) · patterns (read-back)
+│   │   ├── chain/             # zerog (anchor) · zerog_storage (PatternRegistry) · zerog_blob (0G Storage)
+│   │   │                      # storage_priors (StorageIndex pointer + read-back) · patterns (chain priors)
+│   │   │                      # keeperhub (REST · 3 workflows) · keeperhub_mcp (MCP transport)
 │   │   ├── email_delivery/    # sender (resend / smtp / stub) + HTML template builder
 │   │   ├── scripts/           # Node helpers — provision:0g · headers:0g · storage:0g · check:0g
 │   │   ├── samples/           # 5 example bills used by the dashboard chips
 │   │   └── store/             # in-memory job store + sweeper, rolling stats
-│   └── contracts/             # BillRegistry · PatternRegistry · DisputeRegistry · AppealRegistry
+│   └── contracts/             # BillRegistry · PatternRegistry · DisputeRegistry
+│                              # AppealRegistry · StorageIndex
 │                              # deployed via deploy.py (py-solc-x + web3.py, no Foundry)
 ├── infra/
 │   └── axl/                   # Dockerfile, configs/{alpha,beta,gamma}.json, keys/peer_ids.json

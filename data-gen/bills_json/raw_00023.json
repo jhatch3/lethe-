@@ -1,0 +1,104 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "ob_gyn",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Magnolia Women's Health & Surgery Associates",
+    "npi": "3847261905",
+    "tax_id": "47-3829104",
+    "address": {
+      "street": "2214 Camellia Blvd, Suite 310",
+      "city": "Baton Rouge",
+      "state": "LA",
+      "zip": "70808"
+    },
+    "phone": "225-555-0193",
+    "specialty_taxonomy": "207V00000X"
+  },
+  "patient": {
+    "name": "Elijah Tran",
+    "dob": "2018-03-14",
+    "sex": "M",
+    "account_number": "MWH-20240827-0041",
+    "address": {
+      "street": "918 Sycamore Creek Rd",
+      "city": "Denham Springs",
+      "state": "LA",
+      "zip": "70726"
+    },
+    "insurance_id": "LBH7734829001"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Louisiana",
+    "plan_type": "PPO",
+    "group_number": "GRP-558821",
+    "subscriber_id": "LBH7734829001"
+  },
+  "encounter": {
+    "date_of_service": "2024-08-27",
+    "billing_date": "2024-09-03",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "Z09",
+      "description": "Encounter for follow-up examination after completed treatment for conditions other than malignant neoplasm"
+    },
+    {
+      "pointer": "B",
+      "icd10": "N47.1",
+      "description": "Phimosis"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z87.39",
+      "description": "Personal history of other musculoskeletal disorders"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-08-27",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99213",
+      "modifiers": [
+        "24"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 165.0,
+      "line_charge": 165.0,
+      "description": "Office or other outpatient visit, established patient, low medical decision making (post-operative follow-up, modifier 24 \u2013 E&M during global period, unrelated to original procedure)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-08-27",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99024",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 0.0,
+      "line_charge": 0.0,
+      "description": "Postoperative follow-up visit, normally included in the surgical package (no charge \u2013 within global period for circumcision performed 2024-08-06)"
+    }
+  ],
+  "totals": {
+    "total_charges": 165.0,
+    "insurance_payment": 112.4,
+    "patient_responsibility": 52.6,
+    "amount_due": 52.6
+  }
+}

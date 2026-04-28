@@ -1,0 +1,147 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "orthopedics",
+    "bill_type": "UB-04",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Chesapeake Orthopaedic Surgery Center",
+    "npi": "3847261059",
+    "tax_id": "47-3821604",
+    "address": {
+      "street": "2210 Harborview Blvd, Suite 100",
+      "city": "Annapolis",
+      "state": "MD",
+      "zip": "21401"
+    },
+    "phone": "410-555-0192",
+    "specialty_taxonomy": "261QA1903X"
+  },
+  "patient": {
+    "name": "Marcus T. Delgado",
+    "dob": "2006-03-14",
+    "sex": "M",
+    "account_number": "ASC-20240817-00384",
+    "address": {
+      "street": "714 Sycamore Run Drive",
+      "city": "Bowie",
+      "state": "MD",
+      "zip": "20716"
+    },
+    "insurance_id": "XPQ884712301"
+  },
+  "insurance": {
+    "payer_name": "CareFirst BlueCross BlueShield of Maryland",
+    "plan_type": "PPO",
+    "group_number": "GRP-774923",
+    "subscriber_id": "XPQ884712301"
+  },
+  "encounter": {
+    "date_of_service": "2024-08-17",
+    "billing_date": "2024-08-22",
+    "place_of_service_code": "24",
+    "place_of_service_description": "Ambulatory Surgical Center",
+    "facility": "Chesapeake Orthopaedic Surgery Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "M23.201",
+      "description": "Derangement of unspecified meniscus due to old tear or injury, right knee"
+    },
+    {
+      "pointer": "B",
+      "icd10": "M25.361",
+      "description": "Stiffness of right knee, not elsewhere classified"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z96.651",
+      "description": "Presence of right artificial knee joint (pre-existing hardware, prior ACL)"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-08-17",
+      "place_of_service": "24",
+      "cpt_hcpcs": "29881",
+      "modifiers": [
+        "RT"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 4850.0,
+      "line_charge": 4850.0,
+      "description": "Arthroscopy, knee, surgical; with meniscectomy (medial OR lateral, including any meniscal shaving), right knee"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-08-17",
+      "place_of_service": "24",
+      "cpt_hcpcs": "01382",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 1420.0,
+      "line_charge": 1420.0,
+      "description": "Anesthesia for diagnostic and therapeutic arthroscopic procedures, knee joint"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-08-17",
+      "place_of_service": "24",
+      "cpt_hcpcs": "99100",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 75.0,
+      "line_charge": 75.0,
+      "description": "Anesthesia qualifying circumstance: patient of extreme age (under 18)"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-08-17",
+      "place_of_service": "24",
+      "cpt_hcpcs": "A4550",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 38.0,
+      "line_charge": 38.0,
+      "description": "Surgical trays and supplies"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-08-17",
+      "place_of_service": "24",
+      "cpt_hcpcs": "99024",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 0.0,
+      "line_charge": 0.0,
+      "description": "Postoperative follow-up visit included in global surgical package (no charge)"
+    }
+  ],
+  "totals": {
+    "total_charges": 6383.0,
+    "insurance_payment": 4218.75,
+    "patient_responsibility": 850.0,
+    "amount_due": 850.0
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "dermatology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "99214 (moderate complexity E&M) billed for a new pediatric patient referred for evaluation of a localized eczematous rash. The documented scenario \u2014 single self-limited condition, straightforward history, limited exam, OTC topical recommended \u2014 warrants at most a 99213 (low complexity). Upcoding to 99214 inflates the E&M by one level.",
+        "expected_savings_usd": 48.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the E&M (99214) on the same day as a simple destruction procedure (17110). The clinical record reflects no separately identifiable evaluation beyond the routine assessment leading directly to the destruction; the E&M was not a distinct, significant service and should not be billed separately.",
+        "expected_savings_usd": 112.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Chesapeake Dermatology Associates",
+    "npi": "1437208956",
+    "tax_id": "52-3847291",
+    "address": {
+      "street": "4821 Harborview Blvd, Suite 310",
+      "city": "Annapolis",
+      "state": "MD",
+      "zip": "21401"
+    },
+    "phone": "4105552874",
+    "specialty_taxonomy": "207N00000X"
+  },
+  "patient": {
+    "name": "Brianna Kowalczyk",
+    "dob": "2016-03-14",
+    "sex": "F",
+    "account_number": "CHD-2024-088341",
+    "address": {
+      "street": "1103 Ridgewood Court",
+      "city": "Bowie",
+      "state": "MD",
+      "zip": "20715"
+    },
+    "insurance_id": "MBK4492017831"
+  },
+  "insurance": {
+    "payer_name": "CareFirst BlueCross BlueShield",
+    "plan_type": "PPO",
+    "group_number": "GRP-772194",
+    "subscriber_id": "MBK4492017831"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "L20.89",
+      "description": "Other atopic dermatitis"
+    },
+    {
+      "pointer": "B",
+      "icd10": "B07.8",
+      "description": "Other viral warts"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99214",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 245.0,
+      "line_charge": 245.0,
+      "description": "Office or other outpatient visit, established patient, moderate medical decision making (upcoded; visit complexity warranted 99213)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "17110",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "Destruction of benign lesions other than skin tags or cutaneous vascular proliferative lesions; up to 14 lesions (common warts, plantar surface)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 18.0,
+      "line_charge": 18.0,
+      "description": "Handling and/or conveyance of specimen for transfer from the physician's office to a laboratory"
+    }
+  ],
+  "totals": {
+    "total_charges": 448.0,
+    "insurance_payment": 198.4,
+    "patient_responsibility": 89.6,
+    "amount_due": 89.6
+  }
+}

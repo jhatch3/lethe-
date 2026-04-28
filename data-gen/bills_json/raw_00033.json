@@ -1,0 +1,134 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "ophthalmology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "CPT 99215 (high-complexity E&M) billed for a telehealth follow-up visit for stable dry eye disease and spectacle blur \u2014 clinical scenario supports at most 99213 (low-complexity, straightforward established patient). Medical decision-making and history documented do not support high complexity.",
+        "expected_savings_usd": 112.45
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to 99215 on the same day as a brief anterior segment imaging service (92132). The telehealth E&M note does not document a separately identifiable, significant evaluation and management service beyond the decision to order the imaging, making the modifier 25 unsupported.",
+        "expected_savings_usd": 89.32
+      }
+    ]
+  },
+  "provider": {
+    "name": "Chesapeake Eye Associates, PC",
+    "npi": "1437829056",
+    "tax_id": "47-3821094",
+    "address": {
+      "street": "8204 Greenbelt Station Pkwy, Suite 310",
+      "city": "Greenbelt",
+      "state": "MD",
+      "zip": "20770"
+    },
+    "phone": "301-555-0182",
+    "specialty_taxonomy": "207W00000X"
+  },
+  "patient": {
+    "name": "Marcus T. Delacroix",
+    "dob": "1989-03-14",
+    "sex": "M",
+    "account_number": "CEA-2024-087341",
+    "address": {
+      "street": "1122 Sprucemill Court",
+      "city": "Silver Spring",
+      "state": "MD",
+      "zip": "20904"
+    },
+    "insurance_id": "UHC8834102975"
+  },
+  "insurance": {
+    "payer_name": "UnitedHealthcare Choice Plus",
+    "plan_type": "PPO",
+    "group_number": "GRP-774920",
+    "subscriber_id": "UHC8834102975"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "02",
+    "place_of_service_description": "Telehealth \u2014 Patient Home",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "H04.123",
+      "description": "Dry eye syndrome of bilateral lacrimal glands"
+    },
+    {
+      "pointer": "B",
+      "icd10": "H52.13",
+      "description": "Myopia, bilateral"
+    },
+    {
+      "pointer": "C",
+      "icd10": "H53.141",
+      "description": "Visual discomfort, right eye"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "02",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25",
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 385.0,
+      "line_charge": 385.0,
+      "description": "Office/outpatient visit est. patient \u2014 high complexity telehealth E&M"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "02",
+      "cpt_hcpcs": "92132",
+      "modifiers": [
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 148.0,
+      "line_charge": 148.0,
+      "description": "Scanning computerized ophthalmic diagnostic imaging, anterior segment \u2014 telehealth review of externally captured images"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "02",
+      "cpt_hcpcs": "99072",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 32.0,
+      "line_charge": 32.0,
+      "description": "Additional supplies, materials, and clinical staff time for public health emergency \u2014 telehealth infection control"
+    }
+  ],
+  "totals": {
+    "total_charges": 565.0,
+    "insurance_payment": 198.44,
+    "patient_responsibility": 366.56,
+    "amount_due": 366.56
+  }
+}

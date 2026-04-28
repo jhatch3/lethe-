@@ -1,0 +1,154 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "cardiology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "DUPLICATE",
+        "affected_line": 3,
+        "description": "CPT 93000 (routine ECG with interpretation and report) billed twice on the same date of service (2024-09-12) on lines 2 and 3 without a 76 or 77 modifier to justify a repeat study.",
+        "expected_savings_usd": 28.5
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to 99214 E&M code, but the visit documentation implies the evaluation was not separately significant from the cardiovascular risk counseling and ECG performed at the same encounter; the E&M was not a distinct, separately identifiable service.",
+        "expected_savings_usd": 142.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Magnolia Heart Specialists, LLC",
+    "npi": "3847201956",
+    "tax_id": "47-2938410",
+    "address": {
+      "street": "4821 Peachtree Commons Blvd, Suite 310",
+      "city": "Birmingham",
+      "state": "AL",
+      "zip": "35243"
+    },
+    "phone": "205-555-0174",
+    "specialty_taxonomy": "207RC0000X"
+  },
+  "patient": {
+    "name": "Sandra L. Beaumont",
+    "dob": "1968-03-14",
+    "sex": "F",
+    "account_number": "MGH-2024-088421",
+    "address": {
+      "street": "1093 Cottonwood Trail",
+      "city": "Hoover",
+      "state": "AL",
+      "zip": "35226"
+    },
+    "insurance_id": "BCB-AL-7741928305"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Alabama",
+    "plan_type": "PPO",
+    "group_number": "GRP-448820",
+    "subscriber_id": "XKY774192830"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-12",
+    "billing_date": "2024-09-20",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "Z00.00",
+      "description": "Encounter for general adult medical examination without abnormal findings"
+    },
+    {
+      "pointer": "B",
+      "icd10": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "pointer": "C",
+      "icd10": "E78.5",
+      "description": "Hyperlipidemia, unspecified"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z82.49",
+      "description": "Family history of ischemic heart disease and other diseases of the circulatory system"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99214",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office or other outpatient visit, established patient, moderate medical decision making (25-39 min)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "93000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 57.0,
+      "line_charge": 57.0,
+      "description": "Electrocardiogram, routine ECG with at least 12 leads; with interpretation and report"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "93000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 57.0,
+      "line_charge": 57.0,
+      "description": "Electrocardiogram, routine ECG with at least 12 leads; with interpretation and report"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99401",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 48.0,
+      "line_charge": 48.0,
+      "description": "Preventive medicine counseling, individual; approximately 15 minutes (cardiovascular risk factor reduction)"
+    }
+  ],
+  "totals": {
+    "total_charges": 447.0,
+    "insurance_payment": 218.4,
+    "patient_responsibility": 89.4,
+    "amount_due": 89.4
+  }
+}

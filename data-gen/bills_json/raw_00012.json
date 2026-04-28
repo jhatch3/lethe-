@@ -1,0 +1,147 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "ENT (Otolaryngology)",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "CPT 99215 billed (high-complexity E&M) for a new patient follow-up presenting with occupational noise-induced hearing loss and mild tinnitus. Documentation supports a straightforward 99213-level visit: limited history, focused exam of ears with otoscopy, and a routine audiogram referral \u2014 not the medical decision-making complexity required for 99215.",
+        "expected_savings_usd": 142.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the 99215 E&M on the same date as audiometric testing (92557). The E&M visit note does not document a separately identifiable, significant evaluation beyond the assessment needed to order and interpret the audiogram; the modifier 25 is not supported as a distinct service.",
+        "expected_savings_usd": 198.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Cascadia ENT Associates, PLLC",
+    "npi": "1487230569",
+    "tax_id": "91-3847261",
+    "address": {
+      "street": "4812 NE Salmon Creek Ave, Suite 310",
+      "city": "Vancouver",
+      "state": "WA",
+      "zip": "98686"
+    },
+    "phone": "360-555-0174",
+    "specialty_taxonomy": "207Y00000X"
+  },
+  "patient": {
+    "name": "Gerald T. Mosswick",
+    "dob": "1952-03-18",
+    "sex": "M",
+    "account_number": "CEN-2024-087341",
+    "address": {
+      "street": "7703 SE Hazel Dell Loop",
+      "city": "Vancouver",
+      "state": "WA",
+      "zip": "98661"
+    },
+    "insurance_id": "WCS-4471093-B"
+  },
+  "insurance": {
+    "payer_name": "Washington State Department of Labor & Industries",
+    "plan_type": "Workers Compensation",
+    "group_number": "WA-LNI-GRP-44",
+    "subscriber_id": "WCS-4471093-B"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-20",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "H83.3X3",
+      "description": "Noise effects on inner ear, bilateral"
+    },
+    {
+      "pointer": "B",
+      "icd10": "H93.13",
+      "description": "Tinnitus, bilateral"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z57.0",
+      "description": "Occupational exposure to noise"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 385.0,
+      "line_charge": 385.0,
+      "description": "Office or outpatient visit, established patient, high medical decision making complexity (upcoded; documentation supports 99213)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "92557",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 195.0,
+      "line_charge": 195.0,
+      "description": "Comprehensive audiometry threshold evaluation and speech recognition"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "92567",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 88.0,
+      "line_charge": 88.0,
+      "description": "Tympanometry"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "92588",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 148.0,
+      "line_charge": 148.0,
+      "description": "Distortion product evoked otoacoustic emissions; comprehensive diagnostic evaluation"
+    }
+  ],
+  "totals": {
+    "total_charges": 816.0,
+    "insurance_payment": 412.0,
+    "patient_responsibility": 0.0,
+    "amount_due": 404.0
+  }
+}

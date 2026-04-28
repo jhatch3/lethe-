@@ -1,0 +1,126 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "dental_oral_surgery",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Ridgemont Pediatric Oral Surgery Associates",
+    "npi": "3847291056",
+    "tax_id": "47-3829104",
+    "address": {
+      "street": "2204 Magnolia Blvd Suite 110",
+      "city": "Baton Rouge",
+      "state": "LA",
+      "zip": "70808"
+    },
+    "phone": "225-555-0173",
+    "specialty_taxonomy": "1223S0112X"
+  },
+  "patient": {
+    "name": "Caleb Trosclair",
+    "dob": "2016-03-14",
+    "sex": "M",
+    "account_number": "RPOS-20240812-00447",
+    "address": {
+      "street": "918 Cypress Creek Rd",
+      "city": "Gonzales",
+      "state": "LA",
+      "zip": "70737"
+    },
+    "insurance_id": "MCH-LA-774892031"
+  },
+  "insurance": {
+    "payer_name": "Louisiana Medicaid Managed Care - Aetna Better Health",
+    "plan_type": "Medicaid",
+    "group_number": "LABH-9934",
+    "subscriber_id": "MCH-LA-774892031"
+  },
+  "encounter": {
+    "date_of_service": "2024-08-12",
+    "billing_date": "2024-08-19",
+    "place_of_service_code": "02",
+    "place_of_service_description": "Telehealth Provided Other than in Patient's Home",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "K04.0",
+      "description": "Pulpitis"
+    },
+    {
+      "pointer": "B",
+      "icd10": "K02.62",
+      "description": "Dental caries on smooth surface penetrating into pulp"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z96.5",
+      "description": "Presence of tooth-root and mandibular implants (post-operative status after prior extraction noted in record)"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z09",
+      "description": "Encounter for follow-up examination after completed treatment for conditions other than malignant neoplasm"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-08-12",
+      "place_of_service": "02",
+      "cpt_hcpcs": "99212",
+      "modifiers": [
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 82.0,
+      "line_charge": 82.0,
+      "description": "Office or other outpatient visit, established patient, low complexity MDM, telehealth follow-up post oral surgery"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-08-12",
+      "place_of_service": "02",
+      "cpt_hcpcs": "99072",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 18.0,
+      "line_charge": 18.0,
+      "description": "Additional supplies, materials, and clinical staff time over and above those usually included in an office visit or other outpatient visit during COVID-19 public health emergency (applied per state Medicaid policy for telehealth infection control overhead)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-08-12",
+      "place_of_service": "02",
+      "cpt_hcpcs": "D9992",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 45.0,
+      "line_charge": 45.0,
+      "description": "Dental case management \u2013 care coordination (telehealth follow-up coordination for pediatric patient post-pulpitis treatment)"
+    }
+  ],
+  "totals": {
+    "total_charges": 145.0,
+    "insurance_payment": 120.75,
+    "patient_responsibility": 0.0,
+    "amount_due": 0.0
+  }
+}

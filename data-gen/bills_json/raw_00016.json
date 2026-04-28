@@ -1,0 +1,176 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "cardiology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Cascade Cardiovascular Consultants PC",
+    "npi": "3847261905",
+    "tax_id": "91-4738265",
+    "address": {
+      "street": "4210 NE Salmon Ridge Blvd, Suite 310",
+      "city": "Portland",
+      "state": "OR",
+      "zip": "97213"
+    },
+    "phone": "503-847-2210",
+    "specialty_taxonomy": "207RC0000X"
+  },
+  "patient": {
+    "name": "Gerald Thorkildsen",
+    "dob": "1964-03-18",
+    "sex": "M",
+    "account_number": "CCC-2024-087441",
+    "address": {
+      "street": "1882 Fir Hollow Drive",
+      "city": "Beaverton",
+      "state": "OR",
+      "zip": "97006"
+    },
+    "insurance_id": "UHC884729301W"
+  },
+  "insurance": {
+    "payer_name": "UnitedHealthcare Choice Plus",
+    "plan_type": "PPO",
+    "group_number": "GRP-774821",
+    "subscriber_id": "UHC884729301W"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-20",
+    "place_of_service_code": "21",
+    "place_of_service_description": "Inpatient Hospital",
+    "facility": "Providence Willamette Valley Medical Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "I21.4",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "pointer": "B",
+      "icd10": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "pointer": "C",
+      "icd10": "E11.9",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z87.891",
+      "description": "Personal history of nicotine dependence"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99253",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 420.0,
+      "line_charge": 420.0,
+      "description": "Inpatient consultation, moderate complexity (initial)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "21",
+      "cpt_hcpcs": "93306",
+      "modifiers": [
+        "26"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 385.0,
+      "line_charge": 385.0,
+      "description": "Echocardiography, transthoracic, complete with spectral and color flow Doppler \u2013 professional component"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99232",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 210.0,
+      "line_charge": 210.0,
+      "description": "Subsequent hospital care, moderate complexity"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "21",
+      "cpt_hcpcs": "93000",
+      "modifiers": [
+        "26"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 55.0,
+      "line_charge": 55.0,
+      "description": "Electrocardiogram, routine ECG with 12 leads \u2013 professional component"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-13",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99232",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 210.0,
+      "line_charge": 210.0,
+      "description": "Subsequent hospital care, moderate complexity"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99238",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 175.0,
+      "line_charge": 175.0,
+      "description": "Hospital discharge day management, 30 minutes or less"
+    }
+  ],
+  "totals": {
+    "total_charges": 1455.0,
+    "insurance_payment": 1048.4,
+    "patient_responsibility": 209.68,
+    "amount_due": 209.68
+  }
+}

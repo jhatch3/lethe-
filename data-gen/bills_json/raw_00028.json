@@ -1,0 +1,183 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "emergency_medicine",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "99285 (high-complexity ED E&M) billed for a presentation that, based on diagnoses and minimal workup documented by associated codes, reflects a straightforward moderate-complexity encounter consistent with 99283. The chief complaint of chest wall pain with a single view chest X-ray, basic metabolic panel, and ECG does not support the high-complexity MDM required for 99285.",
+        "expected_savings_usd": 112.5
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the ED E&M (99285) alongside a 12-lead ECG interpretation (93010), but the ECG interpretation is inherently part of the ED evaluation for chest pain and does not represent a separately identifiable service beyond the E&M. The modifier 25 is not appropriate here as the E&M was not distinct from the decision to perform and review the ECG.",
+        "expected_savings_usd": 28.75
+      }
+    ]
+  },
+  "provider": {
+    "name": "Harborview Emergency Physicians Group LLC",
+    "npi": "3847261905",
+    "tax_id": "47-3829164",
+    "address": {
+      "street": "814 Chesapeake Boulevard",
+      "city": "Baltimore",
+      "state": "MD",
+      "zip": "21230"
+    },
+    "phone": "410-555-0187",
+    "specialty_taxonomy": "207P00000X"
+  },
+  "patient": {
+    "name": "Marlene T. Okonkwo",
+    "dob": "1966-03-14",
+    "sex": "F",
+    "account_number": "ED2024-088431",
+    "address": {
+      "street": "2207 Ridgeway Terrace",
+      "city": "Towson",
+      "state": "MD",
+      "zip": "21204"
+    },
+    "insurance_id": "UHC887340021F"
+  },
+  "insurance": {
+    "payer_name": "UnitedHealthcare Choice Plus",
+    "plan_type": "PPO",
+    "group_number": "GRP-774421",
+    "subscriber_id": "UHC887340021F"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-19",
+    "place_of_service_code": "23",
+    "place_of_service_description": "Emergency Room \u2013 Hospital",
+    "facility": "St. Clement's Medical Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "M54.6",
+      "description": "Pain in thoracic spine"
+    },
+    {
+      "pointer": "B",
+      "icd10": "R07.9",
+      "description": "Chest pain, unspecified"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z87.891",
+      "description": "Personal history of nicotine dependence"
+    },
+    {
+      "pointer": "D",
+      "icd10": "I10",
+      "description": "Essential (primary) hypertension"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "23",
+      "cpt_hcpcs": "99285",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 485.0,
+      "line_charge": 485.0,
+      "description": "Emergency department visit, high complexity medical decision making"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "23",
+      "cpt_hcpcs": "93010",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 58.0,
+      "line_charge": 58.0,
+      "description": "Electrocardiogram, routine ECG, interpretation and report only"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "23",
+      "cpt_hcpcs": "71046",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Radiologic examination, chest; 2 views"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "23",
+      "cpt_hcpcs": "80048",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 74.0,
+      "line_charge": 74.0,
+      "description": "Basic metabolic panel (Calcium, total)"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "23",
+      "cpt_hcpcs": "85025",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 42.0,
+      "line_charge": 42.0,
+      "description": "Blood count; complete (CBC), automated and automated differential WBC count"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "23",
+      "cpt_hcpcs": "84484",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 55.0,
+      "line_charge": 55.0,
+      "description": "Assay of troponin, quantitative"
+    }
+  ],
+  "totals": {
+    "total_charges": 826.0,
+    "insurance_payment": 541.3,
+    "patient_responsibility": 142.0,
+    "amount_due": 142.0
+  }
+}

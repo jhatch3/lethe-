@@ -1,0 +1,265 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "oncology",
+    "bill_type": "UB-04",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Prairie Ridge Cancer Care Center",
+    "npi": "3812047659",
+    "tax_id": "47-3920815",
+    "address": {
+      "street": "204 Elm Grove Road",
+      "city": "Kearney",
+      "state": "NE",
+      "zip": "68847"
+    },
+    "phone": "308-555-0192",
+    "specialty_taxonomy": "207RX0202X"
+  },
+  "patient": {
+    "name": "Macie Joellen Brandt",
+    "dob": "2017-03-14",
+    "sex": "F",
+    "account_number": "PRC-2024-088341",
+    "address": {
+      "street": "7712 County Road 18",
+      "city": "Gibbon",
+      "state": "NE",
+      "zip": "68840"
+    },
+    "insurance_id": "BCN4471092837"
+  },
+  "insurance": {
+    "payer_name": "Blue Cross Blue Shield of Nebraska",
+    "plan_type": "PPO",
+    "group_number": "GRP-NE-774420",
+    "subscriber_id": "BCN4471092837"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "22",
+    "place_of_service_description": "On Campus-Outpatient Hospital",
+    "facility": "Prairie Ridge Cancer Care Center \u2013 Outpatient Infusion Suite"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "C91.00",
+      "description": "Acute lymphoblastic leukemia not having achieved remission"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Z79.899",
+      "description": "Other long-term (current) drug therapy"
+    },
+    {
+      "pointer": "C",
+      "icd10": "D61.810",
+      "description": "Antineoplastic chemotherapy-induced pancytopenia"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z23",
+      "description": "Encounter for immunization (supportive, pneumococcal deferred per protocol)"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "99213",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "Office or outpatient visit, established patient, low-moderate complexity (oncology follow-up)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "96413",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 312.0,
+      "line_charge": 312.0,
+      "description": "Chemotherapy administration, intravenous infusion, up to 1 hour; vincristine"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "96415",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 148.0,
+      "line_charge": 148.0,
+      "description": "Chemotherapy administration, IV infusion, each additional hour (methotrexate continuation)"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "J9370",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 28.0,
+      "line_charge": 28.0,
+      "description": "Vincristine sulfate injection, 1 mg"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "J9250",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 50,
+      "unit_charge": 2.1,
+      "line_charge": 105.0,
+      "description": "Methotrexate sodium injection, 5 mg per unit (50 units = 250 mg)"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "96360",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 95.0,
+      "line_charge": 95.0,
+      "description": "IV hydration infusion, initial 31 minutes to 1 hour (pre-chemotherapy hydration)"
+    },
+    {
+      "line_number": 7,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "J2405",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 4,
+      "unit_charge": 14.5,
+      "line_charge": 58.0,
+      "description": "Ondansetron HCl injection, 1 mg per unit (4 mg total, antiemetic pre-medication)"
+    },
+    {
+      "line_number": 8,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "96367",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 72.0,
+      "line_charge": 72.0,
+      "description": "Additional sequential IV infusion, up to 1 hour (dexamethasone supportive)"
+    },
+    {
+      "line_number": 9,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "J1100",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 4,
+      "unit_charge": 4.25,
+      "line_charge": 17.0,
+      "description": "Dexamethasone sodium phosphate injection, 1 mg per unit (4 mg total)"
+    },
+    {
+      "line_number": 10,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "85025",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 38.0,
+      "line_charge": 38.0,
+      "description": "Complete blood count (CBC) with automated differential, pre-treatment monitoring"
+    },
+    {
+      "line_number": 11,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "80053",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 62.0,
+      "line_charge": 62.0,
+      "description": "Comprehensive metabolic panel (hepatic/renal function prior to methotrexate)"
+    },
+    {
+      "line_number": 12,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "36430",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 120.0,
+      "line_charge": 120.0,
+      "description": "Transfusion, packed red blood cells (1 unit PRBC for chemotherapy-induced anemia)"
+    },
+    {
+      "line_number": 13,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "22",
+      "cpt_hcpcs": "P9021",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 210.0,
+      "line_charge": 210.0,
+      "description": "Red blood cells, each unit (blood product supply)"
+    }
+  ],
+  "totals": {
+    "total_charges": 1450.0,
+    "insurance_payment": 1102.4,
+    "patient_responsibility": 145.0,
+    "amount_due": 145.0
+  }
+}

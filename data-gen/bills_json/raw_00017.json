@@ -1,0 +1,168 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "emergency_medicine",
+    "bill_type": "UB-04",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Palmetto Regional Medical Center",
+    "npi": "3847261059",
+    "tax_id": "58-3947261",
+    "address": {
+      "street": "801 Cypress Creek Blvd",
+      "city": "Macon",
+      "state": "GA",
+      "zip": "31201"
+    },
+    "phone": "4785550192",
+    "specialty_taxonomy": "282N00000X"
+  },
+  "patient": {
+    "name": "Elijah Tatum",
+    "dob": "2018-03-14",
+    "sex": "M",
+    "account_number": "ACT-7741983",
+    "address": {
+      "street": "324 Magnolia Lane",
+      "city": "Warner Robins",
+      "state": "GA",
+      "zip": "31088"
+    },
+    "insurance_id": "BCB9002847413"
+  },
+  "insurance": {
+    "payer_name": "Blue Cross Blue Shield of Georgia",
+    "plan_type": "PPO",
+    "group_number": "GRP-448821",
+    "subscriber_id": "BCB9002847413"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-17",
+    "billing_date": "2024-09-19",
+    "place_of_service_code": "23",
+    "place_of_service_description": "Emergency Room \u2013 Hospital",
+    "facility": "Palmetto Regional Medical Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "J06.9",
+      "description": "Acute upper respiratory infection, unspecified"
+    },
+    {
+      "pointer": "B",
+      "icd10": "R50.9",
+      "description": "Fever, unspecified"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R05.9",
+      "description": "Cough, unspecified"
+    },
+    {
+      "pointer": "D",
+      "icd10": "R09.02",
+      "description": "Hypoxemia"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-17",
+      "place_of_service": "23",
+      "cpt_hcpcs": "99284",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 1320.0,
+      "line_charge": 1320.0,
+      "description": "Emergency department visit, moderate-high severity (Level 4)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-17",
+      "place_of_service": "23",
+      "cpt_hcpcs": "94640",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "D",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 215.0,
+      "line_charge": 215.0,
+      "description": "Pressurized or unpressurized inhalation treatment for acute airway obstruction"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-17",
+      "place_of_service": "23",
+      "cpt_hcpcs": "71046",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "D",
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 480.0,
+      "line_charge": 480.0,
+      "description": "Radiologic examination, chest; 2 views"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-17",
+      "place_of_service": "23",
+      "cpt_hcpcs": "87804",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 98.0,
+      "line_charge": 98.0,
+      "description": "Infectious agent antigen detection by immunoassay; Influenza"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-17",
+      "place_of_service": "23",
+      "cpt_hcpcs": "87426",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Infectious agent antigen detection; SARS-CoV-2 (COVID-19)"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-09-17",
+      "place_of_service": "23",
+      "cpt_hcpcs": "94760",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 55.0,
+      "line_charge": 55.0,
+      "description": "Noninvasive ear or pulse oximetry for oxygen saturation; single determination"
+    }
+  ],
+  "totals": {
+    "total_charges": 2280.0,
+    "insurance_payment": 1642.0,
+    "patient_responsibility": 638.0,
+    "amount_due": 638.0
+  }
+}

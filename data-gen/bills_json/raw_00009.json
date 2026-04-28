@@ -1,0 +1,139 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "orthopedics",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Desert Orthopedic Surgical Associates",
+    "npi": "3847291056",
+    "tax_id": "86-4731209",
+    "address": {
+      "street": "4820 N Mesa Blvd, Suite 310",
+      "city": "Tucson",
+      "state": "AZ",
+      "zip": "85704"
+    },
+    "phone": "520-774-3891",
+    "specialty_taxonomy": "207X00000X"
+  },
+  "patient": {
+    "name": "Marcus T. Delgadillo",
+    "dob": "1990-03-14",
+    "sex": "M",
+    "account_number": "DOSA-20240318-00482",
+    "address": {
+      "street": "2219 W Camino Seco",
+      "city": "Tucson",
+      "state": "AZ",
+      "zip": "85745"
+    },
+    "insurance_id": "UHC8847201193"
+  },
+  "insurance": {
+    "payer_name": "UnitedHealthcare Choice Plus",
+    "plan_type": "PPO",
+    "group_number": "GRP-774920",
+    "subscriber_id": "UHC8847201193"
+  },
+  "encounter": {
+    "date_of_service": "2024-03-18",
+    "billing_date": "2024-03-25",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "M23.211",
+      "description": "Derangement of anterior horn of medial meniscus due to old tear or injury, right knee"
+    },
+    {
+      "pointer": "B",
+      "icd10": "M25.361",
+      "description": "Stiffness of right knee, not elsewhere classified"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z96.651",
+      "description": "Presence of right artificial knee joint"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99214",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office visit, established patient, moderate medical decision making (30-39 minutes)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "11",
+      "cpt_hcpcs": "73721",
+      "modifiers": [
+        "RT"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 420.0,
+      "line_charge": 420.0,
+      "description": "MRI right knee without contrast"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "11",
+      "cpt_hcpcs": "20610",
+      "modifiers": [
+        "25",
+        "RT"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 195.0,
+      "line_charge": 195.0,
+      "description": "Arthrocentesis, aspiration and/or injection, major joint; right knee"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "11",
+      "cpt_hcpcs": "J7321",
+      "modifiers": [
+        "RT"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 210.0,
+      "line_charge": 210.0,
+      "description": "Hyaluronan or derivative, Hyalgan or Supartz, for intra-articular injection, per dose"
+    }
+  ],
+  "totals": {
+    "total_charges": 1110.0,
+    "insurance_payment": 742.5,
+    "patient_responsibility": 185.0,
+    "amount_due": 185.0
+  }
+}

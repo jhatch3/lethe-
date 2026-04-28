@@ -4,20 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Lethe is a hackathon-stage system that audits medical bills via AI consensus. The pipeline is: (1) a deterministic PDF parser extracts structured data from the uploaded bill (CPT/ICD codes, modifiers, charges, DOS); (2) a PHI redactor strips all patient identifiers (name, DOB, address, MRN, account numbers) before anything leaves the coordinator; (3) the redacted payload is sent to three independent LLM agents (GPT-4o, Claude, Gemini) communicating peer-to-peer over Gensyn AXL; (4) action is taken only when at least two agents agree. The original bill is held in coordinator memory only — never written to disk, never logged, never persisted on 0G, and never sent to a model provider. What persists is a SHA-256 hash on 0G Chain (proof of *what was analyzed*) and an anonymized pattern record on 0G Storage. Disputes are submitted on-chain via KeeperHub.
+Lethe audits medical bills via multi-agent AI consensus. Pipeline: (1) a deterministic PDF parser extracts structured data (CPT/ICD codes, modifiers, charges, DOS); (2) a PHI redactor strips all patient identifiers (name, DOB, address, MRN, account numbers) before anything leaves the coordinator; (3) three independent LLM agents (GPT-4o · Claude Sonnet 4.5 · Gemini Flash) communicate peer-to-peer over a real Gensyn AXL mesh, broadcast findings, and run a round-2 reflection with peer findings as context; (4) action only fires when ≥2 of 3 agree on the canonical billing code. The original bill is held in coordinator memory only — never written to disk, never logged, never persisted on chain, and never sent to a model provider.
 
-The "zero retention" guarantee is load-bearing — privacy is a product feature, not just a nice-to-have. AI agents must only ever see the redacted payload, never the original bill. When touching the coordinator, parser, redactor, or agent code, treat any path that could persist or leak a bill (logging, error reporting, caching, telemetry, or sending un-redacted data to a model) as a bug.
+What persists per audit: a SHA-256 + verdict on **0G Galileo** (`BillRegistry`), the same record mirrored to **Sepolia** via KeeperHub, anonymized findings indexed on **0G `PatternRegistry`**, the full record in **0G Storage** with the merkle root pointer recorded on the **`StorageIndex`** contract, and (on `dispute`) a filing on the Sepolia **`DisputeRegistry`**. When the user clicks "Send appeal" on the dashboard, an email goes out via Resend and KeeperHub records an attestation on the Sepolia **`AppealRegistry`** — three KeeperHub workflows total per audit.
+
+The "zero retention" guarantee is load-bearing — privacy is the architecture, not a setting. AI agents only ever see the redacted payload. When touching the coordinator, parser, redactor, or agent code, treat any path that could persist or leak the original bill (logging, error reporting, caching, telemetry, or sending un-redacted data to a model) as a bug.
 
 ## Repository layout
 
-The full intended structure is documented in `README.md` under "Repository structure". Currently scaffolded:
-
-- `src/frontend/` — Next.js 16 (App Router) + TypeScript + Tailwind 4 + Framer Motion. The user-facing dashboard.
-- `src/coordinator/` — FastAPI orchestrator. Will eventually host AXL node #0 and the consensus logic.
-- `src/agent/{alpha,beta,gamma}/` — Per-LLM agent containers (scaffolded, not yet implemented).
-- `src/contracts/` — Foundry project for `BillRegistry` / `ConsensusVote` (scaffolded, not yet implemented).
-- `assets/` — Static images for the README only. Not application assets.
-- `docs/`, `infra/`, `samples/` — Scaffolded, not yet populated.
+- `src/frontend/` — Next.js 16 (App Router) + TypeScript + Tailwind 4 + Framer Motion · the dashboard, landing page, /verify, /patterns, /axl, /tech-stack
+- `src/coordinator/` — FastAPI orchestrator: pipeline runner, parser, redactor, agents (alpha/beta/gamma + drafter), chain integrations (zerog · zerog_storage · zerog_blob · storage_priors · keeperhub · keeperhub_mcp), email_delivery, routers, store
+- `src/coordinator/scripts/` — Node sidecars + provisioning: `provision:0g`, `headers:0g`, `storage:0g`, `check:0g` (compute broker SDK + storage TS SDK)
+- `src/contracts/` — Solidity sources for `BillRegistry` · `PatternRegistry` · `DisputeRegistry` · `AppealRegistry` · `StorageIndex` · deployed via `deploy.py` (py-solc-x + web3.py, no Foundry)
+- `infra/axl/` — Three Gensyn AXL sidecars (Dockerfile + per-peer configs + ed25519 keys)
+- `data-gen/` — Sample medical bill generator + `seed_patterns.py` to pre-seed PatternRegistry
+- `assets/` — Banner + dashboard screenshots for the README
+- `docs/` — KeeperHub bounty assets, draft writeup, architecture rendering script
 
 ## Frontend
 

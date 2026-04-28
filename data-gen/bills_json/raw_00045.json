@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "gastroenterology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Desert Valley Gastroenterology Associates",
+    "npi": "3847201956",
+    "tax_id": "85-4712039",
+    "address": {
+      "street": "1402 W Mesquite Blvd, Suite 3",
+      "city": "Deming",
+      "state": "NM",
+      "zip": "88030"
+    },
+    "phone": "575-555-0183",
+    "specialty_taxonomy": "207RG0100X"
+  },
+  "patient": {
+    "name": "Caleb Rios-Mendoza",
+    "dob": "2006-03-14",
+    "sex": "M",
+    "account_number": "DVG-20240819-00447",
+    "address": {
+      "street": "88 CR-612",
+      "city": "Hatch",
+      "state": "NM",
+      "zip": "87937"
+    },
+    "insurance_id": "NMM7734820194"
+  },
+  "insurance": {
+    "payer_name": "New Mexico Medicaid (Centennial Care)",
+    "plan_type": "Medicaid Managed Care",
+    "group_number": "NM-CC-0082",
+    "subscriber_id": "NMM7734820194"
+  },
+  "encounter": {
+    "date_of_service": "2024-08-19",
+    "billing_date": "2024-08-26",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "K50.90",
+      "description": "Crohn's disease of small intestine, unspecified, without complications"
+    },
+    {
+      "pointer": "B",
+      "icd10": "K59.00",
+      "description": "Constipation, unspecified"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R10.9",
+      "description": "Unspecified abdominal pain"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z79.899",
+      "description": "Other long-term (current) drug therapy"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-08-19",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99214",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 265.0,
+      "line_charge": 265.0,
+      "description": "Office or other outpatient visit, established patient, moderate medical decision making (30-39 min)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-08-19",
+      "place_of_service": "11",
+      "cpt_hcpcs": "83540",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 34.0,
+      "line_charge": 34.0,
+      "description": "Iron serum level"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-08-19",
+      "place_of_service": "11",
+      "cpt_hcpcs": "85025",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 28.0,
+      "line_charge": 28.0,
+      "description": "Complete blood count (CBC) with automated differential"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-08-19",
+      "place_of_service": "11",
+      "cpt_hcpcs": "86140",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 22.0,
+      "line_charge": 22.0,
+      "description": "C-reactive protein (CRP)"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-08-19",
+      "place_of_service": "11",
+      "cpt_hcpcs": "84525",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 26.0,
+      "line_charge": 26.0,
+      "description": "Urea nitrogen (BUN), serum"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-08-19",
+      "place_of_service": "11",
+      "cpt_hcpcs": "80074",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 55.0,
+      "line_charge": 55.0,
+      "description": "Acute hepatitis panel (monitoring for immunomodulator therapy)"
+    },
+    {
+      "line_number": 7,
+      "date_of_service": "2024-08-19",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99401",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 45.0,
+      "line_charge": 45.0,
+      "description": "Preventive medicine counseling, individual, approximately 15 minutes (medication adherence and disease self-management)"
+    }
+  ],
+  "totals": {
+    "total_charges": 475.0,
+    "insurance_payment": 332.5,
+    "patient_responsibility": 0.0,
+    "amount_due": 0.0
+  }
+}

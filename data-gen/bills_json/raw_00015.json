@@ -1,0 +1,118 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "neurology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Meridian Pediatric Neurology Associates",
+    "npi": "3847291056",
+    "tax_id": "47-3829104",
+    "address": {
+      "street": "2210 Oleander Medical Pkwy, Suite 340",
+      "city": "Savannah",
+      "state": "GA",
+      "zip": "31405"
+    },
+    "phone": "912-555-0184",
+    "specialty_taxonomy": "2084P0800X"
+  },
+  "patient": {
+    "name": "Lily R. Tatum",
+    "dob": "2017-03-14",
+    "sex": "F",
+    "account_number": "MPN-2024-088471",
+    "address": {
+      "street": "417 Magnolia Trace Dr",
+      "city": "Pooler",
+      "state": "GA",
+      "zip": "31322"
+    },
+    "insurance_id": "BCX-9201847733"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Georgia",
+    "plan_type": "PPO",
+    "group_number": "GRP-774821",
+    "subscriber_id": "BCX-9201847733"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "G40.309",
+      "description": "Generalized idiopathic epilepsy and epileptic syndromes, not intractable, without status epilepticus"
+    },
+    {
+      "pointer": "B",
+      "icd10": "R56.9",
+      "description": "Unspecified convulsions"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z03.89",
+      "description": "Encounter for observation for other suspected diseases and conditions ruled out"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99204",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office or other outpatient visit, new patient, moderate medical decision making (MDM) \u2013 initial neurology evaluation following urgent care referral for new-onset seizure activity"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "95819",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 420.0,
+      "line_charge": 420.0,
+      "description": "Electroencephalogram (EEG); awake and asleep, routine recording with interpretation and report"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "95999",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 95.0,
+      "line_charge": 95.0,
+      "description": "Unlisted neurological or neuromuscular diagnostic procedure \u2013 physician review and preparation of seizure onset documentation for school care plan"
+    }
+  ],
+  "totals": {
+    "total_charges": 800.0,
+    "insurance_payment": 612.4,
+    "patient_responsibility": 95.0,
+    "amount_due": 95.0
+  }
+}

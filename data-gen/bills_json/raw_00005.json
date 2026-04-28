@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "pathology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Tidewater Pathology Associates, PC",
+    "npi": "1427836590",
+    "tax_id": "47-3829104",
+    "address": {
+      "street": "4812 Meridian Blvd, Suite 310",
+      "city": "Savannah",
+      "state": "GA",
+      "zip": "31401"
+    },
+    "phone": "912-555-0183",
+    "specialty_taxonomy": "207ZP0101X"
+  },
+  "patient": {
+    "name": "Darnell R. Hutchins",
+    "dob": "1971-03-14",
+    "sex": "M",
+    "account_number": "TPA-2024-087341",
+    "address": {
+      "street": "228 Palmetto Ridge Drive",
+      "city": "Brunswick",
+      "state": "GA",
+      "zip": "31520"
+    },
+    "insurance_id": "WC-GA-448821073"
+  },
+  "insurance": {
+    "payer_name": "Southeastern Workers Compensation Trust",
+    "plan_type": "Workers Compensation",
+    "group_number": "SWCT-GRP-0094",
+    "subscriber_id": "WC-GA-448821073"
+  },
+  "encounter": {
+    "date_of_service": "2024-08-07",
+    "billing_date": "2024-08-19",
+    "place_of_service_code": "81",
+    "place_of_service_description": "Independent Laboratory",
+    "facility": "Tidewater Reference Laboratory"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "S61.012A",
+      "description": "Open wound of left index finger without damage to nail, initial encounter"
+    },
+    {
+      "pointer": "B",
+      "icd10": "M79.622",
+      "description": "Pain in left upper arm"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z57.5",
+      "description": "Occupational exposure to toxic agents in other industries"
+    },
+    {
+      "pointer": "D",
+      "icd10": "T65.891A",
+      "description": "Toxic effects of other specified substances, accidental (unintentional), initial encounter"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-08-07",
+      "place_of_service": "81",
+      "cpt_hcpcs": "88305",
+      "modifiers": [
+        "TC"
+      ],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 148.0,
+      "line_charge": 148.0,
+      "description": "Level IV - Surgical pathology, gross and microscopic examination, tissue from wound debridement"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-08-07",
+      "place_of_service": "81",
+      "cpt_hcpcs": "88305",
+      "modifiers": [
+        "26"
+      ],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Level IV - Surgical pathology, professional component interpretation, tissue from wound debridement"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-08-07",
+      "place_of_service": "81",
+      "cpt_hcpcs": "80101",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 58.0,
+      "line_charge": 58.0,
+      "description": "Drug screen, qualitative; single drug class - solvent/chemical substance screen per workers comp requirement"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-08-07",
+      "place_of_service": "81",
+      "cpt_hcpcs": "85025",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 34.0,
+      "line_charge": 34.0,
+      "description": "Complete blood count (CBC), automated, with differential WBC"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-08-07",
+      "place_of_service": "81",
+      "cpt_hcpcs": "80053",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 52.0,
+      "line_charge": 52.0,
+      "description": "Comprehensive metabolic panel - baseline metabolic evaluation for occupational toxic exposure workup"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-08-07",
+      "place_of_service": "81",
+      "cpt_hcpcs": "82055",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 44.0,
+      "line_charge": 44.0,
+      "description": "Alcohol (ethanol); any specimen except breath, per workers comp protocol"
+    },
+    {
+      "line_number": 7,
+      "date_of_service": "2024-08-07",
+      "place_of_service": "81",
+      "cpt_hcpcs": "88312",
+      "modifiers": [
+        "26"
+      ],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 98.0,
+      "line_charge": 98.0,
+      "description": "Special stains, including interpretation and report; Group I - Gram stain for wound tissue evaluation"
+    }
+  ],
+  "totals": {
+    "total_charges": 546.0,
+    "insurance_payment": 437.2,
+    "patient_responsibility": 0.0,
+    "amount_due": 0.0
+  }
+}

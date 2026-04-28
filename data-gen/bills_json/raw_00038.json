@@ -1,0 +1,213 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "general_surgery",
+    "bill_type": "UB-04",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Cascade Valley Medical Center",
+    "npi": "3847291056",
+    "tax_id": "91-4728305",
+    "address": {
+      "street": "4820 Ridgecrest Blvd",
+      "city": "Eugene",
+      "state": "OR",
+      "zip": "97401"
+    },
+    "phone": "541-555-0192",
+    "specialty_taxonomy": "208600000X"
+  },
+  "patient": {
+    "name": "Marisol Tenorio",
+    "dob": "2005-03-14",
+    "sex": "F",
+    "account_number": "CV-2024-088341",
+    "address": {
+      "street": "712 Hawthorn Lane",
+      "city": "Springfield",
+      "state": "OR",
+      "zip": "97477"
+    },
+    "insurance_id": "OPR9204715X"
+  },
+  "insurance": {
+    "payer_name": "PacificCare Select Health",
+    "plan_type": "PPO",
+    "group_number": "GRP-447821",
+    "subscriber_id": "OPR9204715X"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "21",
+    "place_of_service_description": "Inpatient Hospital",
+    "facility": "Cascade Valley Medical Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "K37",
+      "description": "Unspecified appendicitis"
+    },
+    {
+      "pointer": "B",
+      "icd10": "K35.80",
+      "description": "Other and unspecified acute appendicitis without abscess"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R10.31",
+      "description": "Right lower quadrant pain"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z87.891",
+      "description": "Personal history of other specified conditions"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99253",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 420.0,
+      "line_charge": 420.0,
+      "description": "Inpatient consult, moderate complexity (initial)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "21",
+      "cpt_hcpcs": "44950",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 3850.0,
+      "line_charge": 3850.0,
+      "description": "Appendectomy"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "21",
+      "cpt_hcpcs": "74177",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 980.0,
+      "line_charge": 980.0,
+      "description": "CT abdomen and pelvis with contrast"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "21",
+      "cpt_hcpcs": "85025",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 98.0,
+      "line_charge": 98.0,
+      "description": "Complete blood count with differential"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "21",
+      "cpt_hcpcs": "80053",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 145.0,
+      "line_charge": 145.0,
+      "description": "Comprehensive metabolic panel"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "21",
+      "cpt_hcpcs": "86140",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "C-reactive protein"
+    },
+    {
+      "line_number": 7,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "21",
+      "cpt_hcpcs": "00840",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 1250.0,
+      "line_charge": 1250.0,
+      "description": "Anesthesia for intraperitoneal procedures in lower abdomen"
+    },
+    {
+      "line_number": 8,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99232",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 215.0,
+      "line_charge": 215.0,
+      "description": "Subsequent hospital care, moderate complexity"
+    },
+    {
+      "line_number": 9,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99238",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 195.0,
+      "line_charge": 195.0,
+      "description": "Hospital discharge day management, 30 minutes or less"
+    }
+  ],
+  "totals": {
+    "total_charges": 7265.0,
+    "insurance_payment": 5540.0,
+    "patient_responsibility": 1725.0,
+    "amount_due": 1725.0
+  }
+}

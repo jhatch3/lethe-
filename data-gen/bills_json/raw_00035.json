@@ -1,0 +1,150 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "family_medicine",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "DUPLICATE",
+        "affected_line": 2,
+        "description": "CPT 99213 is billed twice on the same date of service (2024-03-14) without a 76 or 77 modifier on the second instance, constituting a duplicate charge for the same telehealth follow-up visit.",
+        "expected_savings_usd": 115.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the E&M code (99213) alongside a depression screening (G0444) on the same date, but the documentation does not support a separately significant and identifiable evaluation and management service beyond the screening itself for this straightforward telehealth follow-up.",
+        "expected_savings_usd": 115.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Harborview Family Medicine Associates",
+    "npi": "1427835960",
+    "tax_id": "83-4712650",
+    "address": {
+      "street": "214 Elmwood Avenue, Suite 3B",
+      "city": "Providence",
+      "state": "RI",
+      "zip": "02906"
+    },
+    "phone": "401-555-0183",
+    "specialty_taxonomy": "207Q00000X"
+  },
+  "patient": {
+    "name": "Brianna T. Kowalski",
+    "dob": "2005-08-22",
+    "sex": "F",
+    "account_number": "HVFM-2024-091447",
+    "address": {
+      "street": "87 Chestnut Street, Apt 2F",
+      "city": "Cranston",
+      "state": "RI",
+      "zip": "02910"
+    },
+    "insurance_id": "RIB-447820193"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Rhode Island",
+    "plan_type": "PPO",
+    "group_number": "GRP-77542",
+    "subscriber_id": "RIB-447820193"
+  },
+  "encounter": {
+    "date_of_service": "2024-03-14",
+    "billing_date": "2024-03-21",
+    "place_of_service_code": "10",
+    "place_of_service_description": "Telehealth Provided in Patient's Home",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "pointer": "B",
+      "icd10": "F32.1",
+      "description": "Major depressive disorder, single episode, moderate"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z00.00",
+      "description": "Encounter for general adult medical examination without abnormal findings"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-03-14",
+      "place_of_service": "10",
+      "cpt_hcpcs": "99213",
+      "modifiers": [
+        "25",
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 115.0,
+      "line_charge": 115.0,
+      "description": "Office or other outpatient visit, established patient, low-moderate complexity (telehealth)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-03-14",
+      "place_of_service": "10",
+      "cpt_hcpcs": "99213",
+      "modifiers": [
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 115.0,
+      "line_charge": 115.0,
+      "description": "Office or other outpatient visit, established patient, low-moderate complexity (telehealth) \u2014 duplicate line, no 76/77 modifier"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-03-14",
+      "place_of_service": "10",
+      "cpt_hcpcs": "G0444",
+      "modifiers": [
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 30.0,
+      "line_charge": 30.0,
+      "description": "Annual depression screening, 15 minutes (telehealth)"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-03-14",
+      "place_of_service": "10",
+      "cpt_hcpcs": "99000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 18.0,
+      "line_charge": 18.0,
+      "description": "Handling and/or conveyance of specimen for transfer from the office to a laboratory"
+    }
+  ],
+  "totals": {
+    "total_charges": 278.0,
+    "insurance_payment": 148.0,
+    "patient_responsibility": 130.0,
+    "amount_due": 130.0
+  }
+}

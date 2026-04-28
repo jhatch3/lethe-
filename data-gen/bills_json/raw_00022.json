@@ -1,0 +1,153 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "physical_therapy",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Riverbend Physical Therapy & Rehabilitation LLC",
+    "npi": "3847261905",
+    "tax_id": "47-3829104",
+    "address": {
+      "street": "2214 Magnolia Crossing Blvd, Suite 110",
+      "city": "Baton Rouge",
+      "state": "LA",
+      "zip": "70808"
+    },
+    "phone": "225-555-0183",
+    "specialty_taxonomy": "225100000X"
+  },
+  "patient": {
+    "name": "Marcus D. Thibodeau",
+    "dob": "1989-06-14",
+    "sex": "M",
+    "account_number": "RBR-2024-08841",
+    "address": {
+      "street": "518 Creekwood Drive",
+      "city": "Prairieville",
+      "state": "LA",
+      "zip": "70769"
+    },
+    "insurance_id": "BCB8841073X"
+  },
+  "insurance": {
+    "payer_name": "Blue Cross Blue Shield of Louisiana",
+    "plan_type": "PPO",
+    "group_number": "GRP-774821",
+    "subscriber_id": "BCB8841073X"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "M23.201",
+      "description": "Derangement of unspecified meniscus due to old tear or injury, right knee"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Z96.651",
+      "description": "Presence of right artificial knee joint"
+    },
+    {
+      "pointer": "C",
+      "icd10": "M25.361",
+      "description": "Stiffness of right knee, not elsewhere classified"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z87.39",
+      "description": "Personal history of other musculoskeletal disorders"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97161",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 195.0,
+      "line_charge": 195.0,
+      "description": "Physical therapy evaluation, low complexity"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97110",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 2,
+      "unit_charge": 85.0,
+      "line_charge": 170.0,
+      "description": "Therapeutic exercises, 30 minutes (2 units x 15 min)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97530",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 2,
+      "unit_charge": 90.0,
+      "line_charge": 180.0,
+      "description": "Therapeutic activities, 30 minutes (2 units x 15 min)"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97012",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 55.0,
+      "line_charge": 55.0,
+      "description": "Mechanical traction, right knee/lower extremity"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97035",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 50.0,
+      "line_charge": 50.0,
+      "description": "Ultrasound therapy, right knee, 1 area, 15 minutes"
+    }
+  ],
+  "totals": {
+    "total_charges": 650.0,
+    "insurance_payment": 487.5,
+    "patient_responsibility": 162.5,
+    "amount_due": 162.5
+  }
+}

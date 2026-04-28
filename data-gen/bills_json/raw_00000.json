@@ -1,0 +1,131 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "pediatrics",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "Post-operative check billed as 99215 (high-complexity E&M) rather than the appropriate 99213 or 99212 level. A routine post-op wound check on a stable 72-year-old with no complications involves straightforward medical decision-making and does not warrant a level 5 E&M visit.",
+        "expected_savings_usd": 98.0
+      },
+      {
+        "error_type": "GLOBAL_PERIOD_VIOLATION",
+        "affected_line": 2,
+        "description": "E&M service (99215) billed on post-operative day 9 following a minor surgical procedure (10060) performed at the same practice. The incision and drainage procedure carries a 10-day global period; a separately billed E&M requires modifier 24 to indicate an unrelated service, which is absent here.",
+        "expected_savings_usd": 134.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Desert Bloom Pediatric & Family Care",
+    "npi": "1487362059",
+    "tax_id": "86-4721053",
+    "address": {
+      "street": "4821 W Camelback Rd, Suite 110",
+      "city": "Phoenix",
+      "state": "AZ",
+      "zip": "85031"
+    },
+    "phone": "602-555-0174",
+    "specialty_taxonomy": "208000000X"
+  },
+  "patient": {
+    "name": "Gerald T. Montoya",
+    "dob": "1952-03-14",
+    "sex": "M",
+    "account_number": "DBPC-20240918-00472",
+    "address": {
+      "street": "2293 E Pima Street",
+      "city": "Tucson",
+      "state": "AZ",
+      "zip": "85716"
+    },
+    "insurance_id": "MCR8834720154A"
+  },
+  "insurance": {
+    "payer_name": "Medicare Part B",
+    "plan_type": "Medicare",
+    "group_number": "N/A",
+    "subscriber_id": "MCR8834720154A"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-18",
+    "billing_date": "2024-09-25",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "L02.214",
+      "description": "Cutaneous abscess of left armpit, status post I&D"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Z48.817",
+      "description": "Encounter for surgical aftercare following surgery on the skin and subcutaneous tissue"
+    },
+    {
+      "pointer": "C",
+      "icd10": "E11.9",
+      "description": "Type 2 diabetes mellitus without complications"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-18",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office or outpatient visit, established patient, high medical decision making (level 5) - post-op wound check"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-18",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office or outpatient visit, established patient - follow-up wound inspection post I&D left axilla (billed without modifier 24 during global period of 10060)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-18",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97597",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Debridement, open wound; first 20 sq cm or less - wound care to post-I&D site left axilla"
+    }
+  ],
+  "totals": {
+    "total_charges": 682.0,
+    "insurance_payment": 198.4,
+    "patient_responsibility": 49.6,
+    "amount_due": 49.6
+  }
+}

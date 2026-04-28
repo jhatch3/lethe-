@@ -42,6 +42,11 @@ _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 class AppealSubmitBody(BaseModel):
     job_id: str
     recipient_email: str
+    # Frontend sends the user's fully-composed letter (structured form fields
+    # filled in + any body edits) so the email reflects exactly what they see
+    # on screen, not the drafter's untouched output. Optional — falls back to
+    # _extract_appeal_letter(result) if missing or blank.
+    letter_override: Optional[str] = None
 
     @field_validator("recipient_email")
     @classmethod
@@ -109,8 +114,13 @@ async def submit_appeal(body: AppealSubmitBody) -> Dict[str, Any]:
     bill_sha = "0x" + job.sha256 if not job.sha256.startswith("0x") else job.sha256
     proof = result.get("proof") or {}
     consensus = _extract_consensus(result)
-    letter_md = _extract_appeal_letter(result)
+    # Prefer the frontend-composed letter (with the user's filled-in structured
+    # fields + any body edits). Fall back to the drafter's untouched output
+    # only if the override is missing or blank.
+    override = (body.letter_override or "").strip()
+    letter_md = override if override else _extract_appeal_letter(result)
 
+    from config import settings as _s
     html = build_appeal_email_html(
         appeal_letter_markdown=letter_md,
         bill_sha256=bill_sha,
@@ -118,6 +128,7 @@ async def submit_appeal(body: AppealSubmitBody) -> Dict[str, Any]:
         agree_count=consensus["agree_count"],
         total_agents=consensus["total_agents"],
         proof=proof,
+        public_url=_s.public_url,
     )
     subject = (
         f"Lethe audit — {consensus['verdict']} consensus — "

@@ -144,13 +144,11 @@ type BackendResult = {
   total_runtime_ms: number;
 };
 
-const SAMPLE_BILLS = [
-  { name: "general-hospital-er", ext: "pdf" },
-  { name: "imaging-center-ct", ext: "pdf" },
-  { name: "ortho-clinic-mri", ext: "pdf" },
-  { name: "discharge-summary", ext: "txt" },
-  { name: "labs-itemized", ext: "png" },
-] as const;
+// Sample chips disabled — users upload their own bills. Synthetic bills with
+// planted, ground-truth-labeled coding errors live in `data-gen/bills_pdf/`
+// (see data-gen/README.md) for offline eval. Drop one back in samples/ and
+// add an entry here to surface it as a chip.
+const SAMPLE_BILLS: ReadonlyArray<{ name: string; ext: string }> = [] as const;
 
 const AGENT_STREAMS: Record<"alpha" | "beta" | "gamma", string[]> = {
   alpha: [
@@ -529,9 +527,22 @@ export default function Dashboard() {
   });
   const sseRef = useRef<EventSource | null>(null);
 
-  const [letter, setLetter] = useState(DEFAULT_LETTER);
+  // `body` is the drafter's prose — what the LLM produced (or the default).
+  // The fully-rendered letter is derived from body + personalVars via
+  // `composeLetter`, so any input change live-updates the displayed letter,
+  // PDF download, and outgoing email — no save step required.
+  const [body, setBody] = useState(DEFAULT_LETTER);
   const [editing, setEditing] = useState(false);
   const [draftLetter, setDraftLetter] = useState("");
+
+  const [personalVars, setPersonalVars] = useState({
+    yourName: "",
+    yourAddress: "",
+    providerName: "",
+    accountNumber: "",
+    dos: "",
+    today: new Date().toISOString().slice(0, 10),
+  });
   const [hashCopied, setHashCopied] = useState(false);
 
   // Appeal-to-provider email submission state
@@ -543,6 +554,87 @@ export default function Dashboard() {
     | { phase: "error"; message: string }
   >({ phase: "idle" });
 
+  // Compose a final letter from the structured personal fields and a body.
+  // The drafter agent already produces its own date / RE / [NAME]/[ADDRESS]
+  // placeholder lines, so we (a) substitute placeholders inline, (b) strip
+  // the drafter's redundant header lines so we don't double them up, and
+  // (c) only append a Sincerely block when the body doesn't already have one.
+  const composeLetter = useCallback(
+    (rawBody: string, vars = personalVars) => {
+      // (a) substitute placeholders the drafter writes inline. Drafter's
+      // output varies in casing + separator style across runs — we accept
+      // any of: [NAME], [YOUR_NAME], [Your Name], [ACCOUNT_NUMBER],
+      // [Account #], [DATE_OF_SERVICE], [DOS], [Date of Service], etc.
+      let cleaned = rawBody
+        .replace(/\[(?:YOUR[\s_-]?)?NAME\]/gi, vars.yourName || "[YOUR NAME]")
+        .replace(/\[(?:YOUR[\s_-]?)?ADDRESS\]/gi, vars.yourAddress || "[YOUR ADDRESS]")
+        .replace(
+          /\[(?:ACCOUNT[\s_-]?(?:NUMBER|#)?|CLAIM[\s_-]?(?:NUMBER|#)?|ACC(?:OUNT)?[\s_-]?REF(?:ERENCE)?)\]/gi,
+          vars.accountNumber || "[ACCOUNT #]",
+        )
+        .replace(
+          /\[(?:DATE[\s_-]?OF[\s_-]?SERVICE|DOS|SERVICE[\s_-]?DATE)\]/gi,
+          vars.dos || "[DOS]",
+        )
+        .replace(
+          /\[(?:LETTER[\s_-]?)?(?:DATE|TODAY)\]/gi,
+          vars.today || "[DATE]",
+        )
+        .replace(
+          /\[PROVIDER[\s_-]?(?:NAME)?\]/gi,
+          vars.providerName || "[PROVIDER]",
+        );
+
+      // (b) strip drafter's header noise from the top so we don't duplicate it.
+      // We keep stripping while the leading non-empty line looks like a date,
+      // an "RE:" line, or an "Account Reference (SHA-256)" + hash pair.
+      const lines = cleaned.split("\n");
+      while (lines.length > 0) {
+        const t = lines[0].trim();
+        if (!t) { lines.shift(); continue; }
+        if (/^\d{4}-\d{2}-\d{2}$/.test(t) || /^[Rr][Ee]:\s/.test(t)) {
+          lines.shift();
+          continue;
+        }
+        if (/account reference/i.test(t)) {
+          lines.shift();
+          while (lines.length && !lines[0].trim()) lines.shift();
+          if (lines.length) lines.shift();
+          continue;
+        }
+        break;
+      }
+      cleaned = lines.join("\n").trim();
+
+      // Build header
+      const header: string[] = [];
+      if (vars.yourName) header.push(vars.yourName);
+      if (vars.yourAddress) header.push(vars.yourAddress);
+      if (vars.today) header.push(vars.today);
+      if (header.length) header.push("");
+      if (vars.providerName) header.push(`To: ${vars.providerName}`);
+      const re: string[] = [];
+      if (vars.accountNumber) re.push(`Account ${vars.accountNumber}`);
+      if (vars.dos) re.push(`DOS ${vars.dos}`);
+      if (re.length) header.push(`RE: ${re.join(" · ")}`);
+      if (vars.providerName || re.length) header.push("");
+
+      // (c) only append Sincerely if the cleaned body doesn't already have one
+      const hasSignoff = /\bSincerely,?\b/i.test(cleaned);
+      const tail: string[] = [];
+      if (vars.yourName && !hasSignoff) {
+        tail.push("", "Sincerely,", vars.yourName);
+      }
+
+      return [...header, cleaned, ...tail].join("\n");
+    },
+    [personalVars],
+  );
+
+  // The fully-rendered letter — derived from body + personalVars so that
+  // every input keystroke live-updates the display, PDF, and outgoing email.
+  const letter = composeLetter(body);
+
   const onSendAppeal = useCallback(async () => {
     if (!jobId || !providerEmail.trim()) return;
     setAppealStatus({ phase: "sending" });
@@ -550,7 +642,15 @@ export default function Dashboard() {
       const r = await fetch(`${API_URL}/api/appeal/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ job_id: jobId, recipient_email: providerEmail.trim() }),
+        // Send the FULLY-COMPOSED letter (with all the user's structured-form
+        // fields filled in + body edits) so the email reflects what they see
+        // on screen — not the drafter's untouched output. Backend prefers
+        // letter_override when present, falls back to the stored body.
+        body: JSON.stringify({
+          job_id: jobId,
+          recipient_email: providerEmail.trim(),
+          letter_override: letter,
+        }),
       });
       if (!r.ok) {
         const txt = await r.text();
@@ -566,15 +666,15 @@ export default function Dashboard() {
     } catch (e) {
       setAppealStatus({ phase: "error", message: e instanceof Error ? e.message : String(e) });
     }
-  }, [jobId, providerEmail]);
+  }, [jobId, providerEmail, letter]);
 
   const onEditStart = useCallback(() => {
-    setDraftLetter(letter);
+    setDraftLetter(body);
     setEditing(true);
   }, [letter]);
 
   const onEditSave = useCallback(() => {
-    setLetter(draftLetter);
+    setBody(draftLetter);
     setEditing(false);
   }, [draftLetter]);
 
@@ -753,10 +853,10 @@ export default function Dashboard() {
     }
 
     const st = p?.patterns?.storage;
+    lines.push(RULE);
+    lines.push(center("0G STORAGE (anonymized record)"));
+    lines.push(RULE);
     if (st?.live && st.root_hash) {
-      lines.push(RULE);
-      lines.push(center("0G STORAGE (anonymized record)"));
-      lines.push(RULE);
       lines.push(row("executor", st.executor));
       if (st.schema) lines.push(row("schema", st.schema));
       if (typeof st.bytes === "number") lines.push(row("bytes", String(st.bytes)));
@@ -770,8 +870,14 @@ export default function Dashboard() {
         lines.push("verify on chainscan:");
         lines.push(`  ${st.tx_link}`);
       }
-      lines.push("");
+    } else {
+      lines.push(row("executor", st?.executor ?? "stub (sidecar not running)"));
+      lines.push("status");
+      lines.push("  not yet wired — start `npm run storage:0g`");
+      lines.push("  in src/coordinator/scripts/ to enable 0G Storage");
+      lines.push("  uploads + the on-chain StorageIndex pointer.");
     }
+    lines.push("");
 
     if (p?.mirror?.live) {
       const isDup = p.mirror.status === "duplicate";
@@ -1064,9 +1170,11 @@ export default function Dashboard() {
           if (body.result) {
             setResult(body.result as BackendResult);
             setHash("0x" + (body.sha256 || body.result.sha256));
-            // Seed the letter with the real drafted body if present.
+            // Seed the letter body with the real drafted body if present.
+            // The composed letter (header + body + signature) re-derives from
+            // this + personalVars on every render.
             if (body.result.dispute?.body) {
-              setLetter(body.result.dispute.body);
+              setBody(body.result.dispute.body);
             }
             setPhase("complete");
           } else {
@@ -1126,7 +1234,7 @@ export default function Dashboard() {
     setErrorMsg(null);
     setLiveAgents({ alpha: null, beta: null, gamma: null });
     setLiveMessages({ alpha: [], beta: [], gamma: [] });
-    setLetter(DEFAULT_LETTER);
+    setBody(DEFAULT_LETTER);
     setEditing(false);
   }, []);
 
@@ -1703,20 +1811,75 @@ export default function Dashboard() {
                           Drafted dispute · review &amp; approve
                           {editing && <span className="panel-tag">editing</span>}
                         </div>
+                        {/* Personal-info form — always visible. Each keystroke
+                            re-derives the displayed letter, PDF download, and
+                            outgoing email via composeLetter(body, personalVars). */}
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                            gap: 10,
+                            padding: 14,
+                            border: "1px dashed var(--line-strong)",
+                            borderRadius: 4,
+                            background: "rgba(0,0,0,0.02)",
+                            marginBottom: 14,
+                          }}
+                        >
+                          {[
+                            { key: "yourName" as const, label: "Your name", placeholder: "Jane Doe" },
+                            { key: "providerName" as const, label: "Provider name", placeholder: "General Hospital Billing Dept." },
+                            { key: "yourAddress" as const, label: "Your address (one line)", placeholder: "123 Main St, Portland OR 97201" },
+                            { key: "accountNumber" as const, label: "Account / claim #", placeholder: "ACC-7F3A2B" },
+                            { key: "dos" as const, label: "Date of service", placeholder: "2026-04-14" },
+                            { key: "today" as const, label: "Letter date", placeholder: "2026-04-28" },
+                          ].map((f) => (
+                            <label
+                              key={f.key}
+                              style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--ink-faint)" }}
+                            >
+                              <span style={{ letterSpacing: "0.05em", textTransform: "uppercase" }}>{f.label}</span>
+                              <input
+                                type="text"
+                                value={personalVars[f.key]}
+                                placeholder={f.placeholder}
+                                onChange={(e) =>
+                                  setPersonalVars((prev) => ({ ...prev, [f.key]: e.target.value }))
+                                }
+                                style={{
+                                  padding: "6px 10px",
+                                  border: "1px solid var(--line-strong)",
+                                  borderRadius: 3,
+                                  fontFamily: "var(--font-jetbrains-mono), monospace",
+                                  fontSize: 12,
+                                  background: "var(--paper)",
+                                  color: "var(--ink)",
+                                }}
+                              />
+                            </label>
+                          ))}
+                        </div>
+
                         {editing ? (
-                          <textarea
-                            className="dispute-editor"
-                            value={draftLetter}
-                            onChange={(e) => setDraftLetter(e.target.value)}
-                            spellCheck={false}
-                          />
+                          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--ink-faint)" }}>
+                            <span style={{ letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                              Letter body (header + signature auto-applied from fields above)
+                            </span>
+                            <textarea
+                              className="dispute-editor"
+                              value={draftLetter}
+                              onChange={(e) => setDraftLetter(e.target.value)}
+                              spellCheck={false}
+                              rows={10}
+                            />
+                          </label>
                         ) : (
                           <div className="dispute-letter">
                             {letter
                               .trim()
                               .split(/\n\s*\n/)
                               .map((para, i) => (
-                                <p key={i}>{para}</p>
+                                <p key={i} style={{ whiteSpace: "pre-wrap" }}>{para}</p>
                               ))}
                           </div>
                         )}
@@ -1749,6 +1912,8 @@ export default function Dashboard() {
 
                     <div className="proof-card">
                       <div className="panel-label">On-chain proof</div>
+
+                      {/* === Audit metadata (chain-agnostic) === */}
                       <div className="proof-row">
                         <span className="k">Bill hash</span>
                         <span className="v">
@@ -1763,20 +1928,16 @@ export default function Dashboard() {
                         </span>
                       </div>
                       <div className="proof-row">
-                        <span className="k">Network</span>
-                        <span className="v dim">{result?.proof?.network ?? "—"}</span>
-                      </div>
-                      <div className="proof-row">
-                        <span className="k">Anchor tx</span>
+                        <span className="k">Verify</span>
                         <span className="v">
-                          {result?.proof?.anchor_tx
-                            ? `${result.proof.anchor_tx.slice(0, 10)} ${result.proof.anchor_tx.slice(10, 14)} … ${result.proof.anchor_tx.slice(-6)}`
-                            : "—"}
+                          <Link
+                            href={`/verify?sha=${hash}`}
+                            target="_blank"
+                            style={{ color: "var(--accent-violet)", borderBottom: "1px dotted var(--ink-faint)" }}
+                          >
+                            /verify?sha=… ↗
+                          </Link>
                         </span>
-                      </div>
-                      <div className="proof-row">
-                        <span className="k">Executor</span>
-                        <span className="v dim">{result?.proof?.executor ?? "—"}</span>
                       </div>
                       <div className="proof-row">
                         <span className="k">This run</span>
@@ -1816,6 +1977,38 @@ export default function Dashboard() {
                               </span>
                             </div>
                           )}
+                        </>
+                      )}
+
+                      {/* === 0G Galileo subgroup === */}
+                      <div
+                        className="proof-row"
+                        style={{
+                          marginTop: 14,
+                          paddingTop: 10,
+                          borderTop: "1px solid var(--line)",
+                        }}
+                      >
+                        <span
+                          className="k"
+                          style={{ color: "var(--accent-pink, #f472b6)", fontWeight: 600, fontSize: 11, letterSpacing: "0.05em", textTransform: "uppercase" }}
+                        >
+                          ⛓️ 0G Galileo · chain {result?.proof?.chain_id ?? "16602"}
+                        </span>
+                        <span className="v dim" style={{ fontSize: 11 }}>
+                          {result?.proof?.executor ?? "—"}
+                        </span>
+                      </div>
+                      <div className="proof-row">
+                        <span className="k">Anchor tx</span>
+                        <span className="v">
+                          {result?.proof?.anchor_tx
+                            ? `${result.proof.anchor_tx.slice(0, 10)} ${result.proof.anchor_tx.slice(10, 14)} … ${result.proof.anchor_tx.slice(-6)}`
+                            : "—"}
+                        </span>
+                      </div>
+                      {result?.proof?.onchain && (
+                        <>
                           {result.proof.block_number && (
                             <div className="proof-row">
                               <span className="k">Block</span>
@@ -1860,6 +2053,69 @@ export default function Dashboard() {
                         </>
                       )}
                       {(() => {
+                        const st = result?.proof?.patterns?.storage;
+                        if (st?.live && st.root_hash) {
+                          return (
+                            <>
+                              <div className="proof-row">
+                                <span className="k">0G Storage</span>
+                                <span className="v">
+                                  <a
+                                    href={st.tx_link ?? (st.tx_hash ? `https://chainscan-galileo.0g.ai/tx/${st.tx_hash}` : "#")}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: "var(--accent-cyan, #22d3ee)", borderBottom: "1px dotted var(--ink-faint)" }}
+                                  >
+                                    {typeof st.bytes === "number" ? `${st.bytes}B uploaded ↗` : "uploaded ↗"}
+                                  </a>
+                                </span>
+                              </div>
+                              <div className="proof-row">
+                                <span className="k">Merkle root</span>
+                                <span className="v dim" style={{ wordBreak: "break-all", fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: 11 }}>
+                                  {st.root_hash}
+                                </span>
+                              </div>
+                              {st.tx_hash && (
+                                <div className="proof-row">
+                                  <span className="k">Commitment tx</span>
+                                  <span className="v dim" style={{ wordBreak: "break-all", fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: 11 }}>
+                                    {st.tx_hash}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          );
+                        }
+                        return (
+                          <div className="proof-row">
+                            <span className="k">0G Storage</span>
+                            <span className="v dim" style={{ fontSize: 12, fontStyle: "italic" }}>
+                              {st?.executor ?? "stub"} — start <code style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>npm run storage:0g</code> to enable
+                            </span>
+                          </div>
+                        );
+                      })()}
+                      {/* === Sepolia subgroup === */}
+                      <div
+                        className="proof-row"
+                        style={{
+                          marginTop: 14,
+                          paddingTop: 10,
+                          borderTop: "1px solid var(--line)",
+                        }}
+                      >
+                        <span
+                          className="k"
+                          style={{ color: "var(--accent-amber)", fontWeight: 600, fontSize: 11, letterSpacing: "0.05em", textTransform: "uppercase" }}
+                        >
+                          ⛓️ Ethereum Sepolia · via KeeperHub
+                        </span>
+                        <span className="v dim" style={{ fontSize: 11 }}>
+                          chain 11155111
+                        </span>
+                      </div>
+                      {(() => {
                         const m = result?.proof?.mirror;
                         const isDuplicate = m?.live && m?.status === "duplicate";
                         const hasFreshTx = m?.live && m?.tx_hash && !isDuplicate;
@@ -1870,7 +2126,7 @@ export default function Dashboard() {
                           return (
                             <>
                               <div className="proof-row">
-                                <span className="k">Sepolia mirror</span>
+                                <span className="k">Mirror anchor (WF #1)</span>
                                 <span className="v">
                                   <a
                                     href={link}
@@ -1923,7 +2179,7 @@ export default function Dashboard() {
                         const isStub = !m?.live;
                         return (
                           <div className="proof-row">
-                            <span className="k">Sepolia mirror</span>
+                            <span className="k">Mirror anchor (WF #1)</span>
                             <span className="v dim" style={{ fontSize: 12, fontStyle: "italic" }}>
                               {isStub
                                 ? `via KeeperHub — not yet wired (${exec || "stub"})`
@@ -1932,6 +2188,42 @@ export default function Dashboard() {
                           </div>
                         );
                       })()}
+                      {(() => {
+                        const df = result?.proof?.dispute_filing;
+                        if (df?.live && df.tx_hash) {
+                          return (
+                            <div className="proof-row">
+                              <span className="k">Dispute filing (WF #2)</span>
+                              <span className="v">
+                                <a
+                                  href={df.tx_link ?? `https://sepolia.etherscan.io/tx/${df.tx_hash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ color: "var(--accent-rose)", borderBottom: "1px dotted var(--ink-faint)" }}
+                                >
+                                  {df.tx_hash.slice(0, 10)}…{df.tx_hash.slice(-6)} ↗
+                                </a>
+                              </span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                      {appealStatus.phase === "sent" && appealStatus.attestation.live && appealStatus.attestation.tx_hash && (
+                        <div className="proof-row">
+                          <span className="k">Appeal sent (WF #3)</span>
+                          <span className="v">
+                            <a
+                              href={appealStatus.attestation.tx_link ?? `https://sepolia.etherscan.io/tx/${appealStatus.attestation.tx_hash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "var(--accent-green)", borderBottom: "1px dotted var(--ink-faint)" }}
+                            >
+                              {appealStatus.attestation.tx_hash.slice(0, 10)}…{appealStatus.attestation.tx_hash.slice(-6)} ↗
+                            </a>
+                          </span>
+                        </div>
+                      )}
                       <div className="proof-actions">
                         <a
                           className="btn-sm"

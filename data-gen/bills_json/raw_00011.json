@@ -1,0 +1,161 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "dermatology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "DUPLICATE",
+        "affected_line": 3,
+        "description": "CPT 17000 (destruction of premalignant lesion, first lesion) is billed on line 1 and again on line 3 for the same date of service without a 76 or 77 modifier on the repeat line, constituting a duplicate charge.",
+        "expected_savings_usd": 187.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 2,
+        "description": "Modifier 25 is appended to E&M code 99213 on the same DOS as the destruction procedures, but the clinical scenario does not support a separately significant and identifiable evaluation and management service beyond the decision to perform the destructions; the E&M is not independently documented.",
+        "expected_savings_usd": 142.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Pacific Skin & Laser Associates",
+    "npi": "3847201956",
+    "tax_id": "82-4471039",
+    "address": {
+      "street": "4812 Coastal Ridge Blvd, Suite 310",
+      "city": "San Diego",
+      "state": "CA",
+      "zip": "92130"
+    },
+    "phone": "619-555-0274",
+    "specialty_taxonomy": "207N00000X"
+  },
+  "patient": {
+    "name": "Randall T. Okafor",
+    "dob": "1967-03-18",
+    "sex": "M",
+    "account_number": "PSLA-2024-084421",
+    "address": {
+      "street": "7730 Miramar Heights Dr",
+      "city": "San Diego",
+      "state": "CA",
+      "zip": "92126"
+    },
+    "insurance_id": "BCBS-CA-W9934471023"
+  },
+  "insurance": {
+    "payer_name": "Blue Shield of California",
+    "plan_type": "PPO",
+    "group_number": "GRP-774452",
+    "subscriber_id": "W9934471023"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-12",
+    "billing_date": "2024-09-19",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "L57.0",
+      "description": "Actinic keratosis"
+    },
+    {
+      "pointer": "B",
+      "icd10": "L82.1",
+      "description": "Other seborrheic keratosis"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z12.83",
+      "description": "Encounter for screening for malignant neoplasm of skin"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "17000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 187.0,
+      "line_charge": 187.0,
+      "description": "Destruction of premalignant lesion (actinic keratosis), first lesion"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99213",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 142.0,
+      "line_charge": 142.0,
+      "description": "Office visit, established patient, low-moderate complexity (after-hours)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "17000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 187.0,
+      "line_charge": 187.0,
+      "description": "Destruction of premalignant lesion (actinic keratosis), first lesion \u2014 DUPLICATE"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "17003",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 3,
+      "unit_charge": 31.0,
+      "line_charge": 93.0,
+      "description": "Destruction of premalignant lesions, 2nd through 14th (3 additional lesions)"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99050",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 55.0,
+      "line_charge": 55.0,
+      "description": "After-hours service add-on"
+    }
+  ],
+  "totals": {
+    "total_charges": 664.0,
+    "insurance_payment": 298.4,
+    "patient_responsibility": 133.2,
+    "amount_due": 232.4
+  }
+}

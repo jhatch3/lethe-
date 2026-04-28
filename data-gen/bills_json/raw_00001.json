@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "anesthesiology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Summit Peaks Anesthesia Associates, LLC",
+    "npi": "3847291065",
+    "tax_id": "84-3917462",
+    "address": {
+      "street": "1140 Ridgeline Blvd, Suite 210",
+      "city": "Missoula",
+      "state": "MT",
+      "zip": "59801"
+    },
+    "phone": "406-555-0183",
+    "specialty_taxonomy": "207L00000X"
+  },
+  "patient": {
+    "name": "Dorothy Mae Callahan",
+    "dob": "1952-03-14",
+    "sex": "F",
+    "account_number": "SPA-2024-088431",
+    "address": {
+      "street": "728 Ponderosa Circle",
+      "city": "Lolo",
+      "state": "MT",
+      "zip": "59847"
+    },
+    "insurance_id": "1EG4-TE5-MK72"
+  },
+  "insurance": {
+    "payer_name": "Medicare",
+    "plan_type": "Medicare Part B",
+    "group_number": "N/A",
+    "subscriber_id": "1EG4-TE5-MK72"
+  },
+  "encounter": {
+    "date_of_service": "2024-03-05",
+    "billing_date": "2024-03-12",
+    "place_of_service_code": "21",
+    "place_of_service_description": "Inpatient Hospital",
+    "facility": "Clearwater Valley Community Hospital"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "M17.11",
+      "description": "Primary osteoarthritis, right knee"
+    },
+    {
+      "pointer": "B",
+      "icd10": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "pointer": "C",
+      "icd10": "E11.9",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z79.4",
+      "description": "Long-term (current) use of insulin"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-03-05",
+      "place_of_service": "21",
+      "cpt_hcpcs": "01402",
+      "modifiers": [
+        "AA"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 10,
+      "unit_charge": 92.0,
+      "line_charge": 920.0,
+      "description": "Anesthesia for total knee arthroplasty; base units + time units (anesthesiologist personally performed) \u2013 10 base/time units at $92.00 per unit"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-03-05",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99100",
+      "modifiers": [
+        "AA"
+      ],
+      "diagnosis_pointers": [
+        "B",
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 46.0,
+      "line_charge": 46.0,
+      "description": "Anesthesia qualifying circumstance: patient of extreme age (72 years) \u2013 qualifying circumstance add-on"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-03-05",
+      "place_of_service": "21",
+      "cpt_hcpcs": "01996",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Daily hospital management of epidural or subarachnoid continuous drug administration \u2013 postoperative pain management day 1"
+    }
+  ],
+  "totals": {
+    "total_charges": 1078.0,
+    "insurance_payment": 726.4,
+    "patient_responsibility": 145.28,
+    "amount_due": 145.28
+  }
+}

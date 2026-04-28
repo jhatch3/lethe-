@@ -7,7 +7,7 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
-
+pitch.txt
 # Env
 .env
 .env.local

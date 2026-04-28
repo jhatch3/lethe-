@@ -1,0 +1,118 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "family_medicine",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Harborview Family Medicine Associates",
+    "npi": "3847261905",
+    "tax_id": "83-4712609",
+    "address": {
+      "street": "412 Elmsworth Boulevard, Suite 201",
+      "city": "Providence",
+      "state": "RI",
+      "zip": "02906"
+    },
+    "phone": "401-555-0173",
+    "specialty_taxonomy": "207Q00000X"
+  },
+  "patient": {
+    "name": "Theresa M. Kowalczyk",
+    "dob": "1967-03-14",
+    "sex": "F",
+    "account_number": "HFM-2024-083741",
+    "address": {
+      "street": "87 Cranston Mill Road",
+      "city": "Cranston",
+      "state": "RI",
+      "zip": "02910"
+    },
+    "insurance_id": "BCB7741038294"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Rhode Island",
+    "plan_type": "PPO",
+    "group_number": "GRP-447821",
+    "subscriber_id": "BCB7741038294"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-17",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "N60.11",
+      "description": "Diffuse cystic mastopathy of right breast"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Z71.20",
+      "description": "Encounter for explanatory medical consultation"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z79.890",
+      "description": "Hormone replacement therapy status"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99244",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 310.0,
+      "line_charge": 310.0,
+      "description": "Office consultation, moderate complexity, 60 min (second opinion consult)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "19100",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "Percutaneous needle core biopsy of breast, without imaging guidance"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "88305",
+      "modifiers": [
+        "TC"
+      ],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 124.0,
+      "line_charge": 124.0,
+      "description": "Surgical pathology, gross and microscopic examination, Level IV \u2014 breast tissue (technical component)"
+    }
+  ],
+  "totals": {
+    "total_charges": 619.0,
+    "insurance_payment": 471.44,
+    "patient_responsibility": 147.56,
+    "amount_due": 147.56
+  }
+}

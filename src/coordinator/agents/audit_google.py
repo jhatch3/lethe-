@@ -208,19 +208,50 @@ class GoogleAuditAgent:
         )
 
 
+def _zg_compute_reachable() -> bool:
+    """Quick TCP probe of the 0G Compute endpoint. Used by the factory to
+    silently fall back to Gemini when the sidecar isn't running, so the user
+    never sees `APIConnectionError` mid-audit and `/api/status` honestly
+    reports γ as `google` instead of stale `0g-compute`.
+    """
+    import socket
+    from urllib.parse import urlparse
+
+    try:
+        parsed = urlparse(settings.zg_compute_endpoint)
+        host = parsed.hostname
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        if not host:
+            return False
+        with socket.create_connection((host, port), timeout=1.5):
+            return True
+    except Exception:
+        return False
+
+
 def _factory() -> AgentClient:
     # Preference order for γ:
-    #   1. 0G Compute (decentralized inference — Track 2 boost)
+    #   1. 0G Compute (decentralized inference) — only if endpoint is reachable
     #   2. Google Gemini (default real LLM)
     #   3. Stub (when no provider is configured)
+    import logging
+    log = logging.getLogger("lethe.agent.gamma")
+
     if settings.zg_compute_endpoint and settings.zg_compute_token:
-        from agents.audit_0g import ZGComputeAgent
-        return ZGComputeAgent(
-            endpoint=settings.zg_compute_endpoint,
-            token=settings.zg_compute_token,
-            model=settings.zg_compute_model,
-            provider_address=settings.zg_compute_provider_address,
-            via_sidecar=settings.zg_compute_sidecar,
+        if _zg_compute_reachable():
+            from agents.audit_0g import ZGComputeAgent
+            log.info("gamma → 0G Compute via %s", settings.zg_compute_endpoint)
+            return ZGComputeAgent(
+                endpoint=settings.zg_compute_endpoint,
+                token=settings.zg_compute_token,
+                model=settings.zg_compute_model,
+                provider_address=settings.zg_compute_provider_address,
+                via_sidecar=settings.zg_compute_sidecar,
+            )
+        log.warning(
+            "gamma · 0G Compute endpoint %s unreachable — falling back to Gemini. "
+            "Start the headers sidecar (`npm run headers:0g`) to enable decentralized inference.",
+            settings.zg_compute_endpoint,
         )
     if settings.google_api_key:
         return GoogleAuditAgent(settings.google_api_key)

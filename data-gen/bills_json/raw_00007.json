@@ -1,0 +1,178 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "physical_therapy",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UNITS_EXCEED_MUE",
+        "affected_line": 3,
+        "description": "CPT 97110 (Therapeutic Exercise) is billed with 10 units on a single date of service. The Medicare MUE for 97110 is 4 units per day. Billing 10 units far exceeds the medically unlikely edit cap and should be reduced to a maximum of 4 units.",
+        "expected_savings_usd": 270.0
+      },
+      {
+        "error_type": "UNBUNDLE",
+        "affected_line": 5,
+        "description": "CPT 97530 (Therapeutic Activities) and CPT 97110 (Therapeutic Exercise) are billed separately in the same session for the same therapeutic goal (shoulder rehabilitation). The distinct services are not documented as separate and distinct procedures; the 97530 should be bundled into the overall treatment session rather than billed as an additional stand-alone unit.",
+        "expected_savings_usd": 135.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Pinnacle Concierge Physical Therapy, LLC",
+    "npi": "1487320956",
+    "tax_id": "47-3829105",
+    "address": {
+      "street": "4812 Peachtree Corners Blvd, Suite 210",
+      "city": "Norcross",
+      "state": "GA",
+      "zip": "30092"
+    },
+    "phone": "678-554-2201",
+    "specialty_taxonomy": "225100000X"
+  },
+  "patient": {
+    "name": "Savannah R. Thibodaux",
+    "dob": "2005-03-18",
+    "sex": "F",
+    "account_number": "PCT-2024-088741",
+    "address": {
+      "street": "316 Magnolia Trace Dr",
+      "city": "Duluth",
+      "state": "GA",
+      "zip": "30097"
+    },
+    "insurance_id": "BCB8834521007F"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Georgia",
+    "plan_type": "PPO",
+    "group_number": "GRP-770234",
+    "subscriber_id": "BCB8834521007F"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "M75.121",
+      "description": "Complete rotator cuff tear or rupture of right shoulder, not specified as traumatic"
+    },
+    {
+      "pointer": "B",
+      "icd10": "M54.2",
+      "description": "Cervicalgia"
+    },
+    {
+      "pointer": "C",
+      "icd10": "M62.811",
+      "description": "Muscle weakness, right shoulder"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z96.611",
+      "description": "Presence of right artificial shoulder joint"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97161",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 225.0,
+      "line_charge": 225.0,
+      "description": "Physical Therapy Evaluation, High Complexity"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97012",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 2,
+      "unit_charge": 55.0,
+      "line_charge": 110.0,
+      "description": "Mechanical Traction, Cervical"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97110",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 10,
+      "unit_charge": 45.0,
+      "line_charge": 450.0,
+      "description": "Therapeutic Exercise, Right Shoulder Strengthening and ROM"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97035",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 2,
+      "unit_charge": 50.0,
+      "line_charge": 100.0,
+      "description": "Ultrasound Therapy, Right Shoulder"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97530",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 3,
+      "unit_charge": 45.0,
+      "line_charge": 135.0,
+      "description": "Therapeutic Activities, Functional Movement Training Right Shoulder"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97014",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 40.0,
+      "line_charge": 40.0,
+      "description": "Electrical Stimulation, Cervical Paraspinals (unattended)"
+    }
+  ],
+  "totals": {
+    "total_charges": 1060.0,
+    "insurance_payment": 612.0,
+    "patient_responsibility": 448.0,
+    "amount_due": 448.0
+  }
+}

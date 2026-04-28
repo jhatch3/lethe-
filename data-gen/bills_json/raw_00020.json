@@ -1,0 +1,169 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "orthopedics",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "DUPLICATE",
+        "affected_line": 3,
+        "description": "CPT 99213 (office/outpatient E&M, established patient) is billed on line 1 and again on line 3 for the same date of service (2024-09-12) without a 76 or 77 modifier to indicate a repeat service by same or different physician. This constitutes a duplicate charge.",
+        "expected_savings_usd": 142.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 is appended to the E&M code (99213) on the same date that a straightforward injection procedure (20610) was performed. Clinical documentation does not support a separately identifiable, significant E&M service beyond the decision to perform the injection; the E&M work is bundled into the procedure.",
+        "expected_savings_usd": 142.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Pacific Crest Orthopedic Group",
+    "npi": "3847261059",
+    "tax_id": "91-4728310",
+    "address": {
+      "street": "4820 Meridian Ave, Suite 310",
+      "city": "Sacramento",
+      "state": "CA",
+      "zip": "95822"
+    },
+    "phone": "916-555-0174",
+    "specialty_taxonomy": "207X00000X"
+  },
+  "patient": {
+    "name": "Randall T. Ochoa",
+    "dob": "1971-03-14",
+    "sex": "M",
+    "account_number": "WC-2024-088341",
+    "address": {
+      "street": "718 Pinecrest Drive",
+      "city": "Elk Grove",
+      "state": "CA",
+      "zip": "95758"
+    },
+    "insurance_id": "WC-CA-7743920"
+  },
+  "insurance": {
+    "payer_name": "State Compensation Insurance Fund",
+    "plan_type": "Workers Compensation",
+    "group_number": "CA-WC-GROUP-44",
+    "subscriber_id": "WC-CA-7743920"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-12",
+    "billing_date": "2024-09-20",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "M17.11",
+      "description": "Primary osteoarthritis, right knee"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Z57.5",
+      "description": "Occupational exposure to toxic agents in other industries"
+    },
+    {
+      "pointer": "C",
+      "icd10": "M79.621",
+      "description": "Pain in right upper arm"
+    },
+    {
+      "pointer": "D",
+      "icd10": "S80.011A",
+      "description": "Contusion of right knee, initial encounter"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99213",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 142.0,
+      "line_charge": 142.0,
+      "description": "Office visit, established patient, low to moderate complexity (E&M)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "20610",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 215.0,
+      "line_charge": 215.0,
+      "description": "Arthrocentesis/injection, major joint (right knee)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99213",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 142.0,
+      "line_charge": 142.0,
+      "description": "Office visit, established patient, low to moderate complexity (E&M) \u2014 duplicate of line 1"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "73562",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "X-ray, knee, 3 views, right"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "11",
+      "cpt_hcpcs": "97110",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 2,
+      "unit_charge": 58.0,
+      "line_charge": 116.0,
+      "description": "Therapeutic exercise, 15-minute units (2 units = 30 minutes)"
+    }
+  ],
+  "totals": {
+    "total_charges": 800.0,
+    "insurance_payment": 456.0,
+    "patient_responsibility": 0.0,
+    "amount_due": 344.0
+  }
+}

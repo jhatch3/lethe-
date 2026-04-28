@@ -15,6 +15,9 @@
  */
 import { config as loadEnv } from 'dotenv';
 import path from 'node:path';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import crypto from 'node:crypto';
 import http from 'node:http';
 import { ethers } from 'ethers';
 import { Indexer, MemData, defaultUploadOption } from '@0glabs/0g-ts-sdk';
@@ -53,6 +56,38 @@ async function main() {
       res.end(JSON.stringify({ ok: true, wallet: wallet.address }));
       return;
     }
+
+    // GET /download?root=0x... — fetch a previously-uploaded blob by merkle root.
+    // The 0G TS SDK's `Indexer.download` writes to disk, so we use a per-request
+    // temp file: download → read bytes → return → unlink.
+    if (req.method === 'GET' && req.url?.startsWith('/download')) {
+      const url = new URL(req.url, `http://localhost:${PORT}`);
+      const root = url.searchParams.get('root');
+      if (!root) {
+        res.writeHead(400, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'missing root query param' }));
+        return;
+      }
+      const tmp = path.join(os.tmpdir(), `lethe-blob-${crypto.randomBytes(8).toString('hex')}`);
+      try {
+        const dlErr = await indexer.download(root, tmp, true);
+        if (dlErr) throw new Error(`indexer.download: ${dlErr.message ?? String(dlErr)}`);
+        const buf = await fs.readFile(tmp);
+        res.writeHead(200, {
+          'content-type': 'application/octet-stream',
+          'content-length': String(buf.length),
+        });
+        res.end(buf);
+      } catch (e: any) {
+        console.error('storage download error:', e?.message ?? e);
+        res.writeHead(502, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: String(e?.message ?? e) }));
+      } finally {
+        try { await fs.unlink(tmp); } catch {}
+      }
+      return;
+    }
+
     if (req.url !== '/upload' || req.method !== 'POST') {
       res.writeHead(404).end('not found');
       return;

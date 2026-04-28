@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "family_medicine",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Heartland Family Medicine Associates",
+    "npi": "1437820956",
+    "tax_id": "47-3821049",
+    "address": {
+      "street": "4812 Prairie View Blvd, Suite 110",
+      "city": "Des Moines",
+      "state": "IA",
+      "zip": "50312"
+    },
+    "phone": "515-774-3920",
+    "specialty_taxonomy": "207Q00000X"
+  },
+  "patient": {
+    "name": "Caleb Thornton",
+    "dob": "2017-03-14",
+    "sex": "M",
+    "account_number": "HFM-20240387",
+    "address": {
+      "street": "2249 Hickory Lane",
+      "city": "Ankeny",
+      "state": "IA",
+      "zip": "50021"
+    },
+    "insurance_id": "BCB9274401"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Iowa",
+    "plan_type": "PPO",
+    "group_number": "GRP-774412",
+    "subscriber_id": "BCB9274401"
+  },
+  "encounter": {
+    "date_of_service": "2024-04-09",
+    "billing_date": "2024-04-11",
+    "place_of_service_code": "02",
+    "place_of_service_description": "Telehealth - Patient Home",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "pointer": "B",
+      "icd10": "L20.9",
+      "description": "Atopic dermatitis, unspecified"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z00.01",
+      "description": "Encounter for general adult medical examination with abnormal findings"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-04-09",
+      "place_of_service": "02",
+      "cpt_hcpcs": "99213",
+      "modifiers": [
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 165.0,
+      "line_charge": 165.0,
+      "description": "Office or other outpatient visit, established patient, low-moderate complexity (telehealth)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-04-09",
+      "place_of_service": "02",
+      "cpt_hcpcs": "99401",
+      "modifiers": [
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 48.0,
+      "line_charge": 48.0,
+      "description": "Preventive medicine counseling, approximately 15 minutes (telehealth)"
+    }
+  ],
+  "totals": {
+    "total_charges": 213.0,
+    "insurance_payment": 148.2,
+    "patient_responsibility": 30.0,
+    "amount_due": 30.0
+  }
+}

@@ -35,6 +35,7 @@ from chain import zerog_blob
 from chain import keeperhub
 from chain import keeperhub_mcp
 from chain import patterns as chain_patterns
+from chain import storage_priors
 
 log = logging.getLogger("lethe.pipeline")
 
@@ -127,24 +128,76 @@ async def run(job_id: str) -> None:
         # Surface the read on the SSE bus so the dashboard can show the
         # agents literally pulling from the on-chain PatternRegistry.
         try:
-            prior_stats = await chain_patterns.get_pattern_stats()
-            prior_block = chain_patterns.format_for_prompt(prior_stats, top_n=30)
+            # Storage-first priors: storage blobs carry full structured records
+            # (full code strings, voter agent names, schema-versioned) — strictly
+            # richer than the bytes32-truncated PatternRegistry events. Try
+            # storage first; if it returns nothing (sidecar down OR
+            # StorageIndex empty) fall back to chain events.
+            storage_blobs, prior_stats = await asyncio.gather(
+                storage_priors.fetch_recent_storage_priors(limit=8),
+                chain_patterns.get_pattern_stats(),
+                return_exceptions=False,
+            )
+            storage_block = storage_priors.format_storage_priors_for_prompt(storage_blobs)
+            if storage_block:
+                prior_block = storage_block
+                priors_source = "0g-storage"
+            else:
+                prior_block = chain_patterns.format_for_prompt(prior_stats, top_n=30)
+                priors_source = "patternregistry-events" if prior_block else "none"
         except Exception as e:
-            log.warning("prior pattern fetch failed: %s — proceeding without", e)
+            log.warning("prior fetch failed: %s — proceeding without", e)
             prior_stats = {}
+            storage_blobs = []
             prior_block = ""
+            priors_source = "none"
         if prior_block:
-            top = sorted(prior_stats.values(), key=lambda s: s["n_observations"], reverse=True)[:3]
-            top_codes = [
-                {
-                    "code": s["code"],
-                    "n_observations": s["n_observations"],
-                    "dispute_rate": s["dispute_rate"],
-                    "clarify_rate": s["clarify_rate"],
-                    "mean_amount_usd": s["mean_amount_usd"],
-                }
-                for s in top
-            ]
+            # When storage is the source, summarize from storage blobs (richer);
+            # when chain events are the source, summarize from prior_stats (the
+            # existing aggregator). Both produce the same `top_codes` shape.
+            if priors_source == "0g-storage":
+                from collections import Counter, defaultdict
+                code_actions: dict = defaultdict(Counter)
+                code_amounts: dict = defaultdict(list)
+                for b in storage_blobs:
+                    for f in (b.get("findings") or []):
+                        code = str(f.get("code") or "").strip()
+                        if not code:
+                            continue
+                        code_actions[code][str(f.get("action") or "info")] += 1
+                        try:
+                            code_amounts[code].append(float(f.get("amount_usd") or 0))
+                        except (TypeError, ValueError):
+                            pass
+                top = sorted(code_actions.items(), key=lambda kv: -sum(kv[1].values()))[:3]
+                top_codes = []
+                for code, actions in top:
+                    n = sum(actions.values())
+                    amts = code_amounts.get(code) or [0.0]
+                    top_codes.append({
+                        "code": code,
+                        "n_observations": n,
+                        "dispute_rate": round(actions.get("dispute", 0) / max(1, n), 3),
+                        "clarify_rate": round(actions.get("clarify", 0) / max(1, n), 3),
+                        "mean_amount_usd": round(sum(amts) / max(1, len(amts)), 2),
+                    })
+                code_count = len(code_actions)
+                total_obs = sum(sum(c.values()) for c in code_actions.values())
+            else:
+                top = sorted(prior_stats.values(), key=lambda s: s["n_observations"], reverse=True)[:3]
+                top_codes = [
+                    {
+                        "code": s["code"],
+                        "n_observations": s["n_observations"],
+                        "dispute_rate": s["dispute_rate"],
+                        "clarify_rate": s["clarify_rate"],
+                        "mean_amount_usd": s["mean_amount_usd"],
+                    }
+                    for s in top
+                ]
+                code_count = len(prior_stats)
+                total_obs = sum(s["n_observations"] for s in prior_stats.values())
+
             registry_short = (
                 settings.pattern_registry_address[:10] + "…"
                 if settings.pattern_registry_address
@@ -152,8 +205,10 @@ async def run(job_id: str) -> None:
             )
             await _emit(
                 job_id, "patterns.prior_loaded",
-                code_count=len(prior_stats),
-                total_observations=sum(s["n_observations"] for s in prior_stats.values()),
+                source=priors_source,
+                blob_count=len(storage_blobs) if priors_source == "0g-storage" else 0,
+                code_count=code_count,
+                total_observations=total_obs,
                 top_codes=top_codes,
                 registry_address=settings.pattern_registry_address,
                 registry_short=registry_short,
@@ -494,6 +549,23 @@ async def run(job_id: str) -> None:
                 bytes=storage_proof.get("bytes"),
                 executor=storage_proof.get("executor"),
             )
+            # Close the loop: write the (billHash → storageRoot) pointer to
+            # the on-chain StorageIndex so future audits can find this blob
+            # via eth_getLogs and pull it back as a richer prior. Stub-falls
+            # back if the contract isn't deployed.
+            sx_proof = await storage_priors.index_storage_root_on_chain(
+                bill_hash_hex=job.sha256,
+                storage_root_hex=storage_proof.get("root_hash") or "",
+            )
+            storage_proof["index"] = sx_proof
+            if sx_proof.get("live"):
+                await _emit(
+                    job_id,
+                    "storage.indexed",
+                    tx=sx_proof.get("tx"),
+                    block_number=sx_proof.get("block_number"),
+                    executor=sx_proof.get("executor"),
+                )
         proof["patterns"] = patterns
 
         # 7. Draft dispute letter (own stage so timing is captured)

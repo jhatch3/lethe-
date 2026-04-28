@@ -1,0 +1,138 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "urology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Pacific Crest Urology Associates",
+    "npi": "3821047659",
+    "tax_id": "47-3829154",
+    "address": {
+      "street": "4210 Meridian Blvd, Suite 310",
+      "city": "Portland",
+      "state": "OR",
+      "zip": "97204"
+    },
+    "phone": "503-555-0192",
+    "specialty_taxonomy": "208800000X"
+  },
+  "patient": {
+    "name": "Camille R. Okonkwo",
+    "dob": "2005-03-14",
+    "sex": "F",
+    "account_number": "PCU-2024-088341",
+    "address": {
+      "street": "817 NE Glisan St, Apt 4C",
+      "city": "Portland",
+      "state": "OR",
+      "zip": "97232"
+    },
+    "insurance_id": "MBX4492817301"
+  },
+  "insurance": {
+    "payer_name": "Cascade Health Partners PPO",
+    "plan_type": "PPO",
+    "group_number": "GRP-558821",
+    "subscriber_id": "MBX4492817301"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "24",
+    "place_of_service_description": "Ambulatory Surgical Center",
+    "facility": "Willamette Valley Outpatient Surgery Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "N20.1",
+      "description": "Calculus of ureter"
+    },
+    {
+      "pointer": "B",
+      "icd10": "N23",
+      "description": "Unspecified renal colic"
+    },
+    {
+      "pointer": "C",
+      "icd10": "N13.2",
+      "description": "Hydronephrosis with renal and ureteral calculous obstruction"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "24",
+      "cpt_hcpcs": "52352",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 3850.0,
+      "line_charge": 3850.0,
+      "description": "Cystourethroscopy with ureteroscopy and/or pyeloscopy; with removal or manipulation of calculus"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "24",
+      "cpt_hcpcs": "52332",
+      "modifiers": [
+        "51"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 1420.0,
+      "line_charge": 1420.0,
+      "description": "Cystourethroscopy with insertion of indwelling ureteral stent"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "24",
+      "cpt_hcpcs": "99100",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 78.0,
+      "line_charge": 78.0,
+      "description": "Anesthesia qualifying circumstance: patient under age 1 year or over 70 years \u2014 N/A; here reported for patient age under 18 requiring anesthesia considerations"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "24",
+      "cpt_hcpcs": "99213",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 165.0,
+      "line_charge": 165.0,
+      "description": "Office or outpatient E&M visit, established patient, low-to-moderate complexity; separately significant pre-operative evaluation and counseling on day of procedure"
+    }
+  ],
+  "totals": {
+    "total_charges": 5513.0,
+    "insurance_payment": 3921.47,
+    "patient_responsibility": 650.0,
+    "amount_due": 650.0
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "ophthalmology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Chesapeake Eye Associates PC",
+    "npi": "3847261950",
+    "tax_id": "52-7384910",
+    "address": {
+      "street": "4112 Harborview Blvd Suite 310",
+      "city": "Annapolis",
+      "state": "MD",
+      "zip": "21401"
+    },
+    "phone": "410-555-0192",
+    "specialty_taxonomy": "207W00000X"
+  },
+  "patient": {
+    "name": "Diane M. Kowalczyk",
+    "dob": "1967-03-14",
+    "sex": "F",
+    "account_number": "CEA-2024-088341",
+    "address": {
+      "street": "817 Willowbrook Terrace",
+      "city": "Bowie",
+      "state": "MD",
+      "zip": "20715"
+    },
+    "insurance_id": "XKM774392100"
+  },
+  "insurance": {
+    "payer_name": "CareFirst BlueCross BlueShield",
+    "plan_type": "PPO",
+    "group_number": "GRP-884721",
+    "subscriber_id": "XKM774392100"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-16",
+    "place_of_service_code": "02",
+    "place_of_service_description": "Telehealth Provided Other than in Patient's Home",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "H40.1131",
+      "description": "Primary open-angle glaucoma, bilateral, mild stage"
+    },
+    {
+      "pointer": "B",
+      "icd10": "H53.141",
+      "description": "Visual discomfort, right eye"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "02",
+      "cpt_hcpcs": "92014",
+      "modifiers": [
+        "95"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 198.0,
+      "line_charge": 198.0,
+      "description": "Ophthalmological examination and evaluation, established patient; comprehensive, with medical decision making of moderate or high complexity \u2014 telehealth"
+    }
+  ],
+  "totals": {
+    "total_charges": 198.0,
+    "insurance_payment": 142.56,
+    "patient_responsibility": 55.44,
+    "amount_due": 55.44
+  }
+}

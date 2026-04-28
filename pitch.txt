@@ -1,79 +1,232 @@
-  ---                                                                                                                                                                                                                           
-  TL;DR (memorize this one line)                                                                                                                                                                                                
-                                                                                                                                                                                                                                
-  ▎ "Lethe audits medical bills with three AI agents that talk to each other peer-to-peer, reach consensus, and prove what they did on-chain — without ever keeping your bill."                                                 
-   
-  ---                                                                                                                                                                                                                           
-  The 3-minute pitch
+================================================================
+LETHE — HACKATHON DEMO SPEECH
+3-minute version (+notes for 2-min compress / 4-min stretch)
+================================================================
 
-  [HOOK — ~25s, slow, look up]
+TL;DR (memorize this one line):
+  "Lethe audits medical bills with three AI agents that talk to each
+   other peer-to-peer, reach consensus, prove what they did on three
+   chains, and email the appeal — without ever keeping your bill."
 
-  Eighty percent of medical bills contain errors. Almost always tilted against the patient — duplicate charges, wrong modifiers, services that never happened.
 
-  When patients dispute these bills, three out of four win. The catch — most people never dispute. Forty percent say they don't know how.
+----------------------------------------------------------------
+[ 00:00 — 00:25 ]  HOOK
+(stand still, slow, look up at the room)
+----------------------------------------------------------------
 
-  And the few apps that do help solve this make a different problem worse: they upload your records to a central database and keep them forever. That's exactly what a HIPAA-anxious patient is trying to avoid.
+Eighty percent of medical bills contain errors — almost always
+against the patient. Duplicate charges, wrong modifiers, services
+that never happened.
 
-  [WHAT IT IS — ~25s, faster, confident]
+When patients dispute, three out of four win. The catch? Most
+people never dispute. Forty percent say they don't know how.
 
-  Lethe runs on a different deal: ephemeral PHI, persistent learning.
+And the few apps that try to help make a different problem worse:
+they upload your records to a central database and keep them
+forever. That's exactly what a HIPAA-anxious patient is trying to
+avoid.
 
-  You drop a bill in. Three independent AI agents analyze it. They talk to each other peer-to-peer over a real Gensyn AXL mesh, reach consensus, and draft a formal appeal letter for your review.
 
-  Your bill never touches storage. Never reaches a model provider. After about a minute, it's gone.
+----------------------------------------------------------------
+[ 00:25 — 00:40 ]  POSITIONING
+(a beat faster, more confident)
+----------------------------------------------------------------
 
-  [WHY AI — ~45s, building energy]
+Lethe runs on a different deal: ephemeral PHI, persistent learning.
 
-  Why three agents? Because no single LLM is reliable enough to act on financially. GPT-4o, Claude Sonnet 4.5, and Gemini Flash each have different blind spots — so we make them disagree productively.
+You drop a bill in. Three independent AI agents analyze it. They
+talk peer-to-peer over a real Gensyn AXL mesh, reach consensus,
+draft a formal appeal letter, and email it to your provider.
 
-  Round one: each agent independently reasons over the redacted bill.
+Your bill never touches storage. Never reaches a model provider.
+After about a minute, it's gone.
 
-  Round two — this is the headline. Every agent broadcasts its findings to the other two over the AXL mesh, drains its inbox, and runs a second LLM call with peer findings as context. They can add findings they missed. They
-  can downgrade ones their peers convinced them were wrong. We explicitly prompt against herd-voting — disagreement is fine; it's data.
 
-  The final consensus runs on those round-two votes. A finding only counts if it survived peer scrutiny and has a 2-of-3 majority. [pause] If they can't agree at all — a 1-1-1 split — we honestly fall back to "clarify." We
-  don't fake consensus.
+----------------------------------------------------------------
+[ 00:40 — 02:30 ]  LIVE DEMO
+(switch to dashboard. Talk while clicking.)
+----------------------------------------------------------------
 
-  [WHY BLOCKCHAIN — ~55s, slower, confident]
+>>> CLICK: a sample bill chip on /dashboard
 
-  Why blockchain? Three reasons, three contracts.
+This is a real ER bill — synthetic, no patient data. Notice the
+ten stages running live across the top. Parse and redact happen
+locally. Now three terminals open — α GPT-4o, β Claude, γ Gemini.
 
-  One. The BillRegistry on 0G Galileo anchors a SHA-256 of every audited bill plus the verdict. You can verify what was analyzed without us holding the analysis.
+>>> WHILE TOKENS STREAM:
 
-  Two. The same hash mirrors to a Sepolia BillRegistry through KeeperHub's Direct Execution API. Two chains, one truth — if 0G goes down, the proof still lives on Sepolia.
+Each agent is reading the same redacted payload independently.
+They don't share a scratchpad. They have different blind spots —
+that's the point.
 
-  Three — the kicker. The PatternRegistry on 0G stores anonymized findings: just code, action, severity, amount. No patient data. Before every new audit, the coordinator queries eth_getLogs and feeds prior dispute rates back
-   into each agent's prompt.
+>>> WHEN "exchange" lights up:
 
-  So Lethe gets smarter with every bill it analyzes — without ever holding any patient's actual records. That's persistent learning without the privacy tradeoff. We're using the chain as the agents' shared memory,
-  deliberately.
+Watch this. Each agent broadcasts its findings to the other two
+over Gensyn AXL — real ed25519 peer IDs, real POST /send, real
+GET /recv. Open the /axl page on the second monitor and you can
+see every packet crossing between sidecars.
 
-  [PROOF — ~20s, energetic]
+>>> WHEN "reflect" lights up:
 
-  Open the dashboard, drop a sample bill — the receipts are real. Three terminals stream live LLM tokens. Real AXL chatter shows peers exchanging findings. Each agent revises its vote. Two transaction hashes drop, both
-  verifiable on the matching block explorer. About a minute total. You download a formal appeal letter. We never saw your bill.
+Now each agent runs a SECOND LLM call with peer findings as new
+context. They can add findings they missed. They can downgrade
+ones their peers convinced them were wrong. The final consensus
+runs on the round-two votes — every conclusion survived peer
+review.
 
-  [CLOSE — ~10s, slow, look up]
+>>> WHEN "anchor" lights up:
 
-  Lethe — medical bills, audited by AI consensus. Forgotten by design.
+This is where the chains light up. SHA-256 of the bill plus the
+verdict gets anchored on 0G Galileo. The full anonymized record
+goes into 0G Storage with a merkle root. KeeperHub mirrors the
+same anchor to Sepolia. If the verdict was "dispute," KeeperHub
+fires a SECOND workflow that records the dispute on its own
+Sepolia contract. Three chains, three independent records, one
+audit. Receipts include every transaction hash — verifiable on
+the matching block explorer.
 
-  ---
-  How to flex the timing
+>>> WHEN the receipt appears:
 
-  Compress to 2 min — drop the third "blockchain reason" (KeeperHub mirror). The PatternRegistry read-back is your strongest beat; lead with that one if you only have time for one chain claim.
+Here's the receipt. Five chain transaction hashes. The drafted
+appeal letter is right here.
 
-  Stretch to 5 min — add these two beats after WHY BLOCKCHAIN:
+>>> CLICK "Edit draft":
 
-  - (~30s) The privacy invariant beat. "Most AI products treat privacy as a feature you toggle. We treat it as the architecture. Every PHI strip happens before the model API call. Bill bytes are zeroed from memory the moment
-   parsing finishes. The SSE event stream — what powers the live dashboard — carries only stage names and counts, never bill content. We can't leak what we don't keep."
-  - (~30s) The judgment-call beat. "The most interesting decision wasn't technical — it was honesty. When agents split 1-1-1, the cheap thing to do is let registration order silently pick a winner, and ship. We caught that
-  and shipped 'no majority → clarify' instead. We'd rather tell you we don't know than fake confidence with your medical bill."
+Patient fills in their name, address, the provider's email — these
+are structured inputs that auto-format into a proper letter. Live
+preview below shows exactly what gets sent.
 
-  ---
-  Delivery tips
+>>> CLICK "Send appeal":
 
-  - The opening "Eighty percent" line: pause after it. Let the number land.
-  - "We make them disagree productively" — this is the line judges remember. Slow down on it.
-  - "Ephemeral PHI, persistent learning" is your tagline. Use it twice — once early as the framing, once at the close as the payoff.
-  - Don't read the chain reasons as a list — number them with your fingers if you're on stage. Visual rhythm matters.
-  - The closer ("Forgotten by design") is the wordmark. Match the cadence of the landing page; it's been engineered.
+Email goes out via Resend right now — to my own inbox. KeeperHub
+fires a THIRD workflow recording on-chain that the appeal was sent.
+The recipient address is keccak-hashed before going on-chain — the
+provider's email never appears as plaintext on Sepolia.
+
+>>> SHOW the email arriving in inbox.
+
+That's the audit. Everything you just saw, anchored on three
+chains, drafted by three different LLMs, delivered to the provider,
+and the patient's bill never persisted anywhere we control.
+
+
+----------------------------------------------------------------
+[ 02:30 — 02:55 ]  WHY IT MATTERS — sponsor track flex
+(slower, look up)
+----------------------------------------------------------------
+
+Three pillars, three sponsors, all real:
+
+ZERO. The architecture is the privacy guarantee. Bill bytes zeroed
+from memory after parsing. SSE events carry stage names only — no
+content. We can't leak what we don't keep.
+
+ONE. Gensyn AXL: three Docker sidecars with cryptographic peer
+identities, live mesh, no central broker. The round-two reflection
+literally cannot fire without findings crossing the mesh.
+
+TWO. 0G stack: Chain anchors the verdicts, Storage holds the full
+records, Compute can run one of the agents on decentralized
+inference. Three pillars wired, not one.
+
+THREE. KeeperHub: three distinct workflow executions per audit —
+mirror anchor, dispute filing, appeal-sent attestation. Different
+contracts, different gates, all retried and gas-optimized
+automatically.
+
+
+----------------------------------------------------------------
+[ 02:55 — 03:05 ]  CLOSE
+(slow, look up, hold the wordmark)
+----------------------------------------------------------------
+
+Lethe — medical bills, audited by AI consensus.
+
+Forgotten by design.
+
+[smile, step back]
+
+
+================================================================
+TIMING FLEX
+================================================================
+
+COMPRESS TO 2 MIN — cut these:
+  - The first 25s hook can drop to 12s ("80% of bills have errors,
+    75% of disputes win, 40% don't know how — and existing tools
+    keep your records forever")
+  - In the demo, skip the AXL message-log aside (just say "talking
+    peer-to-peer over a real mesh")
+  - Skip the dispute-filing workflow #2 mention; just say "anchored
+    on 0G and Sepolia"
+  - Cut the WHY IT MATTERS section entirely; the demo carries it
+
+STRETCH TO 4 MIN — add these after WHY IT MATTERS:
+
+  + (~25s) The honesty beat. "When agents split 1-1-1, the cheap
+    move is to let the first one's vote silently win. We caught
+    that and shipped 'no majority → clarify.' We'd rather tell you
+    we don't know than fake confidence with your medical bill."
+
+  + (~25s) The bidirectional storage beat. "0G Storage isn't cold
+    archive for us. After uploading the full record, we record the
+    storage root on a deployed StorageIndex contract. The next
+    audit queries that contract, pulls the recent blobs back, and
+    feeds the full structured records — voter agent names, full
+    code strings — into the next reasoning pass. Storage is the
+    primary memory layer; the chain index is just a queryable
+    pointer."
+
+
+================================================================
+DELIVERY TIPS
+================================================================
+
+* "Eighty percent" — pause after that number. Let it land.
+* "We make them disagree productively" — the line judges remember.
+  Slow down on it. (Section "WHEN reflect lights up.")
+* "Ephemeral PHI, persistent learning" is your tagline — use it
+  twice: once early as framing, once at the close as payoff.
+* When you list the three chains/sponsors/workflows in the WHY
+  section, count on your fingers. Visual rhythm matters.
+* The closer ("Forgotten by design") is the wordmark. Match the
+  cadence of the landing page; that text has been engineered to
+  land that way.
+* If the live demo crashes — don't panic. Cut to "Here's a receipt
+  from a previous run" and pull up the explorer link directly.
+  Three KeeperHub txs are already on Sepolia from earlier; one of
+  them is what the judges will verify.
+
+================================================================
+HONEST DISCLOSURE NOTES (only if asked, never in main pitch)
+================================================================
+
+If a judge asks why γ shows "google" instead of "0g-compute":
+  "0G Compute provisioning needs 1 OG in the on-chain ledger to
+   acknowledge a provider. Galileo testnet faucet gives 0.1 OG
+   per day per Google account. The integration is wired
+   end-to-end — we have the broker SDK, the headers sidecar, and
+   a smart factory that auto-falls-back to Gemini when the
+   sidecar is unreachable. Show /api/status — it honestly
+   reports `zg_compute_transport: null` because the sidecar
+   isn't up; once funded, the same `/api/status` flips to
+   `sidecar`."
+
+If a judge asks why 0G Storage shows "stub" in some receipts:
+  "Galileo's storage flow contract is rejecting our wallet's
+   submissions right now — same revert across blob sizes from
+   533 bytes up to 4 KB padded. The sidecar code is on the
+   latest SDK, the StorageIndex contract IS deployed and
+   verified at 0xc435…E614, and the read-back loop is wired.
+   When the testnet flow contract clears, every audit anchors a
+   full record. We added a circuit breaker so it degrades
+   honestly without log spam."
+
+If a judge asks about iNFT (the prize text mentions it):
+  "Researched ERC-7857 — that's the 0G-authored standard for
+   intelligent NFTs with encrypted metadata + sealed-key transfer
+   + authorizeUsage hooks. We deferred the implementation because
+   shipping a half-done iNFT is worse than not shipping one — the
+   judging rubric specifically penalizes pointer-NFTs dressed up
+   as iNFTs. Architecture notes are in the roadmap; full impl is
+   a 4-6 hour follow-up if we win."

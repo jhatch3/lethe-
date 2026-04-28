@@ -1,0 +1,134 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "cardiology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Keystone Pediatric Cardiology Associates",
+    "npi": "3847291056",
+    "tax_id": "47-3829105",
+    "address": {
+      "street": "822 Hartwell Medical Plaza, Suite 310",
+      "city": "Wilmington",
+      "state": "DE",
+      "zip": "19801"
+    },
+    "phone": "302-555-0174",
+    "specialty_taxonomy": "207RC0000X"
+  },
+  "patient": {
+    "name": "Ethan R. Kowalski",
+    "dob": "2017-04-09",
+    "sex": "M",
+    "account_number": "PKC-20240409-00831",
+    "address": {
+      "street": "54 Millbrook Lane",
+      "city": "Newark",
+      "state": "DE",
+      "zip": "19702"
+    },
+    "insurance_id": "CHC8847301291"
+  },
+  "insurance": {
+    "payer_name": "Independence Blue Cross",
+    "plan_type": "PPO",
+    "group_number": "GRP-447821",
+    "subscriber_id": "CHC8847301291"
+  },
+  "encounter": {
+    "date_of_service": "2024-04-15",
+    "billing_date": "2024-04-22",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "Z00.129",
+      "description": "Encounter for routine child health examination without abnormal findings"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Q21.1",
+      "description": "Atrial septal defect"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R00.0",
+      "description": "Tachycardia, unspecified"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-04-15",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99393",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 215.0,
+      "line_charge": 215.0,
+      "description": "Preventive medicine E&M, established patient, age 5-11"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-04-15",
+      "place_of_service": "11",
+      "cpt_hcpcs": "93000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 142.0,
+      "line_charge": 142.0,
+      "description": "Electrocardiogram, routine ECG with at least 12 leads; with interpretation and report"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-04-15",
+      "place_of_service": "11",
+      "cpt_hcpcs": "93306",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 748.0,
+      "line_charge": 748.0,
+      "description": "Echocardiography, transthoracic, real-time with image documentation; complete, with spectral Doppler echocardiography, and with color flow Doppler echocardiography"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-04-15",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99213",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "Office or other outpatient visit, established patient, low to moderate complexity; separate and significant evaluation of known ASD with episodic tachycardia beyond preventive visit scope"
+    }
+  ],
+  "totals": {
+    "total_charges": 1290.0,
+    "insurance_payment": 987.4,
+    "patient_responsibility": 125.0,
+    "amount_due": 125.0
+  }
+}

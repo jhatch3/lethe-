@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "anesthesiology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "CPT 00834 (anesthesia for hernia repair in patient under 1 year) billed, but patient is 7 years old \u2014 age-inappropriate upcode to a higher-reimbursing pediatric-specific code; correct code for a child aged 1 year or older is 00832.",
+        "expected_savings_usd": 187.5
+      },
+      {
+        "error_type": "UNITS_EXCEED_MUE",
+        "affected_line": 2,
+        "description": "99100 (anesthesia qualifying circumstance \u2014 patient under 1 year) billed with 2 units; this code has an MUE of 1 unit per date of service and should never be billed more than once per encounter.",
+        "expected_savings_usd": 95.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Sonoran Desert Anesthesia Specialists, PLLC",
+    "npi": "1742385906",
+    "tax_id": "84-2371905",
+    "address": {
+      "street": "4821 E Camelback Ranch Blvd, Suite 210",
+      "city": "Scottsdale",
+      "state": "AZ",
+      "zip": "85251"
+    },
+    "phone": "480-555-0193",
+    "specialty_taxonomy": "207L00000X"
+  },
+  "patient": {
+    "name": "Matteo R. Cisneros",
+    "dob": "2017-03-14",
+    "sex": "M",
+    "account_number": "SDA-2024-047812",
+    "address": {
+      "street": "1103 W Papago Trail",
+      "city": "Chandler",
+      "state": "AZ",
+      "zip": "85224"
+    },
+    "insurance_id": "BCZ4471902837"
+  },
+  "insurance": {
+    "payer_name": "Blue Cross Blue Shield of Arizona",
+    "plan_type": "PPO",
+    "group_number": "GRP-AZ-088341",
+    "subscriber_id": "BCZ4471902837"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "24",
+    "place_of_service_description": "Ambulatory Surgical Center",
+    "facility": "Scottsdale Surgical Suites ASC"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "K40.90",
+      "description": "Unilateral inguinal hernia, without obstruction or gangrene, not specified as recurrent"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Z23",
+      "description": "Encounter for immunization \u2014 secondary, pre-op clearance notation"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z87.39",
+      "description": "Personal history of other musculoskeletal disorders, pertinent to anesthesia risk documentation"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "24",
+      "cpt_hcpcs": "00834",
+      "modifiers": [
+        "AA"
+      ],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 8,
+      "unit_charge": 93.75,
+      "line_charge": 750.0,
+      "description": "Anesthesia for hernia repairs in lower abdomen; patient younger than 1 year and older than 50 years [BILLED \u2014 patient actually age 7, correct code 00832]"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "24",
+      "cpt_hcpcs": "99100",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 2,
+      "unit_charge": 95.0,
+      "line_charge": 190.0,
+      "description": "Anesthesia qualifying circumstance \u2014 extreme age, younger than 1 year [BILLED \u2014 patient is 7 years old; additionally, MUE limit of 1 unit exceeded]"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "24",
+      "cpt_hcpcs": "99100",
+      "modifiers": [
+        "GC"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 0.0,
+      "line_charge": 0.0,
+      "description": "Resident supervision notation \u2014 no additional charge"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "24",
+      "cpt_hcpcs": "01996",
+      "modifiers": [
+        "AA"
+      ],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 145.0,
+      "line_charge": 145.0,
+      "description": "Daily hospital management of epidural or subarachnoid continuous drug administration \u2014 post-op pain management caudal block monitoring"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "24",
+      "cpt_hcpcs": "64450",
+      "modifiers": [
+        "AA",
+        "59"
+      ],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 210.0,
+      "line_charge": 210.0,
+      "description": "Injection, anesthetic agent, other peripheral nerve or branch \u2014 ilioinguinal nerve block for post-op analgesia"
+    }
+  ],
+  "totals": {
+    "total_charges": 1295.0,
+    "insurance_payment": 742.18,
+    "patient_responsibility": 552.82,
+    "amount_due": 552.82
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "ENT",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Wasatch Ear Nose & Throat Associates, PC",
+    "npi": "1384720591",
+    "tax_id": "84-2937461",
+    "address": {
+      "street": "3245 Foothill Blvd, Suite 410",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "zip": "84109"
+    },
+    "phone": "801-555-0182",
+    "specialty_taxonomy": "207YX0602X"
+  },
+  "patient": {
+    "name": "Marcus T. Delgadillo",
+    "dob": "1988-03-14",
+    "sex": "M",
+    "account_number": "WEN-2024-083741",
+    "address": {
+      "street": "774 Sagebrush Lane",
+      "city": "Murray",
+      "state": "UT",
+      "zip": "84107"
+    },
+    "insurance_id": "UHC8841203774X"
+  },
+  "insurance": {
+    "payer_name": "UnitedHealthcare Choice Plus",
+    "plan_type": "PPO",
+    "group_number": "GRP-774821",
+    "subscriber_id": "UHC8841203774X"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-20",
+    "place_of_service_code": "21",
+    "place_of_service_description": "Inpatient Hospital",
+    "facility": "Intermountain Valley Medical Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "J36",
+      "description": "Peritonsillar abscess"
+    },
+    {
+      "pointer": "B",
+      "icd10": "J02.0",
+      "description": "Streptococcal pharyngitis"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R06.00",
+      "description": "Dyspnea, unspecified"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99253",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 420.0,
+      "line_charge": 420.0,
+      "description": "Inpatient consultation, moderate complexity (initial)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "21",
+      "cpt_hcpcs": "42700",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 680.0,
+      "line_charge": 680.0,
+      "description": "Incision and drainage, peritonsillar abscess"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-12",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99232",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 215.0,
+      "line_charge": 215.0,
+      "description": "Subsequent hospital care, moderate complexity"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-13",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99238",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 195.0,
+      "line_charge": 195.0,
+      "description": "Hospital discharge day management, 30 minutes or less"
+    }
+  ],
+  "totals": {
+    "total_charges": 1510.0,
+    "insurance_payment": 1158.25,
+    "patient_responsibility": 351.75,
+    "amount_due": 351.75
+  }
+}

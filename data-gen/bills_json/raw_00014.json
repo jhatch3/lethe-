@@ -1,0 +1,126 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "urology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "99214 (moderate complexity E&M) billed for a straightforward follow-up visit for uncomplicated recurrent UTI with refill of existing antibiotic \u2014 documentation complexity supports 99213 at most.",
+        "expected_savings_usd": 75.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the E&M code (99214-25) to justify separate payment alongside a simple in-office bladder scan (51798), but the clinical note does not support a separately significant E&M beyond the scan decision \u2014 both are part of the same encounter management of UTI symptoms.",
+        "expected_savings_usd": 112.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Shenandoah Valley Urology Associates",
+    "npi": "1437820956",
+    "tax_id": "54-2817463",
+    "address": {
+      "street": "312 Ridgeline Medical Drive",
+      "city": "Strasburg",
+      "state": "VA",
+      "zip": "22657"
+    },
+    "phone": "5406590841",
+    "specialty_taxonomy": "208800000X"
+  },
+  "patient": {
+    "name": "Delia R. Hargrove",
+    "dob": "1988-03-14",
+    "sex": "F",
+    "account_number": "URO-2024-088431",
+    "address": {
+      "street": "74 Meadow Creek Lane",
+      "city": "Woodstock",
+      "state": "VA",
+      "zip": "22664"
+    },
+    "insurance_id": "XBP9941037201"
+  },
+  "insurance": {
+    "payer_name": "CareFirst BlueCross BlueShield",
+    "plan_type": "PPO",
+    "group_number": "GRP-774519",
+    "subscriber_id": "XBP9941037201"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "N30.00",
+      "description": "Acute cystitis without hematuria"
+    },
+    {
+      "pointer": "B",
+      "icd10": "N39.0",
+      "description": "Urinary tract infection, site not specified"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99214",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 225.0,
+      "line_charge": 225.0,
+      "description": "Office visit, established patient, moderate medical decision making (upcoded; visit documented at low complexity level)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "51798",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 68.0,
+      "line_charge": 68.0,
+      "description": "Measurement of post-voiding residual urine and/or bladder capacity by ultrasound, non-imaging"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "81003",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 24.0,
+      "line_charge": 24.0,
+      "description": "Urinalysis, automated, without microscopy"
+    }
+  ],
+  "totals": {
+    "total_charges": 317.0,
+    "insurance_payment": 189.0,
+    "patient_responsibility": 128.0,
+    "amount_due": 128.0
+  }
+}

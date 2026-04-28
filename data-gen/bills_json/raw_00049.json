@@ -1,0 +1,163 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "family_medicine",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "CPT 99215 billed for the office visit component of an annual physical, but the documented complexity for a routine preventive visit with stable chronic conditions (hypertension, hyperlipidemia) and no acute problems addressed warrants at most 99213. The visit was a straightforward follow-up appended to a preventive encounter, not a high-complexity E&M.",
+        "expected_savings_usd": 118.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to 99215 alongside the preventive visit 99381-level service (billed as 99397), implying a separately significant E&M. However, the clinical narrative reflects only routine counseling conducted as part of the annual physical with no distinct, separately identifiable problem addressed beyond the preventive visit scope.",
+        "expected_savings_usd": 165.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Magnolia Family Medicine Associates",
+    "npi": "3847261950",
+    "tax_id": "63-4819207",
+    "address": {
+      "street": "4412 Creekside Blvd, Suite 105",
+      "city": "Huntsville",
+      "state": "AL",
+      "zip": "35802"
+    },
+    "phone": "256-555-0174",
+    "specialty_taxonomy": "207Q00000X"
+  },
+  "patient": {
+    "name": "Gerald T. Whitmore",
+    "dob": "1966-03-22",
+    "sex": "M",
+    "account_number": "MFA-2024-087341",
+    "address": {
+      "street": "819 Willowbend Drive",
+      "city": "Madison",
+      "state": "AL",
+      "zip": "35758"
+    },
+    "insurance_id": "BCH449201837"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Alabama",
+    "plan_type": "PPO",
+    "group_number": "GRP-774412",
+    "subscriber_id": "BCH449201837"
+  },
+  "encounter": {
+    "date_of_service": "2024-04-10",
+    "billing_date": "2024-04-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "Z00.01",
+      "description": "Encounter for general adult medical examination with abnormal findings"
+    },
+    {
+      "pointer": "B",
+      "icd10": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "pointer": "C",
+      "icd10": "E78.5",
+      "description": "Hyperlipidemia, unspecified"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z87.891",
+      "description": "Personal history of nicotine dependence"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-04-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office or other outpatient visit, established patient, high medical decision making (E&M billed separately from preventive)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-04-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99397",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 265.0,
+      "line_charge": 265.0,
+      "description": "Periodic comprehensive preventive medicine re-evaluation, established patient, age 40-64"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-04-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "93000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 75.0,
+      "line_charge": 75.0,
+      "description": "Electrocardiogram, routine ECG with at least 12 leads; with interpretation and report"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-04-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "G0444",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 45.0,
+      "line_charge": 45.0,
+      "description": "Annual depression screening, 15 minutes"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-04-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 15.0,
+      "line_charge": 15.0,
+      "description": "Handling and/or conveyance of specimen for transfer from office to laboratory"
+    }
+  ],
+  "totals": {
+    "total_charges": 685.0,
+    "insurance_payment": 398.5,
+    "patient_responsibility": 75.0,
+    "amount_due": 75.0
+  }
+}

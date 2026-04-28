@@ -36,11 +36,6 @@ async function main() {
   console.log(`Wallet: ${wallet.address}`);
   const balance = await provider.getBalance(wallet.address);
   console.log(`Balance: ${ethers.formatEther(balance)} OG`);
-  if (balance < ethers.parseEther('0.105')) {
-    console.error('Need at least ~0.105 OG (0.1 ledger minimum + gas).');
-    console.error('Top up via https://cloud.google.com/application/web3/faucet/0g/galileo');
-    process.exit(1);
-  }
 
   const broker = await createZGComputeNetworkBroker(wallet);
 
@@ -49,16 +44,38 @@ async function main() {
   // can be smaller — provider docs suggest ~0.005 OG covers a few inferences.
   const DEPOSIT_OG = 0.1;
   const PROVIDER_SUB_OG = 0.005;
+  const LEDGER_FLOOR_FOR_SKIP = ethers.parseEther('0.05');  // ledger considered "funded enough"
 
-  console.log(`Depositing ${DEPOSIT_OG} OG into ledger...`);
+  // Detect existing ledger so re-runs (e.g. when a previous run deposited
+  // but failed at acknowledge/transfer) don't re-deposit and don't trip the
+  // wallet-balance precheck.
+  let ledgerExists = false;
   try {
-    await broker.ledger.depositFund(DEPOSIT_OG);
-  } catch (e) {
-    console.log('  depositFund threw — trying addLedger (first-time setup)...');
-    await broker.ledger.addLedger(DEPOSIT_OG);
+    const existing = await broker.ledger.getLedger();
+    if (existing.totalBalance >= LEDGER_FLOOR_FOR_SKIP) {
+      ledgerExists = true;
+      console.log(`Ledger already funded: ${ethers.formatEther(existing.totalBalance)} OG — skipping deposit.`);
+    }
+  } catch {
+    // No ledger yet — we'll create one below.
   }
-  const ledger = await broker.ledger.getLedger();
-  console.log(`  ledger total: ${ethers.formatEther(ledger.totalBalance)} OG`);
+
+  if (!ledgerExists) {
+    if (balance < ethers.parseEther('0.105')) {
+      console.error('Need at least ~0.105 OG for first-time ledger deposit + gas.');
+      console.error('Top up via https://cloud.google.com/application/web3/faucet/0g/galileo');
+      process.exit(1);
+    }
+    console.log(`Depositing ${DEPOSIT_OG} OG into ledger...`);
+    try {
+      await broker.ledger.depositFund(DEPOSIT_OG);
+    } catch (e) {
+      console.log('  depositFund threw — trying addLedger (first-time setup)...');
+      await broker.ledger.addLedger(DEPOSIT_OG);
+    }
+    const ledger = await broker.ledger.getLedger();
+    console.log(`  ledger total: ${ethers.formatEther(ledger.totalBalance)} OG`);
+  }
 
   console.log('Listing inference providers...');
   const services = await broker.inference.listService();

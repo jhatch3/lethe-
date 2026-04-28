@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "ob_gyn",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "CPT 99233 (high-complexity subsequent hospital care) billed for an inpatient OB/GYN consult follow-up visit on a 19-year-old male patient. Chart documentation would reflect a straightforward interval check with no new data reviewed, no new diagnoses, and minimal MDM \u2014 warranting at most 99231. Billing 99233 represents upcoding by two levels.",
+        "expected_savings_usd": 98.0
+      },
+      {
+        "error_type": "DIAGNOSIS_MISMATCH",
+        "affected_line": 2,
+        "description": "CPT 58300 (insertion of intrauterine device) billed for a 19-year-old male patient (sex documented as M). This is an anatomically impossible procedure for a male patient and represents a clear diagnosis/patient-sex mismatch.",
+        "expected_savings_usd": 215.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Midwest Women's Health Associates, LLC",
+    "npi": "3847162950",
+    "tax_id": "47-3829104",
+    "address": {
+      "street": "2214 Harborview Blvd, Suite 310",
+      "city": "Peoria",
+      "state": "IL",
+      "zip": "61602"
+    },
+    "phone": "3095554812",
+    "specialty_taxonomy": "207V00000X"
+  },
+  "patient": {
+    "name": "Dominic R. Szymanski",
+    "dob": "2005-03-14",
+    "sex": "M",
+    "account_number": "MWHA-2024-087341",
+    "address": {
+      "street": "908 Elmwood Court",
+      "city": "East Peoria",
+      "state": "IL",
+      "zip": "61611"
+    },
+    "insurance_id": "BCB-IL-447829013"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Illinois",
+    "plan_type": "PPO",
+    "group_number": "GRP-774421",
+    "subscriber_id": "BCB-IL-447829013"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-18",
+    "billing_date": "2024-09-25",
+    "place_of_service_code": "21",
+    "place_of_service_description": "Inpatient Hospital",
+    "facility": "OSF Regional Medical Center \u2014 Peoria Campus"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "N45.1",
+      "description": "Epididymo-orchitis"
+    },
+    {
+      "pointer": "B",
+      "icd10": "B37.49",
+      "description": "Other urogenital candidiasis"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z87.39",
+      "description": "Personal history of other musculoskeletal disorders"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-18",
+      "place_of_service": "21",
+      "cpt_hcpcs": "99233",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Subsequent hospital care, high complexity MDM (99233) \u2014 OB/GYN inpatient consult follow-up"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-18",
+      "place_of_service": "21",
+      "cpt_hcpcs": "58300",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 215.0,
+      "line_charge": 215.0,
+      "description": "Insertion of intrauterine device (IUD)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-18",
+      "place_of_service": "21",
+      "cpt_hcpcs": "87081",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 42.0,
+      "line_charge": 42.0,
+      "description": "Culture, presumptive, pathogenic organisms, screening only"
+    }
+  ],
+  "totals": {
+    "total_charges": 542.0,
+    "insurance_payment": 198.0,
+    "patient_responsibility": 344.0,
+    "amount_due": 344.0
+  }
+}

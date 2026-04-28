@@ -1,0 +1,117 @@
+{
+  "network": "galileo",
+  "chain_id": 16602,
+  "contract": "StorageIndex",
+  "address": "0xc435991e2aC242E7692f88c5cD78741B6dD5E614",
+  "deploy_tx": "0xcfa9cf1adcc1a3c95ea1f8b6b513135b28de32b0c89cc5f88ca47c282cb2a022",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "storageRoot",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "indexedAt",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "indexedBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "rootIndex",
+          "type": "uint256"
+        }
+      ],
+      "name": "RootIndexed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "storageRoot",
+          "type": "bytes32"
+        }
+      ],
+      "name": "recordStorageRoot",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "rootCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "roots",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "storageRoot",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint64",
+          "name": "indexedAt",
+          "type": "uint64"
+        },
+        {
+          "internalType": "address",
+          "name": "indexedBy",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

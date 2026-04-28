@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "dermatology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Lakeview Dermatology Associates",
+    "npi": "3847261905",
+    "tax_id": "47-3829104",
+    "address": {
+      "street": "2214 Birchwood Blvd Suite 310",
+      "city": "Columbus",
+      "state": "OH",
+      "zip": "43214"
+    },
+    "phone": "614-555-0182",
+    "specialty_taxonomy": "207N00000X"
+  },
+  "patient": {
+    "name": "Haley R. Winslow",
+    "dob": "2006-03-14",
+    "sex": "F",
+    "account_number": "DRM-2024-088341",
+    "address": {
+      "street": "704 Elmhurst Drive",
+      "city": "Westerville",
+      "state": "OH",
+      "zip": "43081"
+    },
+    "insurance_id": "BCB-OH-9274618305"
+  },
+  "insurance": {
+    "payer_name": "Anthem Blue Cross Blue Shield of Ohio",
+    "plan_type": "PPO",
+    "group_number": "GRP-774821",
+    "subscriber_id": "BCB-OH-9274618305"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-17",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "L70.0",
+      "description": "Acne vulgaris"
+    },
+    {
+      "pointer": "B",
+      "icd10": "L70.4",
+      "description": "Infantile acne"
+    },
+    {
+      "pointer": "C",
+      "icd10": "L71.0",
+      "description": "Perioral dermatitis"
+    },
+    {
+      "pointer": "D",
+      "icd10": "L82.1",
+      "description": "Other seborrhoeic keratosis"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99203",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "Office or other outpatient visit, new patient, moderate medical decision making (MDM), 30-44 minutes"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "11200",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 148.0,
+      "line_charge": 148.0,
+      "description": "Removal of skin tags, mechanical or electrosurgical, any area; up to and including 15 lesions"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 15.0,
+      "line_charge": 15.0,
+      "description": "Handling and/or conveyance of specimen for transfer from the physician's office to a laboratory"
+    }
+  ],
+  "totals": {
+    "total_charges": 348.0,
+    "insurance_payment": 212.4,
+    "patient_responsibility": 50.0,
+    "amount_due": 50.0
+  }
+}

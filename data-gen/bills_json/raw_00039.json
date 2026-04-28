@@ -1,0 +1,131 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "orthopedics",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "CPT 99215 (high-complexity E&M) billed for an initial orthopedic office visit for a 9-year-old with a closed forearm fracture. The documented complexity \u2014 straightforward history, limited exam, and prescription of a prefabricated splint \u2014 warrants at most a 99213 or 99214. A 99215 requires high medical decision-making or significant time documentation not supported by this encounter.",
+        "expected_savings_usd": 142.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the 99215 E&M on the same day as CPT 29125 (static forearm splint application). The decision to apply a prefabricated splint is inherent to the fracture management visit and does not constitute a separately significant E&M service. The E&M should be bundled into the procedure or reduced, not billed at a high level with modifier 25.",
+        "expected_savings_usd": 98.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Bayou Orthopedic Associates, PLLC",
+    "npi": "1457832096",
+    "tax_id": "47-3821056",
+    "address": {
+      "street": "3204 Magnolia Trace Blvd, Suite 110",
+      "city": "Baton Rouge",
+      "state": "LA",
+      "zip": "70809"
+    },
+    "phone": "225-555-0147",
+    "specialty_taxonomy": "207X00000X"
+  },
+  "patient": {
+    "name": "Marisela Tran",
+    "dob": "2015-03-18",
+    "sex": "F",
+    "account_number": "BOA-2024-083761",
+    "address": {
+      "street": "817 Cypress Hollow Rd",
+      "city": "Denham Springs",
+      "state": "LA",
+      "zip": "70726"
+    },
+    "insurance_id": "WC-LA-9934421-T"
+  },
+  "insurance": {
+    "payer_name": "Pelican State Workers Compensation Fund",
+    "plan_type": "Workers Compensation",
+    "group_number": "PSWC-GRP-0044",
+    "subscriber_id": "WC-LA-9934421-T"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "S52.201A",
+      "description": "Unspecified fracture of shaft of unspecified ulna, initial encounter for closed fracture"
+    },
+    {
+      "pointer": "B",
+      "icd10": "M79.622",
+      "description": "Pain in left upper arm"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z04.1",
+      "description": "Encounter for examination and observation following work accident"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 385.0,
+      "line_charge": 385.0,
+      "description": "Office or other outpatient visit, established patient, high complexity (upcoded from appropriate 99213/99214 level)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "29125",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 178.0,
+      "line_charge": 178.0,
+      "description": "Application of short arm splint, static"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "73100",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Radiologic examination, wrist; 2 views"
+    }
+  ],
+  "totals": {
+    "total_charges": 675.0,
+    "insurance_payment": 310.0,
+    "patient_responsibility": 0.0,
+    "amount_due": 365.0
+  }
+}

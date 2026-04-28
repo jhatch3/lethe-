@@ -1,0 +1,238 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "pathology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UNBUNDLE",
+        "affected_line": null,
+        "description": "Bilirubin total (82247) and bilirubin direct (82248) billed separately on the same date of service when hepatic function panel 80076 includes both components and all other components were also ordered and resulted; the composite panel code should have been used instead.",
+        "expected_savings_usd": 38.5
+      },
+      {
+        "error_type": "DUPLICATE",
+        "affected_line": 5,
+        "description": "CPT 85027 (complete CBC automated) is billed twice on the same date of service without a 76 or 77 modifier indicating a repeat test was medically necessary.",
+        "expected_savings_usd": 22.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Pacific Crest Pathology Associates, PC",
+    "npi": "3847261095",
+    "tax_id": "47-2831604",
+    "address": {
+      "street": "4220 Riviera Medical Pkwy, Suite 110",
+      "city": "Eugene",
+      "state": "OR",
+      "zip": "97401"
+    },
+    "phone": "541-555-0183",
+    "specialty_taxonomy": "207ZP0101X"
+  },
+  "patient": {
+    "name": "Mateo Cisneros",
+    "dob": "2005-03-14",
+    "sex": "M",
+    "account_number": "PCL-20240318-00471",
+    "address": {
+      "street": "812 Cascade Bluff Dr",
+      "city": "Springfield",
+      "state": "OR",
+      "zip": "97477"
+    },
+    "insurance_id": "WPN334872019M"
+  },
+  "insurance": {
+    "payer_name": "PacificWest Health Plans",
+    "plan_type": "PPO",
+    "group_number": "GRP-00928341",
+    "subscriber_id": "WPN334872019M"
+  },
+  "encounter": {
+    "date_of_service": "2024-03-18",
+    "billing_date": "2024-03-25",
+    "place_of_service_code": "22",
+    "place_of_service_description": "On Campus-Outpatient Hospital",
+    "facility": "Willamette Valley Community Hospital"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "K75.9",
+      "description": "Inflammatory liver disease, unspecified"
+    },
+    {
+      "pointer": "B",
+      "icd10": "R17",
+      "description": "Unspecified jaundice"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R74.01",
+      "description": "Elevation of levels of alanine transaminase (ALT)"
+    },
+    {
+      "pointer": "D",
+      "icd10": "D64.9",
+      "description": "Anemia, unspecified"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "80076",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 98.0,
+      "line_charge": 98.0,
+      "description": "Hepatic function panel (includes ALT, AST, ALP, total protein, albumin, total bilirubin, direct bilirubin)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "82247",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 24.0,
+      "line_charge": 24.0,
+      "description": "Bilirubin, total"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "82248",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 24.0,
+      "line_charge": 24.0,
+      "description": "Bilirubin, direct"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "84450",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 18.0,
+      "line_charge": 18.0,
+      "description": "Aspartate aminotransferase (AST) (SGOT)"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "85027",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 22.0,
+      "line_charge": 22.0,
+      "description": "Complete blood count (CBC), automated (Hgb, Hct, RBC, WBC, platelets)"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "85027",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 22.0,
+      "line_charge": 22.0,
+      "description": "Complete blood count (CBC), automated (Hgb, Hct, RBC, WBC, platelets) - duplicate billing"
+    },
+    {
+      "line_number": 7,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "86803",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 42.0,
+      "line_charge": 42.0,
+      "description": "Hepatitis C antibody"
+    },
+    {
+      "line_number": 8,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "86704",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 35.0,
+      "line_charge": 35.0,
+      "description": "Hepatitis B core antibody (HBcAb), total"
+    },
+    {
+      "line_number": 9,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "83615",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 20.0,
+      "line_charge": 20.0,
+      "description": "Lactate dehydrogenase (LDH)"
+    },
+    {
+      "line_number": 10,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "80053",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 55.0,
+      "line_charge": 55.0,
+      "description": "Comprehensive metabolic panel"
+    }
+  ],
+  "totals": {
+    "total_charges": 360.0,
+    "insurance_payment": 198.4,
+    "patient_responsibility": 72.0,
+    "amount_due": 72.0
+  }
+}

@@ -77,6 +77,12 @@ async def status():
                 else "stub"
             ),
             "zg_storage_sidecar_url": settings.zg_storage_sidecar_url or None,
+            "storage_index": (
+                "0g-direct"
+                if settings.zg_private_key and settings.storage_index_address
+                else "stub"
+            ),
+            "storage_index_address": settings.storage_index_address or None,
         },
         "timing": timing,
         "ttl": {

@@ -34,6 +34,36 @@ from config import settings
 log = logging.getLogger("lethe.chain.zerog_blob")
 
 
+# Circuit breaker — once the sidecar fails N times in a row (e.g. 0G Galileo
+# flow contract is rejecting submissions for our wallet), short-circuit all
+# subsequent uploads to a stub instead of repeatedly hammering the sidecar.
+# Resets on the next successful upload, so transient failures don't lock the
+# breaker permanently. State is per-coordinator-process (memory only).
+_CIRCUIT_BREAKER_THRESHOLD = 2
+_consecutive_failures = 0
+_circuit_open = False
+
+
+def _record_failure(reason: str) -> None:
+    global _consecutive_failures, _circuit_open
+    _consecutive_failures += 1
+    if _consecutive_failures >= _CIRCUIT_BREAKER_THRESHOLD and not _circuit_open:
+        _circuit_open = True
+        log.warning(
+            "0g storage circuit breaker OPEN after %d consecutive failures (last: %s) — "
+            "subsequent uploads will short-circuit to stub. Will retry on next coordinator restart.",
+            _consecutive_failures, reason,
+        )
+
+
+def _record_success() -> None:
+    global _consecutive_failures, _circuit_open
+    if _circuit_open:
+        log.info("0g storage circuit breaker CLOSED — uploads succeeding again.")
+    _consecutive_failures = 0
+    _circuit_open = False
+
+
 def _stub(reason: str) -> Dict[str, Any]:
     return {
         "executor": f"stub ({reason})",
@@ -71,6 +101,27 @@ def _build_blob(consensus: Dict[str, Any], sha256_hex: str) -> Dict[str, Any]:
     }
 
 
+def _padded_blob_bytes(blob: Dict[str, Any], target_bytes: int = 4096) -> bytes:
+    """Serialize the blob, padding with whitespace so the byte length is at
+    least `target_bytes`. Bypasses 0G Storage Galileo's small-blob revert —
+    the flow contract's `submit()` rejects ~533-byte / 3-chunk uploads
+    intermittently. Padding to ~4 KB pushes us past that edge case.
+
+    The `_padding` field is ignored by `format_storage_priors_for_prompt`,
+    so this is read-side transparent.
+    """
+    initial = json.dumps(blob, separators=(",", ":")).encode("utf-8")
+    needed = target_bytes - len(initial)
+    if needed <= 0:
+        return initial
+    # Account for ',"_padding":""' overhead (≈14 bytes) when sizing the field.
+    overhead = 14
+    pad_len = max(0, needed - overhead)
+    padded = dict(blob)
+    padded["_padding"] = " " * pad_len
+    return json.dumps(padded, separators=(",", ":")).encode("utf-8")
+
+
 async def upload_pattern_blob(
     consensus: Dict[str, Any], sha256_hex: str,
 ) -> Dict[str, Any]:
@@ -83,8 +134,18 @@ async def upload_pattern_blob(
     if not sidecar_url:
         return _stub("no sidecar url")
 
+    # Circuit breaker — short-circuit if the sidecar has failed N consecutive
+    # times (testnet flow contract rejecting submissions, etc.). Avoids log
+    # spam + wasted round-trips. Auto-resets on next successful upload.
+    if _circuit_open:
+        return {
+            **_stub("circuit open · testnet flow contract unavailable"),
+            "circuit_breaker": "open",
+            "consecutive_failures": _consecutive_failures,
+        }
+
     blob = _build_blob(consensus, sha256_hex)
-    blob_json = json.dumps(blob, separators=(",", ":")).encode("utf-8")
+    blob_json = _padded_blob_bytes(blob, target_bytes=4096)
     started = time.perf_counter()
 
     try:
@@ -96,6 +157,7 @@ async def upload_pattern_blob(
             )
             duration_ms = int((time.perf_counter() - started) * 1000)
             if r.status_code != 200:
+                _record_failure(f"http {r.status_code}")
                 return {
                     **_stub(f"http {r.status_code}"),
                     "error": r.text[:240],
@@ -103,12 +165,14 @@ async def upload_pattern_blob(
                 }
             data = r.json()
             if not data.get("ok"):
+                _record_failure("sidecar error")
                 return {
                     **_stub("sidecar error"),
                     "error": data.get("error", "")[:240],
                     "duration_ms": duration_ms,
                 }
             tx = data.get("tx_hash")
+            _record_success()
             return {
                 "executor": "0g-storage",
                 "live": True,
@@ -121,6 +185,7 @@ async def upload_pattern_blob(
                 "duration_ms": duration_ms,
             }
     except Exception as e:
+        _record_failure(f"{type(e).__name__}")
         log.warning("0g storage upload failed: %s", e)
         return {
             **_stub(f"error: {type(e).__name__}"),

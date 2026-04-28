@@ -1,0 +1,137 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "gastroenterology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "99215 billed (high-complexity E&M) for a 7-year-old established patient follow-up for abdominal pain with nausea; documented history and exam support a straightforward 99213-level visit with low medical decision-making complexity, not high complexity.",
+        "expected_savings_usd": 142.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to 99215 on the same date as a hepatic ultrasound (76700), but the clinical documentation does not support a separately identifiable and significant E&M service beyond the decision to order the imaging; the E&M was not independently significant.",
+        "expected_savings_usd": 189.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Desert Peaks Gastroenterology Associates",
+    "npi": "3841029567",
+    "tax_id": "84-2917463",
+    "address": {
+      "street": "2280 N. Cottonwood Blvd, Suite 410",
+      "city": "St. George",
+      "state": "UT",
+      "zip": "84770"
+    },
+    "phone": "435-555-0192",
+    "specialty_taxonomy": "207RG0100X"
+  },
+  "patient": {
+    "name": "Elias Trujillo-Mora",
+    "dob": "2017-03-14",
+    "sex": "M",
+    "account_number": "WC-20240709-4418",
+    "address": {
+      "street": "614 Sagebrush Lane",
+      "city": "Hurricane",
+      "state": "UT",
+      "zip": "84737"
+    },
+    "insurance_id": "WC-UT-887234-A"
+  },
+  "insurance": {
+    "payer_name": "Intermountain Workers Compensation Fund",
+    "plan_type": "Workers Compensation",
+    "group_number": "WC-GRP-44821",
+    "subscriber_id": "WC-UT-887234-A"
+  },
+  "encounter": {
+    "date_of_service": "2024-07-09",
+    "billing_date": "2024-07-22",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "R10.13",
+      "description": "Epigastric pain"
+    },
+    {
+      "pointer": "B",
+      "icd10": "R11.0",
+      "description": "Nausea"
+    },
+    {
+      "pointer": "C",
+      "icd10": "K76.9",
+      "description": "Hepatic disease, unspecified"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z04.2",
+      "description": "Encounter for examination and observation following work accident"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-07-09",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 385.0,
+      "line_charge": 385.0,
+      "description": "Office visit, established patient, high medical decision complexity (upcoded from appropriate 99213)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-07-09",
+      "place_of_service": "11",
+      "cpt_hcpcs": "76700",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 248.0,
+      "line_charge": 248.0,
+      "description": "Ultrasound, abdominal, real time with image documentation, complete"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-07-09",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 18.0,
+      "line_charge": 18.0,
+      "description": "Handling and/or conveyance of specimen for transfer from the office to a laboratory"
+    }
+  ],
+  "totals": {
+    "total_charges": 651.0,
+    "insurance_payment": 312.0,
+    "patient_responsibility": 0.0,
+    "amount_due": 339.0
+  }
+}

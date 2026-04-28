@@ -1,0 +1,131 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "dental_oral_surgery",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "CPT 99215 (high-complexity E&M, level 5) billed for a new pediatric dental/oral surgery consultation that involved evaluation of a single supernumerary tooth with straightforward medical decision-making; a 99202 or 99203 would be appropriate for this brief, low-to-moderate complexity new patient visit.",
+        "expected_savings_usd": 112.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the upcoded 99215 E&M on the same date as the panoramic radiograph (D0330/CDT billed via 70355), but the evaluation was not separately significant from the radiologic interpretation; the exam was performed solely to assess the finding prompting the imaging.",
+        "expected_savings_usd": 148.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Pacific Academic Oral Surgery Associates",
+    "npi": "1437829056",
+    "tax_id": "83-4712905",
+    "address": {
+      "street": "4820 University Medical Drive, Suite 310",
+      "city": "Portland",
+      "state": "OR",
+      "zip": "97201"
+    },
+    "phone": "503-555-0182",
+    "specialty_taxonomy": "1223X0400X"
+  },
+  "patient": {
+    "name": "Marisol Delgado-Fuentes",
+    "dob": "2016-03-14",
+    "sex": "F",
+    "account_number": "PAC-2024-087341",
+    "address": {
+      "street": "718 SW Birchwood Lane",
+      "city": "Beaverton",
+      "state": "OR",
+      "zip": "97005"
+    },
+    "insurance_id": "OHP9341027684"
+  },
+  "insurance": {
+    "payer_name": "Oregon Health Plan - Trillium Community Health",
+    "plan_type": "Medicaid Managed Care",
+    "group_number": "OHPTCH-2024",
+    "subscriber_id": "OHP9341027684"
+  },
+  "encounter": {
+    "date_of_service": "2024-07-22",
+    "billing_date": "2024-08-05",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": "Pacific Academic Oral Surgery Associates \u2013 Outpatient Clinic"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "K00.1",
+      "description": "Supernumerary teeth"
+    },
+    {
+      "pointer": "B",
+      "icd10": "K07.32",
+      "description": "Horizontal impaction of tooth"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z01.21",
+      "description": "Encounter for dental examination and cleaning without abnormal findings"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-07-22",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 320.0,
+      "line_charge": 320.0,
+      "description": "Office or other outpatient visit, new patient, high complexity medical decision making (billed as level 5; documented complexity supports level 2-3 only)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-07-22",
+      "place_of_service": "11",
+      "cpt_hcpcs": "70355",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "Orthopantogram (panoramic X-ray of jaws), bilateral"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-07-22",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99000",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 18.0,
+      "line_charge": 18.0,
+      "description": "Handling and/or conveyance of specimen for transfer from the physician's office to a laboratory"
+    }
+  ],
+  "totals": {
+    "total_charges": 523.0,
+    "insurance_payment": 187.5,
+    "patient_responsibility": 0.0,
+    "amount_due": 335.5
+  }
+}

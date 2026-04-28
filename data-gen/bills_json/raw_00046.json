@@ -1,0 +1,151 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "pediatrics",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "High Desert Pediatric Specialists, PLLC",
+    "npi": "3847201956",
+    "tax_id": "84-3910274",
+    "address": {
+      "street": "2214 Mesa Verde Blvd, Suite 310",
+      "city": "Albuquerque",
+      "state": "NM",
+      "zip": "87109"
+    },
+    "phone": "505-882-4710",
+    "specialty_taxonomy": "208000000X"
+  },
+  "patient": {
+    "name": "Marcus T. Delgadillo",
+    "dob": "1998-03-14",
+    "sex": "M",
+    "account_number": "HDPS-2024-087341",
+    "address": {
+      "street": "519 Cottonwood Lane",
+      "city": "Rio Rancho",
+      "state": "NM",
+      "zip": "87124"
+    },
+    "insurance_id": "BCX994410287"
+  },
+  "insurance": {
+    "payer_name": "Blue Cross Blue Shield of New Mexico",
+    "plan_type": "PPO",
+    "group_number": "GRP-NM-447821",
+    "subscriber_id": "BCX994410287"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "J45.50",
+      "description": "Severe persistent asthma, uncomplicated"
+    },
+    {
+      "pointer": "B",
+      "icd10": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "pointer": "C",
+      "icd10": "L20.9",
+      "description": "Atopic dermatitis, unspecified"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z00.129",
+      "description": "Encounter for routine child health examination without abnormal findings"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99214",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 245.0,
+      "line_charge": 245.0,
+      "description": "Office or other outpatient visit, established patient, moderate medical decision making (30-39 min) \u2013 specialty referral for asthma management and allergic comorbidities"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "94010",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Spirometry, including graphic record, total and timed vital capacity, expiratory flow rate measurement(s)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "94070",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 98.0,
+      "line_charge": 98.0,
+      "description": "Bronchospasm provocation evaluation, multiple spirometric determinations"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "95044",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "C"
+      ],
+      "units": 10,
+      "unit_charge": 9.5,
+      "line_charge": 95.0,
+      "description": "Patch or application test(s) (specify number of tests)"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99401",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 60.0,
+      "line_charge": 60.0,
+      "description": "Preventive medicine counseling, individual, approximately 15 minutes \u2013 asthma action plan education and allergen avoidance counseling"
+    }
+  ],
+  "totals": {
+    "total_charges": 610.0,
+    "insurance_payment": 488.0,
+    "patient_responsibility": 122.0,
+    "amount_due": 122.0
+  }
+}

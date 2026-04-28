@@ -1,0 +1,215 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "emergency_medicine",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "DUPLICATE",
+        "affected_line": 3,
+        "description": "CPT 99285 (high-complexity ED E&M) is billed on line 1 and again on line 3 for the same date of service (2024-09-14) without a 76 or 77 modifier on the second instance, resulting in a duplicate charge of $685.00.",
+        "expected_savings_usd": 685.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 is appended to the ED E&M (99285) on the same DOS as a 12-lead ECG interpretation (93010). The ECG interpretation is a component of the ED visit work and does not represent a separately significant E&M service; modifier 25 is not appropriate in this context.",
+        "expected_savings_usd": 320.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Ridgecrest Emergency Physicians Group, LLC",
+    "npi": "1437829056",
+    "tax_id": "84-3917264",
+    "address": {
+      "street": "4801 Mesa Blanca Drive",
+      "city": "Albuquerque",
+      "state": "NM",
+      "zip": "87109"
+    },
+    "phone": "505-774-2310",
+    "specialty_taxonomy": "207P00000X"
+  },
+  "patient": {
+    "name": "Delores Faye Thistlewood",
+    "dob": "1951-03-22",
+    "sex": "F",
+    "account_number": "EM-20240914-88473",
+    "address": {
+      "street": "2214 Chamisa Road NE",
+      "city": "Rio Rancho",
+      "state": "NM",
+      "zip": "87144"
+    },
+    "insurance_id": "1ZQ44872001A"
+  },
+  "insurance": {
+    "payer_name": "Medicare Part B",
+    "plan_type": "Traditional Medicare",
+    "group_number": "N/A",
+    "subscriber_id": "1ZQ44872001A"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-14",
+    "billing_date": "2024-09-28",
+    "place_of_service_code": "23",
+    "place_of_service_description": "Emergency Room \u2013 Hospital",
+    "facility": "Ridgecrest Regional Medical Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "R00.1",
+      "description": "Bradycardia, unspecified"
+    },
+    {
+      "pointer": "B",
+      "icd10": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R55",
+      "description": "Syncope and collapse"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z87.39",
+      "description": "Personal history of other endocrine, nutritional and metabolic diseases"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "23",
+      "cpt_hcpcs": "99285",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 685.0,
+      "line_charge": 685.0,
+      "description": "Emergency department visit, high complexity medical decision making (MDM)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "23",
+      "cpt_hcpcs": "93010",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 48.0,
+      "line_charge": 48.0,
+      "description": "Electrocardiogram, routine ECG with at least 12 leads; interpretation and report only"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "23",
+      "cpt_hcpcs": "99285",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 685.0,
+      "line_charge": 685.0,
+      "description": "Emergency department visit, high complexity medical decision making (MDM) \u2013 duplicate"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "23",
+      "cpt_hcpcs": "71046",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Radiologic examination, chest; 2 views"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "23",
+      "cpt_hcpcs": "36415",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 18.0,
+      "line_charge": 18.0,
+      "description": "Collection of venous blood by venipuncture"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "23",
+      "cpt_hcpcs": "80053",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 58.0,
+      "line_charge": 58.0,
+      "description": "Comprehensive metabolic panel"
+    },
+    {
+      "line_number": 7,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "23",
+      "cpt_hcpcs": "85025",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 28.0,
+      "line_charge": 28.0,
+      "description": "Blood count; complete (CBC), automated and automated differential WBC count"
+    },
+    {
+      "line_number": 8,
+      "date_of_service": "2024-09-14",
+      "place_of_service": "23",
+      "cpt_hcpcs": "84484",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 44.0,
+      "line_charge": 44.0,
+      "description": "Assay of troponin, quantitative"
+    }
+  ],
+  "totals": {
+    "total_charges": 1678.0,
+    "insurance_payment": 742.5,
+    "patient_responsibility": 185.63,
+    "amount_due": 185.63
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "emergency_medicine",
+    "bill_type": "UB-04",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Magnolia Regional Medical Center",
+    "npi": "3847261905",
+    "tax_id": "63-4817293",
+    "address": {
+      "street": "1402 Camellia Blvd",
+      "city": "Hattiesburg",
+      "state": "MS",
+      "zip": "39401"
+    },
+    "phone": "601-555-0183",
+    "specialty_taxonomy": "282N00000X"
+  },
+  "patient": {
+    "name": "Brianna Yolanda Trosclair",
+    "dob": "2005-03-14",
+    "sex": "F",
+    "account_number": "EM-20230816-74921",
+    "address": {
+      "street": "308 Longleaf Pine Rd",
+      "city": "Petal",
+      "state": "MS",
+      "zip": "39465"
+    },
+    "insurance_id": "HBX9274013F"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Mississippi",
+    "plan_type": "PPO",
+    "group_number": "GRP-448821",
+    "subscriber_id": "HBX9274013F"
+  },
+  "encounter": {
+    "date_of_service": "2023-08-16",
+    "billing_date": "2023-08-22",
+    "place_of_service_code": "23",
+    "place_of_service_description": "Emergency Room \u2013 Hospital",
+    "facility": "Magnolia Regional Medical Center"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "Z00.00",
+      "description": "Encounter for general adult medical examination without abnormal findings"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Z11.51",
+      "description": "Encounter for screening for human papillomavirus (HPV)"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z11.3",
+      "description": "Encounter for screening examination for infections with a predominantly sexual mode of transmission"
+    },
+    {
+      "pointer": "D",
+      "icd10": "R10.9",
+      "description": "Unspecified abdominal pain"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2023-08-16",
+      "place_of_service": "23",
+      "cpt_hcpcs": "99283",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 620.0,
+      "line_charge": 620.0,
+      "description": "Emergency department visit, moderate severity (Level 3)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2023-08-16",
+      "place_of_service": "23",
+      "cpt_hcpcs": "87491",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "NAAT for Chlamydia trachomatis, vaginal/cervical specimen"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2023-08-16",
+      "place_of_service": "23",
+      "cpt_hcpcs": "87591",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 185.0,
+      "line_charge": 185.0,
+      "description": "NAAT for Neisseria gonorrhoeae, vaginal/cervical specimen"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2023-08-16",
+      "place_of_service": "23",
+      "cpt_hcpcs": "87624",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 210.0,
+      "line_charge": 210.0,
+      "description": "Infectious agent detection by nucleic acid, HPV, high-risk types"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2023-08-16",
+      "place_of_service": "23",
+      "cpt_hcpcs": "81025",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 48.0,
+      "line_charge": 48.0,
+      "description": "Urine pregnancy test, qualitative"
+    },
+    {
+      "line_number": 6,
+      "date_of_service": "2023-08-16",
+      "place_of_service": "23",
+      "cpt_hcpcs": "85025",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 112.0,
+      "line_charge": 112.0,
+      "description": "Complete blood count (CBC) with automated differential"
+    },
+    {
+      "line_number": 7,
+      "date_of_service": "2023-08-16",
+      "place_of_service": "23",
+      "cpt_hcpcs": "36415",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 35.0,
+      "line_charge": 35.0,
+      "description": "Routine venipuncture for laboratory specimen collection"
+    }
+  ],
+  "totals": {
+    "total_charges": 1395.0,
+    "insurance_payment": 987.4,
+    "patient_responsibility": 407.6,
+    "amount_due": 407.6
+  }
+}

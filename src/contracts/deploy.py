@@ -36,6 +36,7 @@ CONTRACTS = {
     "PatternRegistry": CONTRACTS_DIR / "PatternRegistry.sol",
     "DisputeRegistry": CONTRACTS_DIR / "DisputeRegistry.sol",
     "AppealRegistry":  CONTRACTS_DIR / "AppealRegistry.sol",
+    "StorageIndex":    CONTRACTS_DIR / "StorageIndex.sol",
 }
 
 # Contract name -> .env variable to paste the address into. The Sepolia
@@ -45,6 +46,7 @@ ENV_KEYS = {
     "PatternRegistry": "PATTERN_REGISTRY_ADDRESS",
     "DisputeRegistry": "LETHE_DISPUTE_REGISTRY_ADDRESS",
     "AppealRegistry":  "LETHE_APPEAL_REGISTRY_ADDRESS",
+    "StorageIndex":    "LETHE_STORAGE_INDEX_ADDRESS",
 }
 
 

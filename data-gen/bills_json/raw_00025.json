@@ -1,0 +1,131 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "dermatology",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Sunstone Dermatology Associates",
+    "npi": "3847261905",
+    "tax_id": "85-4712309",
+    "address": {
+      "street": "4821 E Camelback Rd, Suite 210",
+      "city": "Scottsdale",
+      "state": "AZ",
+      "zip": "85251"
+    },
+    "phone": "480-555-0192",
+    "specialty_taxonomy": "207N00000X"
+  },
+  "patient": {
+    "name": "Mateo Delgado-Fuentes",
+    "dob": "2017-03-14",
+    "sex": "M",
+    "account_number": "SDA-2024-008834",
+    "address": {
+      "street": "1103 W Pinon Drive",
+      "city": "Chandler",
+      "state": "AZ",
+      "zip": "85224"
+    },
+    "insurance_id": "BCB-AZ-7742198301"
+  },
+  "insurance": {
+    "payer_name": "Blue Cross Blue Shield of Arizona",
+    "plan_type": "PPO",
+    "group_number": "GRP-990124",
+    "subscriber_id": "BCB-AZ-7742198301"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "L20.89",
+      "description": "Other atopic dermatitis"
+    },
+    {
+      "pointer": "B",
+      "icd10": "L20.0",
+      "description": "Besnier's prurigo (atopic neurodermatitis)"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z51.89",
+      "description": "Encounter for other specified aftercare / specialty referral follow-up"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99204",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office or other outpatient visit, new patient, moderate medical decision making (45 min)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "96372",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 48.0,
+      "line_charge": 48.0,
+      "description": "Therapeutic, prophylactic, or diagnostic injection, subcutaneous or intramuscular"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "J1030",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 22.0,
+      "line_charge": 22.0,
+      "description": "Injection, methylprednisolone acetate, 40 mg"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "95044",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 78.0,
+      "line_charge": 78.0,
+      "description": "Patch or application test(s), 1-5 tests"
+    }
+  ],
+  "totals": {
+    "total_charges": 433.0,
+    "insurance_payment": 312.0,
+    "patient_responsibility": 121.0,
+    "amount_due": 121.0
+  }
+}

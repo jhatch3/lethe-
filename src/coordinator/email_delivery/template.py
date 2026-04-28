@@ -55,10 +55,14 @@ def build_appeal_email_html(
     total_agents: int,
     proof: Dict[str, Any],
     sender_name: str = "Lethe",
+    public_url: str = "http://localhost:3000",
 ) -> str:
-    """Compose the HTML body. `proof` is the receipt dict from the pipeline."""
+    """Compose the HTML body. `proof` is the receipt dict from the pipeline.
+    `public_url` is the Lethe dashboard root, used to build the verify link.
+    """
     sha = bill_sha256[:64] if bill_sha256.startswith("0x") else bill_sha256
     sha_disp = sha if sha.startswith("0x") else "0x" + sha
+    verify_url = f"{public_url.rstrip('/')}/verify?sha={sha_disp}"
 
     # Convert the drafted letter to safe HTML (preserve linebreaks).
     letter_html = (
@@ -154,9 +158,25 @@ def build_appeal_email_html(
           {letter_html}
         </td></tr>
 
+        <tr><td style="padding:8px 32px 0">
+          <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:14px 18px">
+            <div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#4338ca;margin-bottom:4px">
+              Verify this audit
+            </div>
+            <a href="{_html.escape(verify_url)}" style="color:#1e1b4b;font-size:14px;text-decoration:none;font-weight:500">
+              {_html.escape(verify_url)} ↗
+            </a>
+            <div style="color:#4338ca;font-size:12px;margin-top:6px;line-height:1.5">
+              Open this link to look up the audit by SHA-256 and see every on-chain artifact
+              (Galileo anchor, pattern index, storage commitment, Sepolia mirror, dispute filing)
+              with one click.
+            </div>
+          </div>
+        </td></tr>
+
         <tr><td style="padding:24px 32px 8px">
           <div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#9b9b9b;margin-bottom:6px">
-            Chain verification
+            Chain verification (raw artifacts)
           </div>
           <div style="color:#6b6b6b;font-size:13px;margin-bottom:12px;line-height:1.5">
             Bill SHA-256: <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#222">{_html.escape(sha_disp)}</span>

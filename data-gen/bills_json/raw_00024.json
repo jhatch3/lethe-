@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "psychiatry",
+    "bill_type": "CMS-1500",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Harborview Behavioral Health Associates",
+    "npi": "3847201956",
+    "tax_id": "84-2731095",
+    "address": {
+      "street": "2214 Westlake Ave N, Suite 310",
+      "city": "Seattle",
+      "state": "WA",
+      "zip": "98109"
+    },
+    "phone": "206-555-0183",
+    "specialty_taxonomy": "2084P0800X"
+  },
+  "patient": {
+    "name": "Marcus Deleon",
+    "dob": "1989-04-17",
+    "sex": "M",
+    "account_number": "HBA-2024-088421",
+    "address": {
+      "street": "5503 Phinney Ave N",
+      "city": "Seattle",
+      "state": "WA",
+      "zip": "98103"
+    },
+    "insurance_id": "WPN8841302047"
+  },
+  "insurance": {
+    "payer_name": "Regence BlueShield of Washington",
+    "plan_type": "PPO",
+    "group_number": "GRP-774210",
+    "subscriber_id": "WPN8841302047"
+  },
+  "encounter": {
+    "date_of_service": "2024-03-14",
+    "billing_date": "2024-03-22",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "F32.1",
+      "description": "Major depressive disorder, single episode, moderate"
+    },
+    {
+      "pointer": "B",
+      "icd10": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z00.00",
+      "description": "Encounter for general adult medical examination without abnormal findings"
+    },
+    {
+      "pointer": "D",
+      "icd10": "Z87.39",
+      "description": "Personal history of other mental and behavioral disorders"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-03-14",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99214",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 285.0,
+      "line_charge": 285.0,
+      "description": "Office or other outpatient visit, established patient, moderate medical decision making, 30-39 minutes"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-03-14",
+      "place_of_service": "11",
+      "cpt_hcpcs": "90837",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 320.0,
+      "line_charge": 320.0,
+      "description": "Psychotherapy, 60 minutes with patient"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-03-14",
+      "place_of_service": "11",
+      "cpt_hcpcs": "96127",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 2,
+      "unit_charge": 28.0,
+      "line_charge": 56.0,
+      "description": "Brief emotional/behavioral assessment (PHQ-9 and GAD-7), per standardized instrument, with scoring and documentation"
+    }
+  ],
+  "totals": {
+    "total_charges": 661.0,
+    "insurance_payment": 487.4,
+    "patient_responsibility": 173.6,
+    "amount_due": 173.6
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "oncology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "99215 (high-complexity E&M) billed for a new specialty referral encounter documented as a straightforward initial consultation review of outside pathology and staging imaging with a single chronic condition (early-stage prostate cancer), which warrants at most 99214. Medical decision-making complexity does not support the highest-level office visit.",
+        "expected_savings_usd": 98.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the upcoded 99215 on the same date as 96372 (therapeutic injection for leuprolide depot). The E&M on this date reflects only the discussion of treatment options and staging review, which is not separately significant from the decision to administer the injection and does not meet criteria for a distinct evaluation and management service on that same date.",
+        "expected_savings_usd": 145.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Harborview Oncology Associates",
+    "npi": "1437829056",
+    "tax_id": "47-2918364",
+    "address": {
+      "street": "2814 Chesapeake Medical Plaza, Suite 310",
+      "city": "Baltimore",
+      "state": "MD",
+      "zip": "21201"
+    },
+    "phone": "410-555-0183",
+    "specialty_taxonomy": "207RX0202X"
+  },
+  "patient": {
+    "name": "Gerald T. Mancuso",
+    "dob": "1964-03-17",
+    "sex": "M",
+    "account_number": "HVO-2024-087441",
+    "address": {
+      "street": "715 Ridgewood Court",
+      "city": "Annapolis",
+      "state": "MD",
+      "zip": "21401"
+    },
+    "insurance_id": "BCB-MD-447821993"
+  },
+  "insurance": {
+    "payer_name": "CareFirst BlueCross BlueShield of Maryland",
+    "plan_type": "PPO",
+    "group_number": "GRP-558820",
+    "subscriber_id": "BCB-MD-447821993"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-11",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "C61",
+      "description": "Malignant neoplasm of prostate"
+    },
+    {
+      "pointer": "B",
+      "icd10": "Z85.46",
+      "description": "Personal history of malignant neoplasm of prostate"
+    },
+    {
+      "pointer": "C",
+      "icd10": "Z79.899",
+      "description": "Other long-term (current) drug therapy"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B"
+      ],
+      "units": 1,
+      "unit_charge": 385.0,
+      "line_charge": 385.0,
+      "description": "Office or other outpatient visit, established patient, high medical decision making (upcoded from appropriate 99214 level)"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "J9217",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 1842.0,
+      "line_charge": 1842.0,
+      "description": "Leuprolide acetate (for depot suspension), 7.5 mg (Lupron Depot)"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "96372",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 95.0,
+      "line_charge": 95.0,
+      "description": "Therapeutic, prophylactic, or diagnostic injection; subcutaneous or intramuscular"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-11",
+      "place_of_service": "11",
+      "cpt_hcpcs": "86316",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 78.0,
+      "line_charge": 78.0,
+      "description": "Immunoassay for tumor antigen; PSA (prostate specific antigen)"
+    }
+  ],
+  "totals": {
+    "total_charges": 2400.0,
+    "insurance_payment": 1820.0,
+    "patient_responsibility": 580.0,
+    "amount_due": 580.0
+  }
+}

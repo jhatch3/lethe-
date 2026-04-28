@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "radiology",
+    "bill_type": "UB-04",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 2,
+        "description": "CPT 74178 (CT abdomen and pelvis with contrast, high complexity) billed when clinical documentation and ordering context support only a single-region study (74177, CT abdomen with contrast). The after-hours add-on does not justify upgrading to a combined abdomen/pelvis composite code when only abdominal imaging was ordered and documented.",
+        "expected_savings_usd": 187.5
+      },
+      {
+        "error_type": "INFLATED_CHARGE",
+        "affected_line": 3,
+        "description": "CPT 76770 (retroperitoneal ultrasound complete) billed at $1,420.00 per unit, which exceeds 5x the Medicare national allowed amount (~$112) for this code. No supporting documentation or rare circumstance justifies this charge level.",
+        "expected_savings_usd": 860.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Intermountain Diagnostic Imaging Associates",
+    "npi": "3847261905",
+    "tax_id": "84-2731605",
+    "address": {
+      "street": "4820 W Copper Ridge Blvd",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "zip": "84104"
+    },
+    "phone": "801-555-0293",
+    "specialty_taxonomy": "2085R0202X"
+  },
+  "patient": {
+    "name": "Maren Thalia Kostreva",
+    "dob": "1988-03-14",
+    "sex": "F",
+    "account_number": "IDIA-2024-088341",
+    "address": {
+      "street": "217 Sagebrush Loop",
+      "city": "West Jordan",
+      "state": "UT",
+      "zip": "84084"
+    },
+    "insurance_id": "UHC8834127650"
+  },
+  "insurance": {
+    "payer_name": "United HealthCare Choice Plus",
+    "plan_type": "PPO",
+    "group_number": "GRP-774921",
+    "subscriber_id": "UHC8834127650"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-07",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "22",
+    "place_of_service_description": "On Campus-Outpatient Hospital",
+    "facility": "Ridgecrest Regional Medical Center Outpatient Imaging"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "R10.9",
+      "description": "Unspecified abdominal pain"
+    },
+    {
+      "pointer": "B",
+      "icd10": "N20.0",
+      "description": "Calculus of kidney"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R31.9",
+      "description": "Hematuria, unspecified"
+    },
+    {
+      "pointer": "D",
+      "icd10": "N28.9",
+      "description": "Disorder of kidney and ureter, unspecified"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-07",
+      "place_of_service": "22",
+      "cpt_hcpcs": "70553",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 1850.0,
+      "line_charge": 1850.0,
+      "description": "MRI brain with and without contrast \u2014 ordered for acute headache concurrent with abdominal pain presentation"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-07",
+      "place_of_service": "22",
+      "cpt_hcpcs": "74178",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 2340.0,
+      "line_charge": 2340.0,
+      "description": "CT abdomen and pelvis with contrast \u2014 UPCODED from 74177 (CT abdomen with contrast only); ordering provider documented abdomen-only study for suspected nephrolithiasis"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-07",
+      "place_of_service": "22",
+      "cpt_hcpcs": "76770",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "C",
+        "D"
+      ],
+      "units": 1,
+      "unit_charge": 1420.0,
+      "line_charge": 1420.0,
+      "description": "Ultrasound retroperitoneal complete \u2014 INFLATED charge, billed at $1,420 vs. typical allowed ~$112-$180"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-09-07",
+      "place_of_service": "22",
+      "cpt_hcpcs": "93005",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 215.0,
+      "line_charge": 215.0,
+      "description": "Electrocardiogram, routine ECG with at least 12 leads, tracing only without interpretation and report"
+    },
+    {
+      "line_number": 5,
+      "date_of_service": "2024-09-07",
+      "place_of_service": "22",
+      "cpt_hcpcs": "36415",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 42.0,
+      "line_charge": 42.0,
+      "description": "Venipuncture, routine"
+    }
+  ],
+  "totals": {
+    "total_charges": 5867.0,
+    "insurance_payment": 3140.2,
+    "patient_responsibility": 587.8,
+    "amount_due": 587.8
+  }
+}

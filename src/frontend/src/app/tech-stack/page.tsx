@@ -75,9 +75,9 @@ const STAGES: StageRow[] = [
   },
   {
     step: "9 · patterns + storage",
-    what: "Index anonymized findings (code · action · severity · amount) to PatternRegistry on 0G Chain in parallel with uploading the full schema-versioned audit blob to 0G Storage. Two pillars, one stage. Future audits read patterns back as priors.",
-    tool: "PatternRegistry events on 0G Chain · @0glabs/0g-ts-sdk via Node sidecar",
-    out: "indexed event log + storage merkle root + commitment tx",
+    what: "Index anonymized findings to PatternRegistry on 0G Chain AND upload the full schema-versioned audit blob to 0G Storage AND record the (billHash → storageRoot) pointer to StorageIndex on 0G Chain — all in one stage. Future audits query StorageIndex for recent roots and pull blobs back via the sidecar's GET /download endpoint, giving agents richer-than-chain priors.",
+    tool: "PatternRegistry + StorageIndex events on 0G Chain · @0glabs/0g-ts-sdk via Node sidecar",
+    out: "PatternRegistry tx + storage merkle root + commitment tx + StorageIndex tx",
   },
   {
     step: "10 · draft",
@@ -140,19 +140,22 @@ const STACK: StackEntry[] = [
   {
     layer: "0G — Chain",
     items: [
-      { name: "Solidity", role: "BillRegistry + PatternRegistry contracts" },
+      { name: "Solidity", role: "BillRegistry · PatternRegistry · StorageIndex contracts" },
       { name: "web3.py + eth-account", role: "EVM RPC + wallet signing for writes" },
       { name: "py-solc-x", role: "compile + deploy contracts (no Foundry)" },
-      { name: "0G Galileo testnet (chain id 16602)", role: "canonical anchor + pattern index + storage commitments" },
+      { name: "0G Galileo testnet (chain id 16602)", role: "canonical anchor + pattern index + storage pointer" },
+      { name: "StorageIndex contract", role: "0xc435…E614 — (billHash → storageRoot) pointer, queried via eth_getLogs for read-back" },
     ],
   },
   {
     layer: "0G — Storage",
     items: [
-      { name: "@0glabs/0g-ts-sdk", role: "Node SDK for 0G Storage uploads (Python SDK is broken upstream)" },
-      { name: "Node storage sidecar", role: "POST /upload → merkle root + on-chain commitment tx (port 8788)" },
+      { name: "@0glabs/0g-ts-sdk", role: "Node SDK for 0G Storage uploads + downloads (Python SDK is broken upstream)" },
+      { name: "Node storage sidecar", role: "POST /upload → merkle root + commitment tx · GET /download?root=R → bytes (port 8788)" },
       { name: "Indexer turbo endpoint", role: "indexer-storage-testnet-turbo.0g.ai — selects replication nodes" },
-      { name: "Schema lethe.audit.pattern.v1", role: "anonymized full-resolution audit blob format" },
+      { name: "Schema lethe.audit.pattern.v1", role: "anonymized full-resolution audit blob format · 4 KB padded for flow contract compat" },
+      { name: "Read-back loop", role: "StorageIndex eth_getLogs → sidecar GET /download → richer-than-chain agent priors" },
+      { name: "Circuit breaker", role: "after 2 consecutive flow contract reverts, short-circuits to stub for the rest of the session" },
     ],
   },
   {

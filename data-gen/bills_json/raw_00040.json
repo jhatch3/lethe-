@@ -1,0 +1,133 @@
+{
+  "metadata": {
+    "is_clean": true,
+    "specialty": "radiology",
+    "bill_type": "UB-04",
+    "planted_errors": []
+  },
+  "provider": {
+    "name": "Cascade Valley Community Hospital Radiology Department",
+    "npi": "3847261095",
+    "tax_id": "91-4728305",
+    "address": {
+      "street": "1402 Ridgeline Blvd",
+      "city": "Enumclaw",
+      "state": "WA",
+      "zip": "98022"
+    },
+    "phone": "360-555-0174",
+    "specialty_taxonomy": "2085R0202X"
+  },
+  "patient": {
+    "name": "Maren Elspeth Tollefson",
+    "dob": "1989-03-14",
+    "sex": "F",
+    "account_number": "CVH-20240318-88421",
+    "address": {
+      "street": "847 Fern Hollow Rd",
+      "city": "Black Diamond",
+      "state": "WA",
+      "zip": "98010"
+    },
+    "insurance_id": "WPN00284716"
+  },
+  "insurance": {
+    "payer_name": "PacificCrest Health Plan",
+    "plan_type": "PPO",
+    "group_number": "GRP-447821",
+    "subscriber_id": "WPN00284716"
+  },
+  "encounter": {
+    "date_of_service": "2024-03-18",
+    "billing_date": "2024-03-25",
+    "place_of_service_code": "22",
+    "place_of_service_description": "On Campus-Outpatient Hospital",
+    "facility": "Cascade Valley Community Hospital"
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "N83.202",
+      "description": "Unspecified ovarian cyst, left side"
+    },
+    {
+      "pointer": "B",
+      "icd10": "N94.89",
+      "description": "Other specified conditions associated with female genital organs and menstrual cycle"
+    },
+    {
+      "pointer": "C",
+      "icd10": "R10.2",
+      "description": "Pelvic and perineal pain"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "76856",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 412.0,
+      "line_charge": 412.0,
+      "description": "Ultrasound, pelvic (nonobstetric), real time with image documentation; complete"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "76830",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 388.0,
+      "line_charge": 388.0,
+      "description": "Ultrasound, transvaginal"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "74178",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 1248.0,
+      "line_charge": 1248.0,
+      "description": "CT abdomen and pelvis with contrast"
+    },
+    {
+      "line_number": 4,
+      "date_of_service": "2024-03-18",
+      "place_of_service": "22",
+      "cpt_hcpcs": "77061",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A"
+      ],
+      "units": 1,
+      "unit_charge": 156.0,
+      "line_charge": 156.0,
+      "description": "Digital breast tomosynthesis, unilateral"
+    }
+  ],
+  "totals": {
+    "total_charges": 2204.0,
+    "insurance_payment": 1587.0,
+    "patient_responsibility": 617.0,
+    "amount_due": 617.0
+  }
+}

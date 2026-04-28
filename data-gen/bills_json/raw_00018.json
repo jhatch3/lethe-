@@ -1,0 +1,133 @@
+{
+  "metadata": {
+    "is_clean": false,
+    "specialty": "neurology",
+    "bill_type": "CMS-1500",
+    "planted_errors": [
+      {
+        "error_type": "UPCODE",
+        "affected_line": 1,
+        "description": "99215 (high-complexity E&M) billed for a routine pediatric neurology screening visit. Documentation supports a straightforward evaluation of developmental milestones with no chronic conditions, multiple diagnoses, or high-complexity medical decision-making \u2014 consistent with 99213 at most.",
+        "expected_savings_usd": 138.0
+      },
+      {
+        "error_type": "MODIFIER_25_ABUSE",
+        "affected_line": 1,
+        "description": "Modifier 25 appended to the E&M code (99215-25) to justify billing a separate EEG interpretation (95816) on the same date, but the clinical documentation indicates the EEG was the reason for the visit, not a separately significant evaluation and management service.",
+        "expected_savings_usd": 92.0
+      }
+    ]
+  },
+  "provider": {
+    "name": "Pacific Coast Neurology Associates",
+    "npi": "3847261905",
+    "tax_id": "47-3829165",
+    "address": {
+      "street": "2240 Hillcrest Medical Blvd, Suite 310",
+      "city": "Portland",
+      "state": "OR",
+      "zip": "97201"
+    },
+    "phone": "503-555-0182",
+    "specialty_taxonomy": "2084N0400X"
+  },
+  "patient": {
+    "name": "Ethan Marcus Delgado",
+    "dob": "2018-03-14",
+    "sex": "M",
+    "account_number": "PCN-20240837",
+    "address": {
+      "street": "714 Fernwood Drive",
+      "city": "Beaverton",
+      "state": "OR",
+      "zip": "97005"
+    },
+    "insurance_id": "BCC8834720"
+  },
+  "insurance": {
+    "payer_name": "BlueCross BlueShield of Oregon",
+    "plan_type": "PPO",
+    "group_number": "GRP-004492",
+    "subscriber_id": "BCC8834720"
+  },
+  "encounter": {
+    "date_of_service": "2024-09-10",
+    "billing_date": "2024-09-18",
+    "place_of_service_code": "11",
+    "place_of_service_description": "Office",
+    "facility": null
+  },
+  "diagnoses": [
+    {
+      "pointer": "A",
+      "icd10": "Z13.88",
+      "description": "Encounter for screening for disorder due to exposure to contaminants"
+    },
+    {
+      "pointer": "B",
+      "icd10": "R41.3",
+      "description": "Other amnesia / developmental screening concern"
+    },
+    {
+      "pointer": "C",
+      "icd10": "F80.9",
+      "description": "Developmental disorder of speech and language, unspecified"
+    }
+  ],
+  "service_lines": [
+    {
+      "line_number": 1,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "99215",
+      "modifiers": [
+        "25"
+      ],
+      "diagnosis_pointers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 325.0,
+      "line_charge": 325.0,
+      "description": "Office or other outpatient visit, established patient, high medical complexity"
+    },
+    {
+      "line_number": 2,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "95816",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "A",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 215.0,
+      "line_charge": 215.0,
+      "description": "Electroencephalogram (EEG); including recording awake and drowsy"
+    },
+    {
+      "line_number": 3,
+      "date_of_service": "2024-09-10",
+      "place_of_service": "11",
+      "cpt_hcpcs": "96110",
+      "modifiers": [],
+      "diagnosis_pointers": [
+        "B",
+        "C"
+      ],
+      "units": 1,
+      "unit_charge": 58.0,
+      "line_charge": 58.0,
+      "description": "Developmental screening with scoring and documentation, per standardized instrument"
+    }
+  ],
+  "totals": {
+    "total_charges": 598.0,
+    "insurance_payment": 310.0,
+    "patient_responsibility": 288.0,
+    "amount_due": 288.0
+  }
+}
