@@ -97,95 +97,55 @@ When consensus lands on `dispute`, KeeperHub fires a **second** workflow recordi
 
 ```mermaid
 flowchart TB
-    subgraph Client["🖥️ Client"]
-        UI[Next.js Dashboard<br/>upload · live SSE viewer · receipt PDF · send appeal]
-    end
+    %% === Pipeline spine: top-to-bottom data flow, one main path ===
+    User["💻 Browser dashboard<br/><sub>upload · SSE viewer · send appeal</sub>"]
+    Parse["🧹 Parse + redact PHI<br/><sub>parser → regex → LLM sweep</sub>"]
+    Round1["🤖 Round 1 · 3 independent agents<br/><sub>α GPT-4o · β Claude Sonnet · γ Gemini or 0G Compute</sub>"]
+    AXL["🕸️ Gensyn AXL P2P mesh<br/><sub>POST /send · GET /recv · ed25519 peer ids</sub>"]
+    Round2["🔁 Round 2 · reflect on peer findings"]
+    Tally["⚖️ Consensus · 2-of-3 quorum"]
+    Drafter["✍️ Drafter agent<br/><sub>Claude → appeal letter</sub>"]
+    Receipt["📋 Receipt + letter on dashboard<br/><sub>5 tx hashes · storage merkle root</sub>"]
 
-    subgraph Orchestration["⚙️ Coordinator — FastAPI"]
-        direction LR
-        API[API gateway<br/>+ SSE event bus]
-        Parse[Parser<br/>PDF / TXT / image]
-        Redact[PHI Redactor<br/>regex + LLM sweep]
-        Tally[Consensus<br/>2-of-3 · clarify on tie]
-        Drafter[Drafter<br/>Claude · appeal letter]
-    end
+    User ==>|"PDF upload"| API
+    API["⚙️ FastAPI coordinator<br/><sub>SSE event bus</sub>"] ==> Parse
+    Parse ==>|"redacted payload"| Round1
+    Round1 ==>|"broadcast findings"| AXL
+    AXL ==> Round2
+    Round2 ==>|"revised votes"| Tally
+    Tally ==> Drafter
+    Drafter ==> Receipt
 
-    subgraph AgentMesh["🕸️ Agent mesh — Gensyn AXL P2P"]
-        direction TB
-        Alpha[Agent α<br/>GPT-4o<br/>ed25519 c4737e16…]
-        Beta[Agent β<br/>Claude Sonnet 4.5<br/>ed25519 fc40f9dd…]
-        Gamma[Agent γ<br/>Gemini Flash<br/>or 0G Compute node<br/>ed25519 739dd219…]
-        Alpha <-->|AXL| Beta
-        Alpha <-->|AXL| Gamma
-        Beta <-->|AXL| Gamma
-    end
+    %% === Side branch: γ on decentralized inference (optional) ===
+    Round1 -.->|"γ via headers sidecar :8787"| Compute["🧠 0G Compute provider<br/><sub>decentralized inference · TEE-attested</sub>"]
+    Compute -.-> Round1
 
-    subgraph Sidecars["🔌 Node sidecars"]
-        direction TB
-        HSidecar[Headers sidecar<br/>:8787 · per-request signing]
-        SSidecar[Storage sidecar<br/>:8788 · @0glabs/0g-ts-sdk]
-    end
+    %% === Side branch: persistence (parallel writes from Tally) ===
+    Tally ==> ZGChain["⛓️ 0G Chain · Galileo<br/><sub>BillRegistry + PatternRegistry</sub>"]
+    Tally ==>|"via storage sidecar :8788"| ZGStorage["💾 0G Storage<br/><sub>full audit blob · merkle-rooted</sub>"]
+    Tally ==> KH1["🔁 KH workflow #1"] ==> SepMirror["⛓️ Sepolia BillRegistry mirror"]
+    Tally -.->|"if dispute"| KH2["🔁 KH workflow #2"] -.-> SepDispute["⛓️ Sepolia DisputeRegistry"]
 
-    subgraph DecInf["🧠 Decentralized inference"]
-        ZGCompute[0G Compute provider<br/>OpenAI-compatible · TEE-attested]
-    end
+    %% === Side branch: user-initiated appeal send (after receipt) ===
+    Receipt -.->|"user clicks Send"| Email["📧 Email · Resend / SMTP / stub"]
+    Email -.-> Provider["📥 Provider's billing inbox"]
+    Email -.->|"recipient hash"| KH3["🔁 KH workflow #3"] -.-> SepAppeal["⛓️ Sepolia AppealRegistry"]
 
-    subgraph ZG["⛓️ 0G Galileo · chain id 16602"]
-        direction TB
-        BillReg[BillRegistry<br/>SHA-256 + verdict anchor]
-        PatReg[PatternRegistry<br/>anonymized findings]
-        ZGStore[0G Storage<br/>full audit blob<br/>merkle-rooted]
-    end
+    classDef user    fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
+    classDef coord   fill:#0b1220,stroke:#34d399,stroke-width:2px,color:#fff
+    classDef agent   fill:#0b1220,stroke:#fbbf24,stroke-width:2px,color:#fff
+    classDef compute fill:#0b1220,stroke:#22d3ee,stroke-width:2px,color:#fff
+    classDef chain   fill:#0b1220,stroke:#f472b6,stroke-width:2px,color:#fff
+    classDef exec    fill:#0b1220,stroke:#22c55e,stroke-width:2px,color:#fff
+    classDef email   fill:#0b1220,stroke:#f97316,stroke-width:2px,color:#fff
 
-    subgraph KH["🔁 KeeperHub · workflow execution"]
-        KHrest[Direct Execution REST<br/>+ MCP transport]
-    end
-
-    subgraph Sepolia["⛓️ Ethereum Sepolia"]
-        direction TB
-        SepBill[BillRegistry mirror<br/>workflow #1]
-        SepDisp[DisputeRegistry<br/>workflow #2 · on dispute]
-        SepApp[AppealRegistry<br/>workflow #3 · on send]
-    end
-
-    subgraph Email["📧 Appeal delivery"]
-        Resend[Transactional email<br/>Resend / SMTP / stub]
-    end
-
-    UI ==>|HTTP request · SSE event stream| API
-    API --> Parse --> Redact
-    Redact ==>|redacted payload| AgentMesh
-    Gamma -.->|optional| HSidecar
-    HSidecar -.-> ZGCompute
-    AgentMesh ==>|votes + peer findings| Tally
-    Tally --> Drafter
-    Tally ==>|sha-256 + verdict| BillReg
-    Tally ==>|patterns| PatReg
-    Tally ==>|full audit blob| SSidecar --> ZGStore
-    Tally ==>|sha-256 + verdict| KHrest
-    KHrest --> SepBill
-    KHrest -.->|on dispute| SepDisp
-    UI ==>|"Send appeal" click| API
-    API ==>|appeal letter HTML| Resend
-    API ==>|recipient hash| KHrest --> SepApp
-
-    classDef client fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
-    classDef orch   fill:#0b1220,stroke:#34d399,stroke-width:2px,color:#fff
-    classDef agent  fill:#0b1220,stroke:#c084fc,stroke-width:2px,color:#fff
-    classDef side   fill:#0b1220,stroke:#fbbf24,stroke-width:2px,color:#fff
-    classDef dec    fill:#0b1220,stroke:#22d3ee,stroke-width:2px,color:#fff
-    classDef chain  fill:#0b1220,stroke:#f472b6,stroke-width:2px,color:#fff
-    classDef exec   fill:#0b1220,stroke:#22c55e,stroke-width:2px,color:#fff
-    classDef mail   fill:#0b1220,stroke:#f97316,stroke-width:2px,color:#fff
-
-    class UI client
-    class API,Parse,Redact,Tally,Drafter orch
-    class Alpha,Beta,Gamma agent
-    class HSidecar,SSidecar side
-    class ZGCompute dec
-    class BillReg,PatReg,ZGStore,SepBill,SepDisp,SepApp chain
-    class KHrest exec
-    class Resend mail
+    class User,Receipt user
+    class API,Parse,Tally,Drafter coord
+    class Round1,Round2,AXL agent
+    class Compute compute
+    class ZGChain,ZGStorage,SepMirror,SepDispute,SepAppeal chain
+    class KH1,KH2,KH3 exec
+    class Email,Provider email
 ```
 
 > 📐 **Setup, env vars, and verification commands** are in [`SETUP.md`](./SETUP.md).
