@@ -1,0 +1,588 @@
+{
+  "network": "sepolia",
+  "chain_id": 11155111,
+  "contract": "LetheRegistry",
+  "address": "0x93D691801FE81Fe3aC7187fe1F394f40a045973E",
+  "deploy_tx": "0x41ecf6652083ed2c62873e14e53450f2656112d49553fa458461393ad76f5edc",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "recipientHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "sentAt",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sentBy",
+          "type": "address"
+        }
+      ],
+      "name": "AppealSent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "npiHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum LetheRegistry.Verdict",
+          "name": "verdict",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "agreeCount",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "totalAgents",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "storageRoot",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint16",
+          "name": "rulebookVersion",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "flaggedCents",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "anchoredAt",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "anchoredBy",
+          "type": "address"
+        }
+      ],
+      "name": "BillAnchored",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "reason",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "note",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "filedAt",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "filedBy",
+          "type": "address"
+        }
+      ],
+      "name": "DisputeFiled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "code",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes16",
+          "name": "action",
+          "type": "bytes16"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes8",
+          "name": "severity",
+          "type": "bytes8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "amountCents",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "voters",
+          "type": "uint8"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "indexedBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "indexedAt",
+          "type": "uint64"
+        }
+      ],
+      "name": "Finding",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        }
+      ],
+      "name": "OwnerTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "version",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "manifestRoot",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "publishedAt",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "publishedBy",
+          "type": "address"
+        }
+      ],
+      "name": "RulebookPublished",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint8",
+          "name": "verdict",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint8",
+          "name": "agreeCount",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint8",
+          "name": "totalAgents",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "npiHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "storageRoot",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint16",
+          "name": "rulebookVersion",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint64",
+          "name": "flaggedCents",
+          "type": "uint64"
+        }
+      ],
+      "name": "anchor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "anchors",
+      "outputs": [
+        {
+          "internalType": "enum LetheRegistry.Verdict",
+          "name": "verdict",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint8",
+          "name": "agreeCount",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint8",
+          "name": "totalAgents",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "npiHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "storageRoot",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint16",
+          "name": "rulebookVersion",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint64",
+          "name": "anchoredAt",
+          "type": "uint64"
+        },
+        {
+          "internalType": "address",
+          "name": "anchoredBy",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentRulebookVersion",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "npiHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "disputeRateBps",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "codes",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "bytes16[]",
+          "name": "actions",
+          "type": "bytes16[]"
+        },
+        {
+          "internalType": "bytes8[]",
+          "name": "severities",
+          "type": "bytes8[]"
+        },
+        {
+          "internalType": "uint64[]",
+          "name": "amountsCents",
+          "type": "uint64[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "voters",
+          "type": "uint8[]"
+        }
+      ],
+      "name": "indexFindings",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isAnchored",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "providerStats",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "totalAudits",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint32",
+          "name": "disputeCount",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint32",
+          "name": "clarifyCount",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint32",
+          "name": "approveCount",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint128",
+          "name": "totalFlaggedCents",
+          "type": "uint128"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "version",
+          "type": "uint16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "manifestRoot",
+          "type": "bytes32"
+        }
+      ],
+      "name": "publishRulebook",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "recipientHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "recordAppealSent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "billHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint8",
+          "name": "reason",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string",
+          "name": "note",
+          "type": "string"
+        }
+      ],
+      "name": "recordDispute",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "name": "rulebookManifest",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

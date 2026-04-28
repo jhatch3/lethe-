@@ -53,7 +53,7 @@ export function NavBar({ subBrand, cta }: NavBarProps) {
         <Link href={isHome ? "#infrastructure" : "/#infrastructure"} onClick={handleAnchor("infrastructure")}>
           Infrastructure
         </Link>
-        <a href="/whitepaper.pdf" target="_blank" rel="noopener noreferrer">Whitepaper</a>
+        <Link href="/tech-stack">Tech</Link>
         <a
           href="https://github.com/jhatch3/lethe-"
           target="_blank"
