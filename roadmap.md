@@ -76,7 +76,7 @@
    gate token streaming behind a ?debug=1 query param or a feature flag.
 
   ---
-  🚀 What I'd ADD (for the VC pitch)
+  🚀 What I'd ADD (for the pitch)
 
   1. Wallet connect for patients. Right now an audit is anonymous + ephemeral. Connect a wallet → audits anchor to that wallet →
   "my audits" page → dispute portfolio. Unlocks the entire patient-product story. This is a 2-day add and transforms Lethe from
