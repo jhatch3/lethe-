@@ -98,7 +98,7 @@ When consensus lands on `dispute`, KeeperHub fires a **second** workflow recordi
 ```mermaid
 flowchart TB
     subgraph FE["💻 Frontend"]
-        User["Browser dashboard<br/><sub>upload · live SSE viewer · send appeal</sub>"]
+        User["Browser dashboard"]
     end
 
     subgraph BE["⚙️ Backend · FastAPI Coordinator"]
