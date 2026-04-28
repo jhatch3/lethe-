@@ -40,6 +40,7 @@
 ## 📑 Table of contents
 
 - [🩺 The problem](#-the-problem)
+- [📊 Why this matters (data points)](#-why-this-matters-data-points)
 - [✨ What Lethe does](#-what-lethe-does)
 - [🏗️ Architecture](#%EF%B8%8F-architecture)
 - [🎯 Features](#-features-as-of-april-27-2026)
@@ -80,6 +81,22 @@ Existing services upload your records to a central database and keep them indefi
 </td>
 </tr>
 </table>
+
+---
+
+## 📊 Why this matters (data points)
+
+### 💸 Financial impact
+- **$125B annual U.S. losses** tied to medical billing errors ([HealthSureHub](https://healthsurehub.com/medical-billing-error-statistics/?utm_source=chatgpt.com))
+- **38% of people who dispute bills get charges reduced or eliminated** ([AJMC](https://www.ajmc.com/view/survey-exposes-pervasive-billing-errors-aggressive-tactics-in-us-health-insurance?utm_source=chatgpt.com))
+- **$31B+ improper Medicare/Medicaid payments per year** ([CMS](https://www.cms.gov/newsroom/fact-sheets/fiscal-year-2024-improper-payments-fact-sheet?utm_source=chatgpt.com))
+
+### ⏱️ Time and friction costs
+- **23% of people do not dispute bills because it takes too much time** ([AJMC](https://www.ajmc.com/view/survey-exposes-pervasive-billing-errors-aggressive-tactics-in-us-health-insurance?utm_source=chatgpt.com))
+- **~50% of denied claims are never resubmitted** due to process friction ([PCG Software](https://www.pcgsoftware.com/financial-impact-of-medical-billing-errors?utm_source=chatgpt.com))
+
+### 🧠 Supporting context
+- **49-80% of medical bills contain errors** ([HealthSureHub](https://healthsurehub.com/medical-billing-error-statistics/?utm_source=chatgpt.com))
 
 ---
 
