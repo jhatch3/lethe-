@@ -211,92 +211,61 @@ flowchart TB
 
 ## 🎯 Features (as of April 28, 2026)
 
-<table>
-<tr>
-<td width="50%" valign="top">
+- **🔒 Zero retention, zero PHI exposure** — bill bytes are zeroed from coordinator memory immediately after parse; agents only ever see the redacted payload.
+- **🤖 3-agent independent consensus** — GPT-4o, Claude Sonnet 4.5, Gemini Flash vote in parallel; ≥2-of-3 quorum required, 1-1-1 splits resolve to `clarify`.
+- **🔁 Round-2 reflection** — agents broadcast findings, then re-vote with peers' findings as new context. Consensus through conversation, not isolation.
+- **🕸️ Real Gensyn AXL P2P mesh** — three Docker sidecars with real ed25519 peer IDs join the public Gensyn mesh; live message log on `/axl` shows every `POST /send` and `GET /recv` with bytes, latency, and verified pubkeys.
+- **⛓️ Three pillars on 0G** — Chain (`LetheRegistry`), Storage (full audit blobs + rulebook JSON), Compute (γ optionally on decentralized inference via broker SDK). Stub-fallback at every layer.
+- **🧠 Read-back pattern loop** — every new audit scans prior `Finding` events (cached 120s) and feeds dispute/clarify rates per code into the agents' prompts.
+- **💚 KeeperHub — three workflows per audit** — anchor mirror, dispute filing (on `dispute`), and appeal-sent attestation (on user click). Same contract, three methods, three gates. REST + MCP transports.
+- **✍️ Auto-drafted appeal letter** — a fourth Claude agent writes a citation-bearing letter from the consensus findings; user reviews and downloads, never auto-submitted.
+- **🏥 Insurance payer submission** — `POST /api/payer/submit` builds X12 837 / FHIR Claim payloads; 5 pluggable adapters (stub, Stedi, Availity, Change Healthcare, direct FHIR).
+- **🩺 On-chain provider reputation** — NPI is salted-SHA-256 hashed and aggregated on `LetheRegistry`; `/providers/<npi>` returns running totals (audits, dispute rate, flagged dollars) read straight from chain.
+- **📜 Versioned NCCI rulebook on chain** — rules JSON lives in 0G Storage; per-version manifest hash anchored via `publishRulebook(version, root)`. One tx per bump, no redeploy.
+- **👛 Wallet connect + per-wallet audit history** — `/my-audits` lists every bill SHA + verdict + tx the connected wallet ran. Local storage only, never sent to a server.
+
+<details>
+<summary><b>Deeper detail on each feature</b> — click to expand</summary>
+
+<br />
 
 ### 🔒 Zero retention, zero PHI exposure
 A deterministic parser handles PDFs (with image fallback) inside the coordinator. PHI is then stripped by a regex pass plus an LLM redactor sweep, all *before any audit agent sees the payload*. Bill bytes are zeroed from memory immediately after the parse stage; only the redacted payload travels further. SSE events carry only stage names, verdicts, and counts — no bill content.
 
-</td>
-<td width="50%" valign="top">
-
 ### 🤖 3-agent independent consensus
 GPT-4o (α), Claude Sonnet 4.5 (β), and Gemini Flash (γ) each independently analyze the redacted payload — no shared scratchpad, no orchestrator nudge. The verdict is the majority vote; a finding only survives with ≥2-of-3 quorum on the canonical billing code. When no verdict reaches majority (a 1-1-1 split), the system falls back to **clarify** rather than letting registration order silently pick a winner. Confidence is the mean across the winning side.
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-
-### 🕸️ Real Gensyn AXL P2P mesh + live message log
-Each of the three agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 peer ID, joined to the public Gensyn mesh via two TLS bootstrap peers. Real `POST /send` broadcasts and real `GET /recv` inbox drains carry findings across the Yggdrasil overlay. The `/axl` page shows live topology with verified peer keys *plus a live message log* — every send/recv with sender/receiver pubkeys, byte counts, latency, and verified-ok badge. If AXL ever falls back to in-process `asyncio.gather`, a loud uvicorn startup banner makes it impossible to miss.
-
-</td>
-<td width="50%" valign="top">
-
-### ⛓️ Three pillars on 0G — Chain + Storage + Compute
-Every audit hits the full 0G stack: **0G Chain** anchors the SHA-256 + verdict to `BillRegistry` (Galileo, chain 16602) and indexes anonymized findings to `PatternRegistry`. **0G Storage** holds the full schema-versioned audit blob (more detail than chain bytes32 fields can carry), with merkle root + commitment tx in the receipt. **0G Compute** *(optional)* runs agent γ on decentralized inference via the broker SDK, with per-request signed headers handled transparently by a local Node sidecar. Built-in stub-fallback at every layer.
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-
-### 🧠 Read-back pattern loop
-Before each new audit, the coordinator scans `LetheRegistry`'s `Finding` events via `eth_getLogs` (cached 120s) and formats prior dispute / clarify rates per code into the agents' system prompts. The next run's reasoning shifts based on what previous runs found. A pre-seed script bootstraps ~20 historical findings so the very first demo audit shows real on-chain priors firing.
-
-</td>
-<td width="50%" valign="top">
-
-### ✍️ Auto-drafted appeal letter
-A fourth agent (Claude, separately prompted) takes the consensus findings and writes a formal, citation-bearing appeal letter. The dashboard renders it as an ASCII-bordered receipt PDF you can review and download — Lethe never auto-submits anything to an insurer.
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
 
 ### 🔁 Round-2 reflection — consensus through conversation
 The three agents don't just vote in isolation — they **talk**. Round 1 runs independent LLM calls in parallel. AXL exchange broadcasts each agent's findings to peers via its sidecar. Round 2 runs a *second* LLM call per agent with peers' findings injected — agents add findings they missed, downgrade ones peers convinced them were wrong, or hold their ground. The dashboard streams a one-line summary per agent: `α: approve → dispute · findings 1→3 · conf 0.92`. Consensus runs on round-2 votes — every finding survived peer scrutiny *and* a 2-of-3 majority.
 
-</td>
-<td width="50%" valign="top">
+### 🕸️ Real Gensyn AXL P2P mesh + live message log
+Each of the three agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 peer ID, joined to the public Gensyn mesh via two TLS bootstrap peers. Real `POST /send` broadcasts and real `GET /recv` inbox drains carry findings across the Yggdrasil overlay. The `/axl` page shows live topology with verified peer keys *plus a live message log* — every send/recv with sender/receiver pubkeys, byte counts, latency, and verified-ok badge. If AXL ever falls back to in-process `asyncio.gather`, a loud uvicorn startup banner makes it impossible to miss.
+
+### ⛓️ Three pillars on 0G — Chain + Storage + Compute
+Every audit hits the full 0G stack: **0G Chain** anchors the SHA-256 + verdict to `LetheRegistry` (Galileo, chain 16602) and emits `Finding` events for the priors loop. **0G Storage** holds the full schema-versioned audit blob (more detail than chain bytes32 fields can carry), with merkle root + commitment tx in the receipt. **0G Compute** *(optional)* runs agent γ on decentralized inference via the broker SDK, with per-request signed headers handled transparently by a local Node sidecar. Built-in stub-fallback at every layer.
+
+### 🧠 Read-back pattern loop
+Before each new audit, the coordinator scans `LetheRegistry`'s `Finding` events via `eth_getLogs` (cached 120s) and formats prior dispute / clarify rates per code into the agents' system prompts. The next run's reasoning shifts based on what previous runs found. A pre-seed script bootstraps ~20 historical findings so the very first demo audit shows real on-chain priors firing.
 
 ### 💚 KeeperHub — three distinct workflows
-Every audit fires KH **twice** (mirror anchor + dispute filing on `dispute`) and a **third** time when the user clicks "Send appeal" (appeal-sent attestation). Different contracts, different methods, different gates — KH is doing real workflow orchestration. Both REST and MCP transports implemented; "already anchored" duplicates are detected and the receipt links the original tx via Sepolia event lookup, not "pending".
+Every audit fires KH **twice** (mirror anchor + dispute filing on `dispute`) and a **third** time when the user clicks "Send appeal" (appeal-sent attestation). Different methods, different gates — KH is doing real workflow orchestration. Both REST and MCP transports implemented; "already anchored" duplicates are detected and the receipt links the original tx via Sepolia event lookup, not "pending".
 
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
+### ✍️ Auto-drafted appeal letter
+A fourth agent (Claude, separately prompted) takes the consensus findings and writes a formal, citation-bearing appeal letter. The dashboard renders it as an ASCII-bordered receipt PDF you can review and download — Lethe never auto-submits anything to an insurer.
 
 ### 🏥 Insurance payer submission
 Once consensus lands on `dispute`, a panel on the dashboard lets the patient file the same disputed-codes packet directly with the insurance payer or clearinghouse. `POST /api/payer/submit` builds an X12 837 / FHIR Claim payload from the consensus findings + member info and dispatches through a pluggable adapter table. Five adapters are registered today: **stub** (default — generates a deterministic mock claim id and returns success, so the full flow is demoable end-to-end without sandbox creds), **stedi** (X12 837 over Stedi REST), **availity** (Availity FHIR R4 + Web Services), **change healthcare** (clearinghouse SOAP/REST), and **fhir** (direct payer FHIR endpoint). The adapter is selected by `LETHE_PAYER_ADAPTER` and the dashboard surfaces `live submission` vs `stub mode` in the response. Member ID, plan ID, and DOB are passed through to the adapter and never persisted.
 
-</td>
-<td width="50%" valign="top">
-
 ### 🩺 On-chain provider reputation
-Each audit's NPI is extracted from the bill, salted-SHA-256 hashed, and written to a deployed `ProviderReputation` contract. Anyone can hit `/providers/<npi>` to see that provider's running stats — total audits, dispute rate, total flagged dollars — read directly from chain. The aggregate is keyed by NPI hash so individual bills aren't linkable, but a provider's overall pattern is. The page also links straight to the chainscan address for the reputation registry so the count is independently verifiable.
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
+Each audit's NPI is extracted from the bill, salted-SHA-256 hashed, and rolled up atomically inside `LetheRegistry.anchor()`. Anyone can hit `/providers/<npi>` to see that provider's running stats — total audits, dispute rate, total flagged dollars — read directly from chain. The aggregate is keyed by NPI hash so individual bills aren't linkable, but a provider's overall pattern is. The page also links straight to the chainscan address so the count is independently verifiable.
 
 ### 📜 Versioned NCCI rulebook on chain
 Coding rules (CPT bundling pairs, modifier-required pairings, units-per-day caps, time-overlap conflicts) live as a JSON manifest in **0G Storage**; the per-version manifest hash is anchored on-chain via `LetheRegistry.publishRulebook(version, manifestRoot)`. Bumping a version is one tx, no contract redeploy. The `/rules` page reads the manifest pointer from chain and pulls the JSON via the storage sidecar. Every audit ties to a specific `rulebookVersion` written into its anchor record.
 
-</td>
-<td width="50%" valign="top">
-
 ### 👛 Wallet connect + per-wallet audit history
 Connect MetaMask (or any EIP-1193 wallet) and the dashboard remembers the audits you ran. `/my-audits` lists every bill SHA, verdict, and chain tx the connected wallet has produced — pulled from local storage, scoped per wallet address, never sent to a server. Switch wallets and the list rescopes. The wallet itself isn't required to run an audit; it's strictly an opt-in personal index so you can find your prior receipts later.
 
-</td>
-</tr>
-</table>
+</details>
 
 ---
 
@@ -371,6 +340,19 @@ At a glance:
 | **Write** | `anchor` · `indexFindings` · `recordDispute` · `recordAppealSent` · `publishRulebook` (owner) · `transferOwnership` (owner) |
 | **Read** | `anchors` · `isAnchored` · `providerStats` · `disputeRateBps` · `rulebookManifest` · `currentRulebookVersion` · `owner` |
 | **Events** | `BillAnchored` · `Finding` · `DisputeFiled` · `AppealSent` · `RulebookPublished` · `OwnerTransferred` |
+
+### Events
+
+Queryable via `eth_getLogs`. Indexed topics (marked `[i]`) are filterable directly in `topics[]`.
+
+| Event | Fields | Indexed | When it fires | Why you'd query it |
+|---|---|---|---|---|
+| `BillAnchored` | `billHash` · `npiHash` · `verdict` · `agreeCount` · `totalAgents` · `storageRoot` · `rulebookVersion` · `flaggedCents` · `anchoredAt` · `anchoredBy` | `[i] billHash`, `[i] npiHash`, `[i] anchoredBy` | every `anchor()` call | "all audits for this bill" / "all audits this wallet anchored" / "all audits for this provider" |
+| `Finding` | `billHash` · `code` · `action` · `severity` · `amountCents` · `voters` · `indexedBy` · `indexedAt` | `[i] billHash`, `[i] code`, `[i] indexedBy` | once per finding inside `indexFindings()` | "all findings for code CPT 99214" — drives the priors loop |
+| `DisputeFiled` | `billHash` · `reason` · `note` · `filedAt` · `filedBy` | `[i] billHash`, `[i] filedBy` | every `recordDispute()` | "show me every dispute filing for this bill" |
+| `AppealSent` | `billHash` · `recipientHash` · `sentAt` · `sentBy` | `[i] billHash`, `[i] recipientHash`, `[i] sentBy` | every `recordAppealSent()` | "did this bill ever get an appeal sent?" |
+| `RulebookPublished` | `version` · `manifestRoot` · `publishedAt` · `publishedBy` | `[i] version`, `[i] publishedBy` | every `publishRulebook()` | rulebook history / audit trail of rule changes |
+| `OwnerTransferred` | `from` · `to` | `[i] from`, `[i] to` | rare | governance transfer history |
 
 If you don't want to write web3 code, the coordinator exposes `GET /api/verify/<sha>`, `GET /api/providers/<npi>`, and `GET /api/rules` as JSON wrappers over the read paths.
 
