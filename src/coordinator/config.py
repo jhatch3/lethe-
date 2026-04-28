@@ -227,7 +227,7 @@ class Settings(BaseSettings):
     # === 0G Compute Network (decentralized inference) ===
     # When set, agent γ runs on 0G Compute instead of Google Gemini —
     # demonstrating real use of 0G's inference layer (not just 0G Chain).
-    # Provision via the TypeScript `0g-compute-cli` — see SETUP.md.
+    # Provision via the TypeScript `0g-compute-cli` — see docs/setup.md.
     # Providers expose OpenAI-compatible /v1/proxy endpoints, so we use the
     # stock `openai` Python SDK with a custom base_url + bearer token.
     zg_compute_endpoint: str = Field(
