@@ -1390,21 +1390,23 @@ export default function Dashboard() {
                   />
                 </motion.div>
 
-                <motion.div className="sample-row" {...reveal(0.35)}>
-                  <span className="sample-label">— or try a sample —</span>
-                  <div className="sample-chips">
-                    {SAMPLE_BILLS.map((s) => (
-                      <button
-                        key={s.name}
-                        className="sample-chip"
-                        onClick={() => startSample(s.name, s.ext)}
-                      >
-                        {s.name}
-                        <span className="ext">{s.ext}</span>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
+                {SAMPLE_BILLS.length > 0 && (
+                  <motion.div className="sample-row" {...reveal(0.35)}>
+                    <span className="sample-label">— or try a sample —</span>
+                    <div className="sample-chips">
+                      {SAMPLE_BILLS.map((s) => (
+                        <button
+                          key={s.name}
+                          className="sample-chip"
+                          onClick={() => startSample(s.name, s.ext)}
+                        >
+                          {s.name}
+                          <span className="ext">{s.ext}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
 
                 <motion.div className="privacy-line" {...reveal(0.45)}>
                   <span><b>ttl</b> 30s</span>
