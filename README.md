@@ -96,86 +96,94 @@ When consensus lands on `dispute`, KeeperHub fires a **second** workflow recordi
 ## 🏗️ Architecture
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TB
+    %% === Subgraph: Frontend ===
     subgraph FE["💻 Frontend"]
-        User["Browser dashboard"]
+        User["Browser Dashboard"]
     end
 
+    %% === Subgraph: Backend ===
     subgraph BE["⚙️ Backend · FastAPI Coordinator"]
         direction LR
-        API["API gateway + SSE event bus"]
-        Parse["Parse + redact PHI<br/><sub>parser → regex → LLM sweep</sub>"]
-        Tally["Consensus tally · 2-of-3 quorum"]
-        Drafter["Drafter agent · Claude → appeal letter"]
-        API --> Parse
-        Tally --> Drafter
+        API["API Gateway + SSE Event Bus"]
+        Parse["Parse & Redact PHI<br><sub>parser → regex → LLM sweep</sub>"]
+        Tally["Consensus Tally<br><sub>2‑of‑3 quorum</sub>"]
+        Drafter["Drafter Agent<br><sub>Claude → appeal letter</sub>"]
     end
 
-    subgraph Mesh["🕸️ Agent mesh"]
+    %% === Subgraph: Agent Mesh ===
+    subgraph Mesh["🕸️ Agent Mesh"]
         direction TB
-        Round1["Round 1 · 3 independent agents<br/><sub>α GPT-4o · β Claude · γ Gemini or 0G Compute</sub>"]
-        AXL["Gensyn AXL P2P mesh<br/><sub>POST /send · GET /recv</sub>"]
-        Round2["Round 2 · reflect on peer findings"]
-        ZGC["🧠 0G Compute provider<br/><sub>γ optional · headers sidecar :8787</sub>"]
-        Round1 -->|broadcast findings| AXL --> Round2
-        Round1 <-.->|γ inference| ZGC
+        Round1["Round 1 · Independent Agents<br><sub>α GPT‑4o · β Claude · γ Gemini / 0G Compute</sub>"]
+        AXL["Gensyn AXL P2P Mesh<br><sub>POST /send · GET /recv</sub>"]
+        Round2["Round 2 · Reflect on Peer Findings"]
+        ZGC["🧠 0G Compute Provider<br><sub>γ optional · headers sidecar :8787</sub>"]
     end
 
-    subgraph Persist["💾 0G persistence"]
+    %% === Subgraph: Persistence ===
+    subgraph Persist["💾 0G Persistence"]
         direction TB
-        ZGChain["0G Chain · Galileo<br/><sub>BillRegistry + PatternRegistry</sub>"]
-        ZGStorage["0G Storage<br/><sub>via storage sidecar :8788</sub>"]
+        ZGChain["0G Chain · Galileo<br><sub>BillRegistry + PatternRegistry</sub>"]
+        ZGStorage["0G Storage<br><sub>via storage sidecar :8788</sub>"]
     end
 
-    subgraph Exec["🔁 KeeperHub · workflow execution"]
-        KH["Direct Execution REST + MCP transport"]
+    %% === Subgraph: Execution Layer ===
+    subgraph Exec["🔁 KeeperHub · Workflow Execution"]
+        KH["Direct Execution REST + MCP Transport"]
     end
 
+    %% === Subgraph: Ethereum ===
     subgraph Sep["⛓️ Ethereum Sepolia"]
         direction TB
-        SepMirror["BillRegistry mirror · WF #1"]
+        SepMirror["BillRegistry Mirror · WF #1"]
         SepDispute["DisputeRegistry · WF #2"]
         SepAppeal["AppealRegistry · WF #3"]
     end
 
-    subgraph Mail["📧 Appeal delivery"]
+    %% === Subgraph: Mail ===
+    subgraph Mail["📧 Appeal Delivery"]
         direction TB
-        Email["Resend / SMTP / stub"]
-        Provider["Provider's billing inbox"]
-        Email --> Provider
+        Email["Resend / SMTP / Stub"]
+        Provider@{ label: "Provider’s Billing Inbox", shape: rect }
     end
 
-    %% === Main pipeline: spine of data flow ===
-    User ==>|PDF upload| API
-    Parse ==>|redacted payload| Round1
-    Round2 ==>|revised votes| Tally
-    Drafter ==>|letter shown| User
-
-    %% === Persistence fan-out from Tally (single edge per destination) ===
-    Tally ==> ZGChain
-    Tally ==> ZGStorage
-    Tally ==>|"anchor + (if dispute) file"| KH
+    %% === Relationships ===
+    User == Upload PDF ==> API
+    API --> Parse
+    Parse == Redacted Payload ==> Round1
+    Round1 -- Broadcast Findings --> AXL
+    AXL --> Round2
+    Round1 <-. γ Inference .-> ZGC
+    Round2 == Revised Votes ==> Tally
+    Tally --> Drafter
+    Drafter == Letter Shown ==> User
+    Tally ==> ZGChain & ZGStorage
+    Tally == Anchor + (if dispute) File ==> KH
     KH ==> SepMirror
-    KH -.-> SepDispute
+    KH -.-> SepDispute & SepAppeal
+    User -. Click Send .-> Email
+    Email --> Provider
+    Email -. After Send .-> KH
 
-    %% === User-initiated appeal send ===
-    User -.->|click Send| Email
-    Email -.->|after send| KH
-    KH -.-> SepAppeal
-
-    classDef tierFE      fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
-    classDef tierBE      fill:#022c22,stroke:#34d399,stroke-width:2px,color:#fff
-    classDef tierMesh    fill:#1c1303,stroke:#fbbf24,stroke-width:2px,color:#fff
-    classDef tierChain   fill:#2a0d1f,stroke:#f472b6,stroke-width:2px,color:#fff
-    classDef tierExec    fill:#0a2818,stroke:#22c55e,stroke-width:2px,color:#fff
-    classDef tierMail    fill:#2a1505,stroke:#f97316,stroke-width:2px,color:#fff
-
+    %% === Styling ===
     class FE tierFE
     class BE tierBE
     class Mesh tierMesh
-    class Persist,Sep tierChain
+    class Persist tierChain
     class Exec tierExec
+    class Sep tierChain
     class Mail tierMail
+
+    classDef tierFE      fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1e1b4b
+    classDef tierBE      fill:#f0fdfa,stroke:#2dd4bf,stroke-width:2px,color:#022c22
+    classDef tierMesh    fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#431407
+    classDef tierChain   fill:#fdf4ff,stroke:#e879f9,stroke-width:2px,color:#4a044e
+    classDef tierExec    fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#052e16
+    classDef tierMail    fill:#fefce8,stroke:#facc15,stroke-width:2px,color:#422006
 ```
 
 > 📐 **Setup, env vars, and verification commands** are in [`SETUP.md`](./SETUP.md).
