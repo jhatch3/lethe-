@@ -97,55 +97,94 @@ When consensus lands on `dispute`, KeeperHub fires a **second** workflow recordi
 
 ```mermaid
 flowchart TB
-    %% === Pipeline spine: top-to-bottom data flow, one main path ===
-    User["💻 Browser dashboard<br/><sub>upload · SSE viewer · send appeal</sub>"]
-    Parse["🧹 Parse + redact PHI<br/><sub>parser → regex → LLM sweep</sub>"]
-    Round1["🤖 Round 1 · 3 independent agents<br/><sub>α GPT-4o · β Claude Sonnet · γ Gemini or 0G Compute</sub>"]
-    AXL["🕸️ Gensyn AXL P2P mesh<br/><sub>POST /send · GET /recv · ed25519 peer ids</sub>"]
-    Round2["🔁 Round 2 · reflect on peer findings"]
-    Tally["⚖️ Consensus · 2-of-3 quorum"]
-    Drafter["✍️ Drafter agent<br/><sub>Claude → appeal letter</sub>"]
-    Receipt["📋 Receipt + letter on dashboard<br/><sub>5 tx hashes · storage merkle root</sub>"]
+    subgraph FE["💻 Frontend"]
+        User["Browser dashboard<br/><sub>upload · live SSE viewer · send appeal</sub>"]
+    end
 
-    User ==>|"PDF upload"| API
-    API["⚙️ FastAPI coordinator<br/><sub>SSE event bus</sub>"] ==> Parse
-    Parse ==>|"redacted payload"| Round1
-    Round1 ==>|"broadcast findings"| AXL
-    AXL ==> Round2
-    Round2 ==>|"revised votes"| Tally
-    Tally ==> Drafter
-    Drafter ==> Receipt
+    subgraph BE["⚙️ Backend · FastAPI Coordinator"]
+        direction TB
+        API["API gateway + SSE event bus"]
+        Parse["Parse + redact PHI<br/><sub>parser → regex → LLM sweep</sub>"]
+        Tally["Consensus tally · 2-of-3 quorum"]
+        Drafter["Drafter agent · Claude → appeal letter"]
+        API --> Parse
+        Tally --> Drafter
+    end
 
-    %% === Side branch: γ on decentralized inference (optional) ===
-    Round1 -.->|"γ via headers sidecar :8787"| Compute["🧠 0G Compute provider<br/><sub>decentralized inference · TEE-attested</sub>"]
-    Compute -.-> Round1
+    subgraph Mesh["🕸️ Agent mesh"]
+        direction TB
+        Round1["Round 1 · 3 independent agents<br/><sub>α GPT-4o · β Claude · γ Gemini or 0G Compute</sub>"]
+        AXL["Gensyn AXL P2P mesh<br/><sub>POST /send · GET /recv</sub>"]
+        Round2["Round 2 · reflect on peer findings"]
+        Round1 -->|broadcast findings| AXL --> Round2
+    end
 
-    %% === Side branch: persistence (parallel writes from Tally) ===
-    Tally ==> ZGChain["⛓️ 0G Chain · Galileo<br/><sub>BillRegistry + PatternRegistry</sub>"]
-    Tally ==>|"via storage sidecar :8788"| ZGStorage["💾 0G Storage<br/><sub>full audit blob · merkle-rooted</sub>"]
-    Tally ==> KH1["🔁 KH workflow #1"] ==> SepMirror["⛓️ Sepolia BillRegistry mirror"]
-    Tally -.->|"if dispute"| KH2["🔁 KH workflow #2"] -.-> SepDispute["⛓️ Sepolia DisputeRegistry"]
+    subgraph DInf["🧠 Decentralized inference"]
+        ZGC["0G Compute provider<br/><sub>via headers sidecar :8787</sub>"]
+    end
 
-    %% === Side branch: user-initiated appeal send (after receipt) ===
-    Receipt -.->|"user clicks Send"| Email["📧 Email · Resend / SMTP / stub"]
-    Email -.-> Provider["📥 Provider's billing inbox"]
-    Email -.->|"recipient hash"| KH3["🔁 KH workflow #3"] -.-> SepAppeal["⛓️ Sepolia AppealRegistry"]
+    subgraph Persist["💾 0G persistence"]
+        direction TB
+        ZGChain["0G Chain · Galileo<br/><sub>BillRegistry + PatternRegistry</sub>"]
+        ZGStorage["0G Storage<br/><sub>via storage sidecar :8788</sub>"]
+    end
 
-    classDef user    fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
-    classDef coord   fill:#0b1220,stroke:#34d399,stroke-width:2px,color:#fff
-    classDef agent   fill:#0b1220,stroke:#fbbf24,stroke-width:2px,color:#fff
-    classDef compute fill:#0b1220,stroke:#22d3ee,stroke-width:2px,color:#fff
-    classDef chain   fill:#0b1220,stroke:#f472b6,stroke-width:2px,color:#fff
-    classDef exec    fill:#0b1220,stroke:#22c55e,stroke-width:2px,color:#fff
-    classDef email   fill:#0b1220,stroke:#f97316,stroke-width:2px,color:#fff
+    subgraph Exec["🔁 KeeperHub · workflow execution"]
+        KH["Direct Execution REST + MCP transport"]
+    end
 
-    class User,Receipt user
-    class API,Parse,Tally,Drafter coord
-    class Round1,Round2,AXL agent
-    class Compute compute
-    class ZGChain,ZGStorage,SepMirror,SepDispute,SepAppeal chain
-    class KH1,KH2,KH3 exec
-    class Email,Provider email
+    subgraph Sep["⛓️ Ethereum Sepolia"]
+        direction TB
+        SepMirror["BillRegistry mirror · WF #1"]
+        SepDispute["DisputeRegistry · WF #2"]
+        SepAppeal["AppealRegistry · WF #3"]
+    end
+
+    subgraph Mail["📧 Appeal delivery"]
+        direction TB
+        Email["Resend / SMTP / stub"]
+        Provider["Provider's billing inbox"]
+        Email --> Provider
+    end
+
+    %% === Main pipeline: spine of data flow ===
+    User ==>|PDF upload| API
+    Parse ==>|redacted payload| Round1
+    Round2 ==>|revised votes| Tally
+    Drafter ==>|letter shown| User
+
+    %% === γ optional decentralized inference ===
+    Round1 -.->|γ optional| ZGC
+    ZGC -.-> Round1
+
+    %% === Persistence fan-out from Tally ===
+    Tally ==> ZGChain
+    Tally ==> ZGStorage
+    Tally ==> KH
+    KH ==> SepMirror
+    Tally -.->|on dispute| KH
+    KH -.-> SepDispute
+
+    %% === User-initiated appeal send ===
+    User -.->|click Send| Email
+    User -.->|after send| KH
+    KH -.-> SepAppeal
+
+    classDef tierFE      fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
+    classDef tierBE      fill:#022c22,stroke:#34d399,stroke-width:2px,color:#fff
+    classDef tierMesh    fill:#1c1303,stroke:#fbbf24,stroke-width:2px,color:#fff
+    classDef tierCompute fill:#082f3a,stroke:#22d3ee,stroke-width:2px,color:#fff
+    classDef tierChain   fill:#2a0d1f,stroke:#f472b6,stroke-width:2px,color:#fff
+    classDef tierExec    fill:#0a2818,stroke:#22c55e,stroke-width:2px,color:#fff
+    classDef tierMail    fill:#2a1505,stroke:#f97316,stroke-width:2px,color:#fff
+
+    class FE tierFE
+    class BE tierBE
+    class Mesh tierMesh
+    class DInf tierCompute
+    class Persist,Sep tierChain
+    class Exec tierExec
+    class Mail tierMail
 ```
 
 > 📐 **Setup, env vars, and verification commands** are in [`SETUP.md`](./SETUP.md).
