@@ -33,7 +33,6 @@ export default function Home() {
           // className="eyebrow"
         >
           <span className="pulse" />
-          {/* <span className="pill">ETHGlobal · OpenAgents 2026</span> */}
         </motion.div>
 
         <motion.h1
@@ -160,110 +159,102 @@ export default function Home() {
               <div className="label">Zero retention</div>
               <h3>Memory-only, then gone.</h3>
               <p>
-                Your bill lives in coordinator memory for the ~60 seconds it takes the pipeline to run, then it&apos;s zeroed. Never written to disk, never persisted on 0G, never sent to a model provider. We can&apos;t leak what we don&apos;t hold.
+                Your bill is held in coordinator memory only for the ~60 seconds the audit takes, then zeroed. Nothing is written to disk, nothing reaches a model provider, nothing about the original bill is persisted on-chain. The privacy guarantee is the architecture — not a policy you have to trust.
               </p>
-              <div className="tick">— bill bytes · in-memory only</div>
+              <div className="tick">— never written · never logged · never sent</div>
             </div>
             <div className="feat amber">
-              <div className="label">3-agent consensus</div>
-              <h3>GPT-4o · Claude · Gemini.</h3>
+              <div className="label">3-agent independent consensus</div>
+              <h3>Three minds, one verdict.</h3>
               <p>
-                Three independent models reason in parallel over the same redacted payload, then vote. A finding only enters the result if 2 of 3 agree on the canonical billing code. 1-1-1 splits fall back to clarify rather than letting registration order silently pick.
+                GPT-4o, Claude, and Gemini reason over the redacted payload independently — different training data, different blind spots, no shared scratchpad. A finding only enters the result when at least two of three agree on the canonical billing code. If they split three ways, the system says &ldquo;clarify&rdquo; instead of pretending to be sure.
               </p>
               <div className="tick">— quorum 2/3 · clarify on tie</div>
             </div>
             <div className="feat violet">
-              <div className="label">Real AXL P2P mesh</div>
-              <h3>Three peers, one Yggdrasil.</h3>
+              <div className="label">Decentralized agents</div>
+              <h3>No central broker.</h3>
               <p>
-                Each agent has its own Gensyn AXL sidecar Docker container running the upstream Go <code>node</code> binary, with a unique ed25519 peer ID joined to the public Gensyn mesh. Real <code>POST /send</code>, real <code>GET /recv</code> — verifiable on the live mesh page.
+                Each agent runs in its own container with its own cryptographic identity, joined to a peer-to-peer mesh. Findings travel agent-to-agent over an encrypted overlay network — there&apos;s no orchestrator nudging the answer and no single point an attacker could compromise to silently sway a verdict.
               </p>
-              <div className="tick">— ed25519 · yggdrasil · public peers</div>
+              <div className="tick">— ed25519 identity · encrypted mesh</div>
             </div>
             <div className="feat pink">
-              <div className="label">Round-2 reflection</div>
-              <h3>Consensus through conversation.</h3>
+              <div className="label">Consensus through debate</div>
+              <h3>Agents that change their minds.</h3>
               <p>
-                After round 1, every agent broadcasts its findings over AXL and drains its peer inbox. Then each one runs a <em>second</em> LLM call with the others&apos; findings as context — adding what it missed, downgrading what peers convinced it was wrong. The final tally runs on round-2 votes, so every verdict survived peer scrutiny.
+                After the first independent vote, every agent sees its peers&apos; findings and runs a second pass — adding evidence it missed, dropping claims peers convinced it were wrong, or holding firm. The final verdict runs on the post-debate votes; nothing makes it through that didn&apos;t survive peer review.
               </p>
-              <div className="tick">— round 1 → axl exchange → round 2</div>
+              <div className="tick">— vote → exchange → reflect → tally</div>
             </div>
             <div className="feat rose">
-              <div className="label">Three pillars on 0G</div>
-              <h3>Chain · Storage · Compute.</h3>
+              <div className="label">Verifiable on-chain</div>
+              <h3>Two chains, same hash.</h3>
               <p>
-                Every audit hits the full 0G stack: <strong>Chain</strong> anchors the SHA-256 + verdict to BillRegistry and indexes findings to PatternRegistry. <strong>Storage</strong> holds the full schema-versioned audit blob with merkle root + commitment tx in the receipt. <strong>Compute</strong> (optional) runs agent γ on decentralized inference via the broker SDK with per-request signed headers.
+                Every audit&apos;s SHA-256 + verdict is anchored on two independent blockchains — one canonical record, one mirror. When consensus lands on dispute, the decision is filed to a separate on-chain registry. Anyone with the bill&apos;s hash can verify what was analyzed and what was decided from either explorer, forever.
               </p>
-              <div className="tick">— 0g chain · 0g storage · 0g compute</div>
+              <div className="tick">— canonical + mirror · audit-proof</div>
             </div>
             <div className="feat cyan">
-              <div className="label">KeeperHub — two workflows</div>
-              <h3>Mirror anchor + dispute filing.</h3>
+              <div className="label">Smarter every audit</div>
+              <h3>Memory that compounds.</h3>
               <p>
-                Every audit fires KH twice: a <strong>mirror anchor</strong> writes the SHA-256 + verdict to a Sepolia BillRegistry, and on consensus = dispute a <strong>second</strong> KH execution calls <code>recordDispute</code> on a configurable DisputeRegistry. Both REST and MCP transports are implemented; "already anchored" duplicates are detected and the receipt links the original tx, not "pending".
-              </p>
-              <div className="tick">— mirror · dispute · rest + mcp</div>
-            </div>
-            <div className="feat ink">
-              <div className="label">Pattern read-back</div>
-              <h3>Each audit is smarter than the last.</h3>
-              <p>
-                Anonymized findings are written to PatternRegistry on 0G Chain in parallel with uploading the full record to 0G Storage. Before each new audit, the coordinator queries <code>eth_getLogs</code> and feeds prior dispute / clarify rates into agent prompts as priors. A pre-seed script bootstraps ~20 historical patterns so the very first demo audit shows the priors loop firing.
+                Anonymized patterns from past audits — which billing codes were flagged and what action they triggered — live on-chain and feed forward as priors into the next audit&apos;s reasoning. The system gets sharper at spotting common errors over time, without ever knowing whose bills produced the patterns.
               </p>
               <div className="tick">— learn from past · zero PHI</div>
             </div>
             <div className="feat ink">
               <div className="label">Auto-drafted appeal</div>
-              <h3>Letter, you review.</h3>
+              <h3>A letter, ready when you are.</h3>
               <p>
-                A fourth agent (Claude, separately prompted) takes the consensus findings and writes a formal appeal letter with regulatory citations. The dashboard renders it as an ASCII-bordered receipt PDF. Lethe never auto-submits to an insurer — you stay in the loop.
+                When consensus lands on dispute, a separate model drafts a formal appeal letter with regulatory citations. You review it, edit it, choose who to send it to — Lethe never auto-submits to an insurer. The letter plus full chain verification can be emailed to the provider&apos;s billing department directly from the dashboard.
               </p>
-              <div className="tick">— draft → review → download</div>
+              <div className="tick">— draft → review → send when you&apos;re ready</div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <section id="tracks" className="band">
+      <section id="infrastructure" className="band">
         <div className="container">
           <motion.div className="section-head" {...reveal}>
             <span className="section-num">[ 03 ]</span>
             <h2 className="section-title">
-              Built on <span className="em">three rails.</span>
+              Built on <span className="em">three pillars.</span>
             </h2>
             <p className="section-kicker">
-              Each sponsor handles a different piece — agent memory, agent communication, agent execution.
+              Memory, communication, execution — each handled by purpose-built decentralized infrastructure.
             </p>
           </motion.div>
           <motion.div className="tracks" {...reveal}>
             <div className="track a">
-              <div className="role">/ track · 01</div>
+              <div className="role">/ memory</div>
               <div className="name">0G — <em>chain · storage · compute</em></div>
               <p>
-                Three pillars on 0G: <strong>Chain</strong> (BillRegistry anchors + PatternRegistry events on Galileo, chain 16602), <strong>Storage</strong> (full schema-versioned audit blob via <code>@0glabs/0g-ts-sdk</code>, merkle root in receipt), and <strong>Compute</strong> (γ-agent on decentralized inference with per-request signed headers via <code>@0glabs/0g-serving-broker</code>).
+                Three layers handle different jobs: <strong>Chain</strong> anchors the SHA-256 + verdict of every audit and indexes anonymized findings as on-chain events. <strong>Storage</strong> holds the full schema-versioned audit record off-chain but provably linked. <strong>Compute</strong> can run one of the agents on decentralized inference instead of a closed model API.
               </p>
               <p className="pitch">
-                Ephemeral PHI, persistent learning — agents get smarter without anyone&apos;s records being recoverable.
+                Ephemeral PHI, persistent learning. Agents get smarter without anyone&apos;s records being recoverable.
               </p>
             </div>
             <div className="track b">
-              <div className="role">/ track · 02</div>
-              <div className="name">Gensyn AXL — <em>mesh</em></div>
+              <div className="role">/ communication</div>
+              <div className="name">Gensyn AXL — <em>peer-to-peer mesh</em></div>
               <p>
-                Each of the three agents has its own AXL sidecar Docker container running the upstream Gensyn <code>node</code> binary, joined to the public Gensyn mesh via TLS. Real ed25519 peer IDs, real <code>POST /send</code> broadcasts, real <code>GET /recv</code> drains.
+                Each agent has its own cryptographic identity and runs in its own container, joined to a public encrypted mesh. Findings travel directly between agents over the overlay — there is no central message broker, no orchestrator silently nudging the answer, no single point of compromise.
               </p>
               <p className="pitch">
-                The mesh is load-bearing — round-2 reflection won&apos;t fire without peer findings actually crossing it.
+                Independence is verifiable, not just claimed. The mesh is load-bearing — peer review does not happen without it.
               </p>
             </div>
             <div className="track c">
-              <div className="role">/ track · 03</div>
-              <div className="name">KeeperHub — <em>workflow execution</em></div>
+              <div className="role">/ execution</div>
+              <div className="name">KeeperHub — <em>workflow orchestration</em></div>
               <p>
-                Two distinct KH workflows fire per audit: a <strong>mirror anchor</strong> writes the SHA-256 + verdict to a Sepolia BillRegistry, and on consensus = dispute a <strong>second</strong> KH execution calls <code>recordDispute</code> on a configurable DisputeRegistry. Both REST and MCP transports implemented.
+                Three workflows fire per audit: mirror the anchor to a second chain, file the dispute on a separate on-chain registry when consensus disagrees, and attest when an appeal letter is sent. Retries, gas optimization, and an audit log are handled automatically.
               </p>
               <p className="pitch">
-                If one chain falls, the proof still lives on the other.
+                If one chain has issues, the proof still lives on the other. Every appeal sent has an immutable receipt.
               </p>
             </div>
           </motion.div>
@@ -414,7 +405,7 @@ export default function Home() {
           <div>
             <div className="foot-brand">Lethe</div>
             <div className="foot-tag">
-              Medical bills, audited by AI consensus. Forgotten by design. Built at ETHGlobal OpenAgents — April 24 to May 3, 2026.
+              Medical bills, audited by AI consensus. Forgotten by design.
             </div>
           </div>
           <div className="foot-col">
@@ -422,19 +413,18 @@ export default function Home() {
             <Link href="/dashboard">Dashboard</Link>
             <Link href="/verify">Verify a bill</Link>
             <Link href="/patterns">Patterns</Link>
-            <Link href="/axl">Mesh viz</Link>
-            <Link href="/tech-stack">Tech stack</Link>
+            <Link href="/tech-stack">Tech</Link>
             <a onClick={scrollTo("features")}>Features</a>
-            <a onClick={scrollTo("tracks")}>Tracks</a>
+            <a onClick={scrollTo("infrastructure")}>Infrastructure</a>
           </div>
           <div className="foot-col">
             <h4>Resources</h4>
-            <a href="#">README</a>
-            <a href="#">Roadmap</a>
+            <a href="/whitepaper.pdf" target="_blank" rel="noopener noreferrer">Whitepaper</a>
+            <a href="https://github.com/jhatch3/lethe-" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a onClick={scrollTo("sources")}>Sources</a>
           </div>
           <div className="foot-col">
-            <h4>Sponsors</h4>
+            <h4>Infrastructure</h4>
             <a href="https://0g.ai" target="_blank" rel="noopener noreferrer">0G</a>
             <a href="https://blog.gensyn.ai/introducing-axl/" target="_blank" rel="noopener noreferrer">Gensyn AXL</a>
             <a href="https://keeperhub.com" target="_blank" rel="noopener noreferrer">KeeperHub</a>
@@ -443,7 +433,7 @@ export default function Home() {
         <div className="foot-bottom">
           <span>MIT · 2026</span>
           <span className="disclaimer">
-            Lethe is a hackathon project and is not yet a production medical service. Disputes drafted by Lethe should be reviewed by a human before submission to a real insurer.
+            Lethe is in active development. Drafted appeal letters should be reviewed by a human before submission to an insurer.
           </span>
         </div>
       </footer>

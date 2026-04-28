@@ -19,10 +19,11 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import re
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, field_validator
 
 from chain import keeperhub
 from email_delivery.sender import send_email
@@ -33,10 +34,22 @@ log = logging.getLogger("lethe.appeal")
 
 router = APIRouter(prefix="/api/appeal", tags=["appeal"])
 
+# Pragmatic email regex — enough to catch typos / empty fields without pulling
+# in the email-validator package as a hard dependency.
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
 
 class AppealSubmitBody(BaseModel):
     job_id: str
-    recipient_email: EmailStr
+    recipient_email: str
+
+    @field_validator("recipient_email")
+    @classmethod
+    def _validate_email(cls, v: str) -> str:
+        v = v.strip()
+        if not _EMAIL_RE.match(v):
+            raise ValueError("recipient_email must be a valid email address")
+        return v
 
 
 def _recipient_hash_hex(email: str, bill_sha: str) -> str:
@@ -57,11 +70,17 @@ def _recipient_hash_hex(email: str, bill_sha: str) -> str:
 
 
 def _extract_appeal_letter(result: Dict[str, Any]) -> str:
-    drafted = (result or {}).get("drafted") or {}
-    body = drafted.get("body") or drafted.get("letter") or drafted.get("text")
+    """The runner stores the drafter's output under `result["dispute"]` (an
+    alias for the drafted letter, set in pipeline/runner.py:511). Older code
+    paths used `drafted` — try both for resilience.
+    """
+    src = (
+        (result or {}).get("dispute")
+        or (result or {}).get("drafted")
+        or {}
+    )
+    body = src.get("body") or src.get("letter") or src.get("text") or src.get("draft")
     if not body:
-        # Fallback: a one-liner so the email isn't empty if drafting hasn't
-        # happened or got skipped.
         return (
             "(No drafted appeal letter is available for this audit. The "
             "consensus findings + chain verification below are still valid.)"

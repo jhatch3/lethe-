@@ -13,17 +13,18 @@
 </p>
 
 <p>
-  <a href="./SETUP.md"><img src="https://img.shields.io/badge/Setup_Guide-22c55e?style=for-the-badge&logoColor=white" alt="Setup Guide" /></a>
-  <a href="https://ethglobal.com/events/openagents"><img src="https://img.shields.io/badge/ETHGlobal-OpenAgents-a78bfa?style=for-the-badge" alt="ETHGlobal OpenAgents" /></a>
+  <a href="./SETUP.md"><img src="https://img.shields.io/badge/Setup-22c55e?style=for-the-badge&logoColor=white" alt="Setup Guide" /></a>
+  <a href="./whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-0b6cda?style=for-the-badge&logoColor=white" alt="Whitepaper" /></a>
+  <a href="https://github.com/jhatch3/lethe-"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
 </p>
 
 <p>
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
-  <img src="https://img.shields.io/badge/status-hackathon--build-orange.svg" alt="Status" />
   <img src="https://img.shields.io/badge/PHI-zero%20retention-22c55e.svg" alt="Zero Retention" />
   <img src="https://img.shields.io/badge/agents-3%20independent%20LLMs-fbbf24.svg" alt="Agents" />
-  <img src="https://img.shields.io/badge/transport-Gensyn%20AXL-c084fc.svg" alt="Transport" />
-  <img src="https://img.shields.io/badge/consensus-2--round%20P2P-f472b6.svg" alt="Two-round consensus" />
+  <img src="https://img.shields.io/badge/transport-P2P%20mesh-c084fc.svg" alt="Transport" />
+  <img src="https://img.shields.io/badge/consensus-2--round%20peer%20review-f472b6.svg" alt="Two-round consensus" />
+  <img src="https://img.shields.io/badge/anchored%20on-2%20chains-0b6cda.svg" alt="Two chains" />
 </p>
 
 <br />
@@ -41,16 +42,9 @@
 - [🩺 The problem](#-the-problem)
 - [✨ What Lethe does](#-what-lethe-does)
 - [🏗️ Architecture](#%EF%B8%8F-architecture)
-- [🎯 Features](#-features-all-wired-and-verified)
+- [🎯 Features](#-features-as-of-april-27-2026)
 - [🛠️ Built with](#%EF%B8%8F-built-with)
-- [🏆 Hackathon tracks](#-hackathon-tracks)
-- [📋 Submission details](#-submission-details)
-  - [Deployed contracts](#deployed-contracts)
-  - [🎖️ Track 1 — Gensyn AXL](#%EF%B8%8F-track-1--gensyn-axl--best-application-of-axl)
-  - [🛠️ Track 2 — 0G](#%EF%B8%8F-track-2--0g--best-autonomous-agents-swarms--inft-innovations)
-  - [💚 Track 3 — KeeperHub](#-track-3--keeperhub--best-innovative-use-of-keeperhub)
-  - [🔍 Bonus — KH Builder Feedback Bounty](#-bonus--keeperhub-builder-feedback-bounty-submission)
- 
+- [⛓️ On-chain artifacts](#%EF%B8%8F-on-chain-artifacts)
 - [🚀 Quick start](#-quick-start)
 - [🎬 Demo](#-demo)
 - [📁 Repository structure](#-repository-structure)
@@ -91,9 +85,11 @@ Existing services upload your records to a central database and keep them indefi
 
 ## ✨ What Lethe does
 
-Drop in a medical bill. A deterministic PDF parser extracts the structured data (CPT/ICD codes, modifiers, charges, dates of service) and a redaction pass strips every piece of PHI (patient name, DOB, address, MRN, account numbers) — *before any AI ever sees the payload*. Three independent AI agents (GPT-4o, Claude Sonnet, Gemini Flash) analyze the bill in parallel. They then **broadcast their own findings** over a [Gensyn AXL](https://blog.gensyn.ai/introducing-axl/) mesh joined to the public Gensyn network and run a **round-2 reflection** with their peers' findings as new context — so each agent gets a chance to revise its vote in light of what the other two saw. A finding only enters the final result if at least 2 of 3 agents agree on it after that reflection round. A fourth agent (Claude) drafts a formal appeal letter from the agreed-on findings.
+Drop in a medical bill. A deterministic PDF parser extracts the structured data (CPT/ICD codes, modifiers, charges, dates of service) and a redaction pass strips every piece of PHI (patient name, DOB, address, MRN, account numbers) — *before any AI ever sees the payload*. Three independent AI agents (GPT-4o, Claude Sonnet, Gemini Flash) analyze the bill in parallel; one of them can optionally run on a **decentralized inference node** instead of a closed model API. They **broadcast their own findings** over a [Gensyn AXL](https://blog.gensyn.ai/introducing-axl/) peer-to-peer mesh and run a **round-2 reflection** with their peers' findings as new context — so each agent gets a chance to revise its vote in light of what the other two saw. A finding only enters the final result if at least 2 of 3 agents agree after that reflection round. A fourth agent (Claude) drafts a formal appeal letter from the agreed-on findings.
 
-The original bill never touches storage and never reaches a model provider. It lives in coordinator memory long enough for the parser and redactor to run, then it's discarded. What persists is a SHA-256 hash anchored on [0G Chain](https://0g.ai) (proof of *what was analyzed*), the same hash mirrored to a Sepolia `BillRegistry` via [KeeperHub](https://keeperhub.com), and an anonymized pattern record on a 0G `PatternRegistry` that makes the next user's analysis smarter without anyone's records being recoverable.
+The original bill never touches storage and never reaches a model provider. It lives in coordinator memory long enough for the parser and redactor to run, then it's discarded. What persists is a SHA-256 + verdict anchored to [0G Galileo](https://0g.ai) (canonical proof of *what was analyzed*), the same record mirrored to Ethereum Sepolia via [KeeperHub](https://keeperhub.com), the full anonymized audit blob written to **0G Storage** with merkle root + commitment tx in the receipt, and an anonymized pattern record on `PatternRegistry` that makes the next user's analysis smarter without anyone's records being recoverable.
+
+When consensus lands on `dispute`, KeeperHub fires a **second** workflow recording the disputed bill on a separate Sepolia `DisputeRegistry`. When the user types a provider's email and clicks **Send**, the coordinator dispatches a formatted appeal letter (with full chain verification) to the provider via a transactional email service, then KeeperHub fires a **third** workflow recording the send on-chain (recipient address keccak-hashed, never plaintext). Three KeeperHub workflows, three independent on-chain records — one immutable audit trail per bill.
 
 ---
 
@@ -102,10 +98,10 @@ The original bill never touches storage and never reaches a model provider. It l
 ```mermaid
 flowchart TB
     subgraph Client["🖥️ Client"]
-        UI[Next.js Dashboard<br/>upload · SSE viewer · receipt PDF]
+        UI[Next.js Dashboard<br/>upload · live SSE viewer · receipt PDF · send appeal]
     end
 
-    subgraph Orchestration["⚙️ Orchestration node — FastAPI Coordinator"]
+    subgraph Orchestration["⚙️ Coordinator — FastAPI"]
         direction LR
         API[API gateway<br/>+ SSE event bus]
         Parse[Parser<br/>PDF / TXT / image]
@@ -118,36 +114,78 @@ flowchart TB
         direction TB
         Alpha[Agent α<br/>GPT-4o<br/>ed25519 c4737e16…]
         Beta[Agent β<br/>Claude Sonnet 4.5<br/>ed25519 fc40f9dd…]
-        Gamma[Agent γ<br/>Gemini Flash<br/>ed25519 739dd219…]
+        Gamma[Agent γ<br/>Gemini Flash<br/>or 0G Compute node<br/>ed25519 739dd219…]
         Alpha <-->|AXL| Beta
         Alpha <-->|AXL| Gamma
         Beta <-->|AXL| Gamma
     end
 
-    subgraph Chain["⛓️ Chain anchors"]
+    subgraph Sidecars["🔌 Node sidecars"]
         direction TB
-        ZG[0G Galileo<br/>BillRegistry + PatternRegistry]
-        KH[KeeperHub<br/>Direct Execution]
-        Sep[Sepolia<br/>BillRegistry mirror]
-        KH --> Sep
+        HSidecar[Headers sidecar<br/>:8787 · per-request signing]
+        SSidecar[Storage sidecar<br/>:8788 · @0glabs/0g-ts-sdk]
+    end
+
+    subgraph DecInf["🧠 Decentralized inference"]
+        ZGCompute[0G Compute provider<br/>OpenAI-compatible · TEE-attested]
+    end
+
+    subgraph ZG["⛓️ 0G Galileo · chain id 16602"]
+        direction TB
+        BillReg[BillRegistry<br/>SHA-256 + verdict anchor]
+        PatReg[PatternRegistry<br/>anonymized findings]
+        ZGStore[0G Storage<br/>full audit blob<br/>merkle-rooted]
+    end
+
+    subgraph KH["🔁 KeeperHub · workflow execution"]
+        KHrest[Direct Execution REST<br/>+ MCP transport]
+    end
+
+    subgraph Sepolia["⛓️ Ethereum Sepolia"]
+        direction TB
+        SepBill[BillRegistry mirror<br/>workflow #1]
+        SepDisp[DisputeRegistry<br/>workflow #2 · on dispute]
+        SepApp[AppealRegistry<br/>workflow #3 · on send]
+    end
+
+    subgraph Email["📧 Appeal delivery"]
+        Resend[Transactional email<br/>Resend / SMTP / stub]
     end
 
     UI ==>|HTTP request · SSE event stream| API
     API --> Parse --> Redact
     Redact ==>|redacted payload| AgentMesh
+    Gamma -.->|optional| HSidecar
+    HSidecar -.-> ZGCompute
     AgentMesh ==>|votes + peer findings| Tally
     Tally --> Drafter
-    Tally ==>|sha-256 · verdict · patterns| Chain
+    Tally ==>|sha-256 + verdict| BillReg
+    Tally ==>|patterns| PatReg
+    Tally ==>|full audit blob| SSidecar --> ZGStore
+    Tally ==>|sha-256 + verdict| KHrest
+    KHrest --> SepBill
+    KHrest -.->|on dispute| SepDisp
+    UI ==>|"Send appeal" click| API
+    API ==>|appeal letter HTML| Resend
+    API ==>|recipient hash| KHrest --> SepApp
 
     classDef client fill:#0b1220,stroke:#60a5fa,stroke-width:2px,color:#fff
     classDef orch   fill:#0b1220,stroke:#34d399,stroke-width:2px,color:#fff
     classDef agent  fill:#0b1220,stroke:#c084fc,stroke-width:2px,color:#fff
+    classDef side   fill:#0b1220,stroke:#fbbf24,stroke-width:2px,color:#fff
+    classDef dec    fill:#0b1220,stroke:#22d3ee,stroke-width:2px,color:#fff
     classDef chain  fill:#0b1220,stroke:#f472b6,stroke-width:2px,color:#fff
+    classDef exec   fill:#0b1220,stroke:#22c55e,stroke-width:2px,color:#fff
+    classDef mail   fill:#0b1220,stroke:#f97316,stroke-width:2px,color:#fff
 
     class UI client
     class API,Parse,Redact,Tally,Drafter orch
     class Alpha,Beta,Gamma agent
-    class ZG,KH,Sep chain
+    class HSidecar,SSidecar side
+    class ZGCompute dec
+    class BillReg,PatReg,ZGStore,SepBill,SepDisp,SepApp chain
+    class KHrest exec
+    class Resend mail
 ```
 
 > 📐 **Setup, env vars, and verification commands** are in [`SETUP.md`](./SETUP.md).
@@ -262,46 +300,9 @@ Every audit fires KH **twice**: a **mirror anchor** writes the same SHA-256 + ve
 
 ---
 
-## 🏆 Hackathon tracks
+## ⛓️ On-chain artifacts
 
-Built for [ETHGlobal OpenAgents](https://ethglobal.com/events/openagents), April 24 – May 3, 2026.
-
-<table>
-<tr>
-<td width="33%" valign="top" align="center">
-
-### [0G](https://0g.ai)
-**The blockchain for AI agents**
-
-Lethe deploys two contracts (`BillRegistry`, `PatternRegistry`) to the 0G Galileo testnet and writes to both on every audit. The pattern read-back loop (priors fetched via `eth_getLogs`) is the load-bearing piece: ephemeral PHI, persistent learning.
-
-</td>
-<td width="33%" valign="top" align="center">
-
-### [Gensyn AXL](https://blog.gensyn.ai/introducing-axl/)
-**Peer-to-peer agent communication**
-
-Three Docker sidecars run the upstream Gensyn `node` binary, each with its own ed25519 keypair, joined to the public Gensyn mesh via two TLS bootstrap peers. Every audit fires real `POST /send` broadcasts before reasoning — verifiable on the `/axl` topology page.
-
-</td>
-<td width="33%" valign="top" align="center">
-
-### [KeeperHub](https://keeperhub.com)
-**Reliable onchain execution**
-
-Every BillRegistry anchor on 0G Galileo is mirrored via KeeperHub's Direct Execution API to a separate Sepolia `BillRegistry` — same hash, two independent chains. Receipts include both transaction hashes for cross-chain verifiability.
-
-</td>
-</tr>
-</table>
-
----
-
-## 📋 Submission details
-
-Lethe is submitted to all three sponsor tracks. This section maps each sponsor's qualification requirements to where they're satisfied in the project.
-
-### Deployed contracts
+Every Lethe audit produces records on two independent blockchains. Anyone with a bill's SHA-256 can verify the audit from either explorer using just the public address.
 
 | Contract | Network | Address | Explorer |
 |----------|---------|---------|----------|
@@ -311,141 +312,54 @@ Lethe is submitted to all three sponsor tracks. This section maps each sponsor's
 | `DisputeRegistry` (KH workflow #2 target) | Ethereum Sepolia | `0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290) |
 | `AppealRegistry` (KH workflow #3 target) | Ethereum Sepolia | `0x69166ACC4718a0062540673F5Cae26997BaB064e` | [sepolia.etherscan.io](https://sepolia.etherscan.io/address/0x69166ACC4718a0062540673F5Cae26997BaB064e) |
 
+In addition, every audit's full anonymized record is uploaded to **0G Storage**, which returns a merkle root + on-chain commitment tx. Both are surfaced in the dashboard receipt next to the chain anchors.
+
 Solidity sources: [`BillRegistry.sol`](./src/contracts/src/BillRegistry.sol), [`PatternRegistry.sol`](./src/contracts/src/PatternRegistry.sol), [`DisputeRegistry.sol`](./src/contracts/src/DisputeRegistry.sol), [`AppealRegistry.sol`](./src/contracts/src/AppealRegistry.sol). Deploy script (`py-solc-x` + `web3.py`, no Foundry): [`src/contracts/deploy.py`](./src/contracts/deploy.py).
 
 ---
 
-### 🎖️ Track 1 — Gensyn AXL · Best Application of AXL
-
-**How we use AXL:** Each of the three audit agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 keypair, joined to the public Gensyn mesh via two TLS bootstrap peers. Agents exchange their findings between rounds via real `POST /send` broadcasts and `GET /recv` inbox drains — the round-2 reflection LLM call literally cannot fire without findings arriving across the mesh.
-
-**Cross-node communication proof (qualification req):**
-- Three separate Docker containers (`axl-alpha`, `axl-beta`, `axl-gamma`) — see [`docker-compose.yml`](./docker-compose.yml).
-- Three distinct ed25519 peer IDs in [`infra/axl/keys/peer_ids.json`](./infra/axl/keys/peer_ids.json):
-  - α: `c4737e1652ed8b8450a1afea70996dad76d68e602f8a79c2e9ac3bcdbf417598`
-  - β: `fc40f9ddaf71a6f1824eef6194082a5d46f6ca1a776c8e70b8b053196f6d2ecb`
-  - γ: `739dd21944361f496f097e107834716fd1375cc19429e4c58b6319e0abb49e21`
-- Live verification at `http://localhost:3000/axl` — shows the three sidecars' `/topology` responses with verified pubkeys and connections to public Gensyn peers.
-- No central message broker — `POST /send` from agent X's sidecar to agent Y's sidecar over the encrypted Yggdrasil overlay.
-
-**Code:** [`src/coordinator/agents/transport_axl.py`](./src/coordinator/agents/transport_axl.py) (HTTP client), [`src/coordinator/pipeline/runner.py`](./src/coordinator/pipeline/runner.py) (the `_exchange()` and `_reflect_all()` stages), [`infra/axl/Dockerfile`](./infra/axl/Dockerfile) (sidecar build).
-
----
-
-### 🛠️ Track 2 — 0G · Best Autonomous Agents, Swarms & iNFT Innovations
-
-**How we use 0G — three pillars, not one:** Lethe is a 3-agent swarm (GPT-4o · Claude · Gemini) that coordinates across the entire 0G stack:
-- **0G Chain — `BillRegistry`** anchors SHA-256 + verdict for every audited bill. Public, on-chain proof of *what was analyzed*, without keeping the bill itself.
-- **0G Chain — `PatternRegistry`** indexes anonymized findings (canonical code · action · severity · amount · voters) as events. The coordinator reads these back via `eth_getLogs` (cached 120s server-side) and feeds aggregate dispute / clarify rates into agent prompts as priors. **Each new audit literally gets smarter than the last via on-chain shared memory.**
-- **0G Storage** holds the full anonymized audit record (full code strings, voter agent names, schema-versioned JSON) that bytes32/16/8 chain fields can't carry. Written via `@0glabs/0g-ts-sdk` through a local Node sidecar; the merkle root + commitment tx are surfaced in the audit receipt next to the chain anchors.
-- **0G Compute** *(optional boost)* runs agent γ on 0G's decentralized inference network instead of Google Gemini. Auth is per-request signed headers, handled transparently by a second Node sidecar — see `src/coordinator/scripts/`.
-
-**Swarm coordination (qualification req):**
-- Three independent LLM agents reason in parallel during round 1.
-- Findings broadcast over Gensyn AXL (see Track 1).
-- Round-2 reflection per agent with peer findings as context — agents may revise verdict, add findings, downgrade ones peers contested.
-- Final consensus tallied with 2-of-3 quorum on the canonical billing code; 1-1-1 splits resolve to "clarify" (no silent registration-order tiebreak).
-
-**Protocol features used:**
-- 0G Chain (EVM) — contract deployment + writes via `web3.py` and `eth-account`.
-- 0G Galileo testnet RPC (`https://evmrpc-testnet.0g.ai`, chain id 16602) for reads (`eth_getLogs`) and writes (`anchorBill`, `indexPattern`).
-- 0G Storage — JSON blob upload + merkle commitment via `@0glabs/0g-ts-sdk`.
-- 0G Compute — OpenAI-compatible inference on user-selected providers, auth signed per-request via the broker SDK.
-- Solidity events as the data-availability layer for the read-back loop.
-
-**Code:** [`src/coordinator/chain/zerog.py`](./src/coordinator/chain/zerog.py) (anchor writes), [`src/coordinator/chain/zerog_storage.py`](./src/coordinator/chain/zerog_storage.py) (pattern indexer), [`src/coordinator/chain/zerog_blob.py`](./src/coordinator/chain/zerog_blob.py) (storage uploader), [`src/coordinator/chain/patterns.py`](./src/coordinator/chain/patterns.py) (read-back + caching), [`src/coordinator/scripts/storage_sidecar.ts`](./src/coordinator/scripts/storage_sidecar.ts) and [`headers_sidecar.ts`](./src/coordinator/scripts/headers_sidecar.ts) (Node bridges to 0G TS SDKs).
-
----
-
-### 💚 Track 3 — KeeperHub · Best Innovative Use of KeeperHub
-
-**How we use KeeperHub — execution platform, not a single API call.** Every audit fires KeeperHub workflows for **three distinct executions**, each against a different Sepolia contract:
-
-1. **Sepolia mirror anchor (always).** KH Direct Execution writes the SHA-256 + verdict to the Sepolia `BillRegistry` mirror (`0xf6B4…B457`) via `POST /api/execute/contract-call`. Same record as 0G Galileo, two independent chains. Audit receipts include both tx hashes; if one chain has issues the proof still lives on the other. Already-anchored duplicates are detected and the receipt links the original tx via Sepolia event lookup, not "pending."
-2. **Dispute auto-file (on consensus = `dispute`).** A second KH execution fires against `DisputeRegistry` ([`0xbdb8…5290`](https://sepolia.etherscan.io/address/0xbdb8282aCD9b542b8302d872Fb9BD28B0b5e5290)), calling `recordDispute(bytes32 billHash, uint8 reason, string note)` with the redacted findings summary. Different contract, different method, different verdict gate.
-3. **Appeal-sent attestation (on user click).** When the user types a provider email and clicks **Send appeal** in the dashboard, the coordinator emails the appeal letter + a chain verification block to the provider, then a third KH execution fires against `AppealRegistry` ([`0x6916…064e`](https://sepolia.etherscan.io/address/0x69166ACC4718a0062540673F5Cae26997BaB064e)), calling `recordAppealSent(billHash, recipientHash)` — recipient address is `keccak256(email | salt)`, never plaintext on-chain.
-
-**Real-world value:** Submitting the same proof to two chains, filing a dispute on a third contract, and attesting to an appeal send on a fourth is a problem usually solved by hand-rolled retry logic, gas-spike handling, and per-target signing. KeeperHub abstracts all of that into a uniform API. For a system that anchors *every* audit, files *every* dispute, and proves *every* appeal send, this is meaningful execution infrastructure — not a novelty integration.
-
-**Two integration vectors implemented:**
-- **Direct Execution REST API** (default, what fires by default in the pipeline)
-- **MCP server transport** — `LETHE_KEEPERHUB_USE_MCP=true` switches the mirror anchor through KeeperHub's MCP server using the official `mcp` Python SDK. Falls back to REST if MCP returns a stub. The prize text reads "MCP server or CLI"; this satisfies the strict reading.
-
-**Code:** [`src/coordinator/chain/keeperhub.py`](./src/coordinator/chain/keeperhub.py) — REST integration (all three workflows). [`src/coordinator/chain/keeperhub_mcp.py`](./src/coordinator/chain/keeperhub_mcp.py) — MCP transport. [`src/coordinator/routers/appeal.py`](./src/coordinator/routers/appeal.py) + [`src/coordinator/email_delivery/`](./src/coordinator/email_delivery/) — the appeal-send pipeline. Resources used: [API docs](https://docs.keeperhub.com/api), [MCP docs](https://docs.keeperhub.com/ai-tools), [platform](https://app.keeperhub.com/).
-
----
-
-### 🔍 Bonus — KeeperHub Builder Feedback Bounty submission
-
-KeeperHub also runs a separate $500 bounty for builders who file specific, actionable, reproducible feedback while integrating during the hackathon. Two friction points hit during this build, with reproduction steps. Screenshots and a screen recording are included under [`docs/keeperhub-feedback/`](./docs/keeperhub-feedback/).
-
-#### Issue 1 — No discoverable way to add a workflow to a project (UX friction)
-
-**Reproduction:**
-1. Create a project (e.g. `lethe`).
-2. Click into it — shows "No workflows".
-3. There is no button, drag target, or context menu to move workflows into it.
-
-**What was confusing:** I eventually found that workflows can be assigned to a project via the **Properties panel** (right side), but only after clicking into an individual workflow. The mental model is inverted — users go *to a project to populate it*, not *to a workflow to file it under one*. Until I stumbled on the Properties field, the project feature appeared broken.
-
-**Suggested fixes (in order of cheapest first):**
-- A `+ Add workflow` button in the project's empty state, where "No workflows" currently displays.
-- Drag-and-drop from "Other Workflows" onto a project name in the left list.
-- Right-click context menu on a workflow → "Move to project →".
-
-The empty-state button is the most discoverable; the other two would still be nice once a project has many workflows.
-
-**Screenshot:** [`docs/keeperhub-feedback/empty-project-state.png`](./docs/keeperhub-feedback/empty-project-state.png)
-
-#### Issue 2 — Right-panel close glitches when left side is fully extended (reproducible bug)
-
-**Reproduction:**
-1. Left side panels (All Workflows + project list) both fully expanded.
-2. Click a workflow to open the right-side Properties panel.
-3. Close the Properties panel via the **X** button.
-
-The canvas does not reflow correctly on close — the layout state appears to depend on the left panel's expanded state at the moment of close.
-
-**Suggested check:** fire a viewport-resize event on right-panel close so the canvas recalculates regardless of the left panel's state. If the X button itself is the part that misbehaves, anchor it to the canvas (always-visible) rather than the panel.
-
-**Screen recording:** [`docs/keeperhub-feedback/right-panel-close-bug.mp4`](./docs/keeperhub-feedback/right-panel-close-bug.mp4)
-
----
-
-
 ## 🚀 Quick start
 
 ```bash
-git clone https://github.com/Justyhatch3/lethe-.git
+git clone https://github.com/jhatch3/lethe-.git
 cd lethe-
-cp .env.example .env       # then fill in API keys + 0G testnet wallet + KeeperHub key
+cp .env.example .env       # fill in: API keys, 0G + Sepolia wallet, KeeperHub, email provider
 docker compose up --build
 open http://localhost:3000
 ```
 
-The compose file spins up:
-- `axl-alpha`, `axl-beta`, `axl-gamma` — three Gensyn AXL sidecars (Go `node` binary, distinct ed25519 keypairs)
-- `coordinator` — FastAPI orchestrator (parser, redactor, agent clients, consensus, drafter, chain writes)
+The compose file spins up the core stack:
+- `axl-alpha`, `axl-beta`, `axl-gamma` — three Gensyn AXL P2P sidecars (Go `node` binary, distinct ed25519 keypairs)
+- `coordinator` — FastAPI orchestrator (parser, redactor, agent clients, consensus, drafter, chain writes, email)
 - `frontend` — Next.js dashboard
 
-For full env-var documentation, local-dev (no-Docker) instructions, and verification commands, see [**SETUP.md**](./SETUP.md).
+Two **optional Node sidecars** unlock the full 0G stack — start them in their own terminals after `npm install` in `src/coordinator/scripts/`:
+
+```bash
+npm run headers:0g    # :8787 · per-request signing for the 0G Compute path (γ on decentralized inference)
+npm run storage:0g    # :8788 · uploads anonymized audit blobs to 0G Storage and returns merkle root + commitment tx
+```
+
+For full env-var documentation, local-dev (no-Docker) instructions, deploy scripts, and verification commands, see [**SETUP.md**](./SETUP.md).
 
 ### Try it
 
 1. Open `http://localhost:3000/dashboard`.
-2. Click one of the **sample bill chips** (general-hospital ER, imaging-center CT, ortho-clinic MRI, discharge summary, labs itemized) — each ships in `src/coordinator/samples/`.
-3. Watch the SSE pipeline run through ten stages: parse → redact → broadcast → reason → **exchange** → **reflect** → consensus → anchor → patterns → draft.
-4. During `reason`, each agent's terminal streams real LLM tokens. In `exchange`, you'll see each agent broadcast its findings via AXL (`⇆ axl · broadcasting 4 findings (612B) → β γ · ed25519:c4737e16…`) and the inbox receipts confirm delivery (`⇆ axl · received 4 findings · verdict=dispute · from α · ed25519:c4737e16…`). Then in `reflect`, each agent runs a round-2 LLM call with peer findings as context and emits a revised line (`⇆ revised · verdict approve → dispute · findings 1→3 · conf 0.92`).
-5. After `done`, copy the 0G tx hash and paste it into [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai) — or hit the `/verify` page in-app.
+2. Click one of the **sample bill chips** (general-hospital ER, imaging-center CT, ortho-clinic MRI, discharge summary, labs itemized).
+3. Watch the SSE pipeline run through every stage: parse → redact → broadcast → reason → **exchange** → **reflect** → consensus → anchor → **dispute filing** → patterns → **storage upload** → draft.
+4. During `reason`, each agent streams real LLM tokens. In `exchange`, the live AXL message log shows packets crossing the mesh between sidecars with byte counts and signed pubkey pairs. In `reflect`, each agent runs a round-2 LLM call with peer findings as context and revises its vote on the spot.
+5. After consensus, **type a provider's email** in the *Send to provider* panel and click **Send appeal** — the coordinator emails a formatted letter with the full chain verification table, then KeeperHub records the send on-chain (recipient address keccak-hashed). Three KH workflow tx hashes total per dispute audit.
+6. Copy the 0G tx from the receipt and paste into [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai), or hit the `/verify` page in-app.
 
-### Other in-app pages
+### In-app pages
 
 | Page | What it shows |
 |------|---------------|
-| `/dashboard` | Upload + run + live SSE consensus + receipt PDF download |
-| `/axl` | Live mesh topology — three peer cards with expected vs observed pubkeys |
-| `/patterns` | Anonymized prior-probability table read from `PatternRegistry` on 0G |
-| `/verify` | Paste a SHA-256, look up its anchor on 0G Galileo and the Sepolia mirror |
+| `/dashboard` | Upload, run, live SSE consensus, receipt PDF, and the appeal-send pipeline |
+| `/verify` | Paste a SHA-256 — look up its anchor on 0G Galileo and the Sepolia mirror |
+| `/patterns` | Anonymized priors read from `PatternRegistry` on 0G — the memory that compounds across audits |
+| `/axl` | Live AXL topology + a 200-entry message log (every send/recv with bytes + latency + signed pubkey pair) |
+| `/tech-stack` | Full stage-by-stage data flow + categorized stack breakdown |
 
 ---
 
@@ -474,19 +388,23 @@ For full env-var documentation, local-dev (no-Docker) instructions, and verifica
 lethe-/
 ├── src/
 │   ├── frontend/              # Next.js 16 dashboard (App Router, TS, Tailwind v4)
-│   │   └── src/app/{dashboard,axl,patterns,verify}/page.tsx
+│   │   └── src/app/{dashboard,axl,patterns,verify,tech-stack}/page.tsx
 │   ├── coordinator/           # FastAPI orchestrator
-│   │   ├── main.py            # app entry + CORS + sweeper
-│   │   ├── routers/           # jobs, samples, status, verify
-│   │   ├── pipeline/          # runner, parser, redactor, consensus, dispute
-│   │   ├── agents/            # audit_{openai,anthropic,google}, drafter, transport_axl, prompts
-│   │   ├── chain/             # zerog (anchor), keeperhub (mirror), zerog_storage (patterns)
+│   │   ├── main.py            # app entry + CORS + sweeper + AXL-off startup banner
+│   │   ├── routers/           # jobs, samples, status, verify, appeal (email + KH workflow #3)
+│   │   ├── pipeline/          # runner, parser, redactor, consensus, dispute drafter
+│   │   ├── agents/            # audit_{openai,anthropic,google,0g}, drafter, transport_axl, prompts
+│   │   ├── chain/             # zerog (anchor) · zerog_storage (patterns) · zerog_blob (0G Storage)
+│   │   │                      # keeperhub (REST) · keeperhub_mcp (MCP transport) · patterns (read-back)
+│   │   ├── email_delivery/    # sender (resend / smtp / stub) + HTML template builder
+│   │   ├── scripts/           # Node helpers — provision:0g · headers:0g · storage:0g · check:0g
 │   │   ├── samples/           # 5 example bills used by the dashboard chips
 │   │   └── store/             # in-memory job store + sweeper, rolling stats
-│   └── contracts/             # BillRegistry.sol + PatternRegistry.sol (deployed via deploy.py / py-solc-x)
+│   └── contracts/             # BillRegistry · PatternRegistry · DisputeRegistry · AppealRegistry
+│                              # deployed via deploy.py (py-solc-x + web3.py, no Foundry)
 ├── infra/
 │   └── axl/                   # Dockerfile, configs/{alpha,beta,gamma}.json, keys/peer_ids.json
-├── data-gen/                  # Bill PDF generator (sample creation utility)
+├── data-gen/                  # Bill PDF generator + PatternRegistry pre-seed script
 ├── docker-compose.yml         # axl-alpha, axl-beta, axl-gamma, coordinator, frontend
 ├── SETUP.md                   # Full setup + verification guide
 └── README.md

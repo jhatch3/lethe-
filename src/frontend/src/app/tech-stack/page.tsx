@@ -115,7 +115,7 @@ const STACK: StackEntry[] = [
       { name: "pdfplumber", role: "deterministic PDF text extraction" },
       { name: "pydantic-settings", role: "12-factor env config" },
       { name: "httpx", role: "async HTTP — talks to AXL sidecars, KH, 0G Storage sidecar" },
-      { name: "mcp (Python SDK)", role: "KeeperHub MCP client (Track 3 strict reading)" },
+      { name: "mcp (Python SDK)", role: "KeeperHub MCP client (alternate transport)" },
     ],
   },
   {
@@ -169,7 +169,7 @@ const STACK: StackEntry[] = [
     items: [
       { name: "Direct Execution REST", role: "workflow #1: Sepolia BillRegistry mirror anchor" },
       { name: "Direct Execution REST (workflow #2)", role: "DisputeRegistry recordDispute on consensus = dispute" },
-      { name: "MCP server transport", role: "alternate path for the mirror anchor (Track 3 strict reading)" },
+      { name: "MCP server transport", role: "alternate path for the mirror anchor" },
       { name: "Sepolia event lookup", role: "publicnode RPC fallback to find original tx for 'already anchored' duplicates" },
       { name: "Ethereum Sepolia", role: "secondary verifiability via etherscan" },
     ],

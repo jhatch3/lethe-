@@ -1007,6 +1007,7 @@ export default function Dashboard() {
         const r1f = Number(data.round1_finding_count ?? 0);
         const r2f = Number(data.round2_finding_count ?? 0);
         const r2c = Number(data.round2_confidence ?? 0);
+        const r2dur = Number(data.round2_duration_ms ?? data.duration_ms ?? 0);
         const changed = Boolean(data.verdict_changed);
         if (!(name in GLYPH)) return;
         const verdictDisplay = changed ? `${r1v} → ${r2v}` : `${r2v} (held)`;
@@ -1015,6 +1016,24 @@ export default function Dashboard() {
           ...prev,
           [name]: [...prev[name], line],
         }));
+        // The agent card's vote + confidence chip reflects round-2 once it
+        // arrives — otherwise it'd freeze at the round-1 vote and look stale
+        // even after the agent revised based on peer findings.
+        setLiveAgents((prev) => {
+          const cur = prev[name];
+          return {
+            ...prev,
+            [name]: {
+              agent: name,
+              model: cur?.model ?? "",
+              verdict: r2v || cur?.verdict || "",
+              confidence: r2c || cur?.confidence || 0,
+              findings: cur?.findings ?? [],
+              notes: cur?.notes ?? "",
+              duration_ms: r2dur || cur?.duration_ms || 0,
+            },
+          };
+        });
       } catch {}
     };
     const onAgentCompleted = (e: MessageEvent) => {
@@ -1760,15 +1779,15 @@ export default function Dashboard() {
                         <span className="v dim">{result?.proof?.executor ?? "—"}</span>
                       </div>
                       <div className="proof-row">
-                        <span className="k">Vote record</span>
+                        <span className="k">This run</span>
                         <span className="v">
-                          {result?.consensus.agree_count ?? "—"} / {result?.consensus.total_agents ?? "—"} · sha-256 verified
+                          {result?.consensus.verdict ?? "—"} · {result?.consensus.agree_count ?? "—"} / {result?.consensus.total_agents ?? "—"} · sha-256 verified
                         </span>
                       </div>
                       {result?.proof?.onchain && (
                         <>
                           <div className="proof-row">
-                            <span className="k">On-chain verdict</span>
+                            <span className="k">Canonical (on-chain)</span>
                             <span
                               className="v"
                               style={{
@@ -1785,6 +1804,18 @@ export default function Dashboard() {
                               {result.proof.onchain.verdict} · {result.proof.onchain.agree_count}/{result.proof.onchain.total_agents}
                             </span>
                           </div>
+                          {result?.consensus && (
+                            result.proof.onchain.verdict !== result.consensus.verdict ||
+                            result.proof.onchain.agree_count !== result.consensus.agree_count ||
+                            result.proof.onchain.total_agents !== result.consensus.total_agents
+                          ) && (
+                            <div className="proof-row">
+                              <span className="k"></span>
+                              <span className="v dim" style={{ fontSize: 11, fontStyle: "italic", lineHeight: 1.5 }}>
+                                On-chain record differs from this run because this bill's SHA-256 was previously anchored. <code>BillRegistry</code> rejects duplicate writes by design — the canonical record is whatever the first audit produced and is immutable.
+                              </span>
+                            </div>
+                          )}
                           {result.proof.block_number && (
                             <div className="proof-row">
                               <span className="k">Block</span>
@@ -1941,7 +1972,7 @@ export default function Dashboard() {
                           value={providerEmail}
                           onChange={(e) => setProviderEmail(e.target.value)}
                           placeholder="billing@provider.example"
-                          disabled={appealStatus.phase === "sending" || appealStatus.phase === "sent"}
+                          disabled={appealStatus.phase === "sending"}
                           style={{
                             flex: "1 1 280px",
                             padding: "8px 12px",
@@ -1958,12 +1989,11 @@ export default function Dashboard() {
                           onClick={onSendAppeal}
                           disabled={
                             !providerEmail.trim() ||
-                            appealStatus.phase === "sending" ||
-                            appealStatus.phase === "sent"
+                            appealStatus.phase === "sending"
                           }
                         >
                           {appealStatus.phase === "sending" ? "Sending…" :
-                           appealStatus.phase === "sent" ? "Sent ✓" :
+                           appealStatus.phase === "sent" ? "Send again" :
                            "Send appeal"}
                         </button>
                       </div>

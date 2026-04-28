@@ -48,10 +48,17 @@ export function NavBar({ subBrand, cta }: NavBarProps) {
         <Link href={isHome ? "#features" : "/#features"} onClick={handleAnchor("features")}>
           Features
         </Link>
-        <Link href="/tech-stack">Tech Stack</Link>
-        <Link href="/verify">Verify</Link>
-        <Link href="/patterns">Patterns</Link>
-        <Link href="/axl">Mesh</Link>
+        <Link href={isHome ? "#infrastructure" : "/#infrastructure"} onClick={handleAnchor("infrastructure")}>
+          Infrastructure
+        </Link>
+        <a href="/whitepaper.pdf" target="_blank" rel="noopener noreferrer">Whitepaper</a>
+        <a
+          href="https://github.com/jhatch3/lethe-"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
       </div>
       {cta ?? (
         <Link className="cta" href="/dashboard">
