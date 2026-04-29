@@ -485,7 +485,7 @@ lethe-/
   <sub>Telegram <code>@jjhatch033</code> · X <code>@jjhatch11</code></sub>
 </td>
 <td align="center" width="33%">
-  <img src="https://placehold.co/120x120/1e293b/94a3b8/png?text=DM" width="100" /><br />
+  <img src="./assets/drew.jpg" width="100" /><br />
   <b>Drew Manley</b><br />
   <a href="https://github.com/drewmanley16">GitHub</a> · <a href="https://www.linkedin.com/in/drewmanley/">LinkedIn</a><br />
   <sub>Telegram <code>@your-telegram-here</code> · X <code>@your-x-here</code></sub>
