@@ -25,15 +25,18 @@ from typing import Any, Deque, Dict, List, Optional
 import httpx
 from rich.align import Align
 from rich.console import Console, Group
+from rich.json import JSON
 from rich.layout import Layout
 from rich.live import Live
 from rich.panel import Panel
+from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
 
 DEFAULT_URL = "http://localhost:8000"
-EVENT_BUFFER = 12
+EVENT_BUFFER = 24
+PAYLOAD_BUFFER = 6      # how many recent events to render with full payload
 SNAPSHOT_REFRESH_S = 15.0
 
 
@@ -391,12 +394,55 @@ def render_events(state: State) -> Panel:
     return Panel(table, title="event log", border_style="white", padding=(0, 1))
 
 
+def render_payloads(state: State) -> Panel:
+    """Last PAYLOAD_BUFFER events, each rendered with its full JSON payload.
+
+    Complements the one-line event log above — when a judge wants to see the
+    actual fields (peer IDs, tx hashes, byte counts, voter masks) without
+    cracking open `eth_getLogs` or coordinator stdout, this is where to look.
+    """
+    if not state.events:
+        return Panel(Text("waiting for events…", style="dim"),
+                     title="payloads (last events · full)",
+                     border_style="white", padding=(0, 1))
+
+    blocks: List[Any] = []
+    for evt in list(state.events)[:PAYLOAD_BUFFER]:
+        ts = time.strftime("%H:%M:%S", time.localtime(evt["ts"]))
+        et = evt["type"]
+        track = classify_track(et)
+        track_tag = {
+            "axl": "[magenta]AXL[/magenta]",
+            "zerog": "[blue]0G[/blue]",
+            "keeperhub": "[green]KH[/green]",
+        }.get(track or "", "[dim]••[/dim]")
+        header = Text.from_markup(
+            f"[dim]{ts}[/dim]  {track_tag}  [bold]{et}[/bold]"
+        )
+        try:
+            payload = JSON(json.dumps(evt["data"], default=str), indent=2)
+        except Exception:
+            payload = Text(str(evt["data"]), style="dim red")
+        blocks.append(header)
+        blocks.append(payload)
+        blocks.append(Rule(style="grey15"))
+
+    # Drop the trailing rule so the last block doesn't have a divider under it.
+    if blocks and isinstance(blocks[-1], Rule):
+        blocks.pop()
+
+    return Panel(Group(*blocks),
+                 title=f"payloads (last {min(PAYLOAD_BUFFER, len(state.events))} · full JSON)",
+                 border_style="white", padding=(0, 1))
+
+
 def build_layout(state: State) -> Layout:
     layout = Layout()
     layout.split_column(
         Layout(name="header", size=5),
         Layout(name="tracks", size=14),
-        Layout(name="bottom", ratio=1),
+        Layout(name="middle", size=14),
+        Layout(name="payloads", ratio=1),
     )
     layout["header"].update(render_header(state))
     layout["tracks"].split_row(
@@ -404,10 +450,11 @@ def build_layout(state: State) -> Layout:
         Layout(render_zerog(state), name="zerog"),
         Layout(render_keeperhub(state), name="kh"),
     )
-    layout["bottom"].split_row(
+    layout["middle"].split_row(
         Layout(render_current(state), name="current", size=40),
         Layout(render_events(state), name="events", ratio=1),
     )
+    layout["payloads"].update(render_payloads(state))
     return layout
 
 

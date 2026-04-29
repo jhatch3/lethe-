@@ -61,22 +61,10 @@ export default function Home() {
           <span className="em">Forgotten by design.</span>
         </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.55 }}
-          className="sub"
-        >
-          Three independent AI agents review every bill, then talk it over peer-to-peer
-          on a Gensyn AXL mesh and revise their votes with each other&apos;s findings as
-          context. Anything they still agree is wrong gets drafted into an appeal.
-          Your bill never touches storage and never reaches a model provider.
-        </motion.p>
-
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
+          transition={{ duration: 0.6, delay: 0.55 }}
           style={{ opacity: heroFade }}
           className="hero-ctas"
         >
@@ -91,7 +79,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.95 }}
+          transition={{ duration: 0.7, delay: 0.7 }}
           style={{ opacity: heroFade }}
           className="hero-foot"
         >
