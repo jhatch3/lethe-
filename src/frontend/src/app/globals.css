@@ -280,6 +280,33 @@ a { color: inherit; }
   line-height: 1.55;
 }
 
+/* Body-text variant of .section-kicker — for sections that lead with a single
+   long paragraph instead of a short sidebar tagline. Sits below .section-head
+   on its own row, with a comfortable reading measure. */
+.section-prose {
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--ink-dim);
+  font-size: 17px;
+  line-height: 1.7;
+  font-family: var(--font-fraunces), serif;
+  font-weight: 300;
+  letter-spacing: -0.005em;
+}
+.section-prose code {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.85em;
+  letter-spacing: 0;
+  color: var(--ink);
+  background: var(--surface-faint, rgba(255, 255, 255, 0.04));
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.section-prose em {
+  font-style: italic;
+  color: var(--ink);
+}
+
 /* === Problem grid === */
 .problem-grid {
   display: grid;

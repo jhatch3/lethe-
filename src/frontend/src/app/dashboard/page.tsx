@@ -1840,27 +1840,8 @@ export default function Dashboard() {
                       {/* === Audit metadata (chain-agnostic) === */}
                       <div className="proof-row">
                         <span className="k">Bill hash</span>
-                        <span className="v">
-                          <Link
-                            href={`/verify?sha=${hash}`}
-                            target="_blank"
-                            style={{ color: "var(--ink)", borderBottom: "1px dotted var(--ink-faint)" }}
-                            title="Open the public verify page for this hash"
-                          >
-                            {hash.slice(0, 10)} {hash.slice(10, 14)} {hash.slice(14, 18)} … {hash.slice(-6)}
-                          </Link>
-                        </span>
-                      </div>
-                      <div className="proof-row">
-                        <span className="k">Verify</span>
-                        <span className="v">
-                          <Link
-                            href={`/verify?sha=${hash}`}
-                            target="_blank"
-                            style={{ color: "var(--accent-violet)", borderBottom: "1px dotted var(--ink-faint)" }}
-                          >
-                            /verify?sha=… ↗
-                          </Link>
+                        <span className="v" style={{ color: "var(--ink)" }}>
+                          {hash.slice(0, 10)} {hash.slice(10, 14)} {hash.slice(14, 18)} … {hash.slice(-6)}
                         </span>
                       </div>
                       <div className="proof-row">

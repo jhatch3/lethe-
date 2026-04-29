@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from routers import appeal, jobs, payer, providers, rules, samples, status, verify
+from routers import appeal, dashboard, jobs, payer, providers, rules, samples, status, verify
 from store.memory import sweeper_loop
 
 # Surface the pipeline's structured events in the uvicorn terminal.
@@ -67,6 +67,7 @@ app.include_router(appeal.router)
 app.include_router(providers.router)
 app.include_router(rules.router)
 app.include_router(payer.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/")

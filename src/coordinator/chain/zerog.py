@@ -65,7 +65,7 @@ _ANCHOR_ABI = [
 
 
 def _stub(sha256: str, reason: str) -> Dict[str, Any]:
-    tx = "0x" + hashlib.sha256(("anchor:" + sha256).encode()).hexdigest()[:40]
+    tx = "0x" + hashlib.sha256(("anchor:" + sha256).encode()).hexdigest()
     return {
         "network": "0g-galileo-testnet",
         "bill_sha256": sha256,
