@@ -432,7 +432,7 @@ All three workflows hit the **same** `LetheRegistry` contract on Sepolia ([`0x93
   <br />
   <img src="./docs/assets/audit-pipeline.png" alt="Live audit pipeline — parse step" width="600" />
   <br />
-  <img src="https://placehold.co/600x340/0f172a/c084fc/png?text=On-Chain+Receipt" alt="Receipt" width="600" />
+  <img src="./docs/assets/onchain-receipt.png" alt="LetheRegistry on 0G Galileo ChainScan — 73 audit txs from the coordinator wallet" width="600" />
   <br />
   <img src="https://placehold.co/600x340/0f172a/f87171/png?text=Drafted+Dispute" alt="Dispute" width="600" />
 </div>

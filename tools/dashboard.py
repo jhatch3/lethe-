@@ -72,6 +72,10 @@ class State:
     axl: TrackHealth = field(default_factory=TrackHealth)
     zerog: TrackHealth = field(default_factory=TrackHealth)
     keeperhub: TrackHealth = field(default_factory=TrackHealth)
+    # Optional file handle — when set, every event is appended as one JSON line
+    # (JSONL). Lets you tail a long-running session in another terminal:
+    #     tail -f dashboard-events.jsonl | jq .
+    log_fp: Optional[Any] = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -102,7 +106,19 @@ def classify_track(event_type: str) -> Optional[str]:
 
 
 def consume_event(state: State, evt_type: str, data: Dict[str, Any]) -> None:
-    state.events.appendleft({"type": evt_type, "data": data, "ts": time.time()})
+    now = time.time()
+    state.events.appendleft({"type": evt_type, "data": data, "ts": now})
+
+    if state.log_fp is not None:
+        try:
+            state.log_fp.write(json.dumps(
+                {"ts": now, "iso": time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(now)),
+                 "type": evt_type, "data": data},
+                default=str,
+            ) + "\n")
+            state.log_fp.flush()
+        except Exception:
+            pass  # never let log I/O break the TUI
 
     job_id = data.get("job_id")
     if job_id:
@@ -463,9 +479,16 @@ def build_layout(state: State) -> Layout:
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-async def main_async(coord_url: str) -> None:
+async def main_async(coord_url: str, log_path: Optional[str]) -> None:
     state = State(coordinator_url=coord_url)
     console = Console()
+
+    if log_path:
+        # Append-mode so re-runs accumulate; flush on every event so a tail/jq
+        # on a separate terminal sees lines immediately.
+        state.log_fp = open(log_path, "a", encoding="utf-8")
+        console.print(f"[dim]logging events to[/dim] [cyan]{log_path}[/cyan] "
+                      f"[dim](JSONL · one event per line)[/dim]")
 
     async with httpx.AsyncClient() as client:
         await fetch_snapshot(state, client)
@@ -482,13 +505,26 @@ async def main_async(coord_url: str) -> None:
         finally:
             sse_task.cancel()
             refresh_task.cancel()
+            if state.log_fp is not None:
+                state.log_fp.close()
 
 
 def main() -> None:
-    url = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_URL
-    url = url.rstrip("/")
+    import argparse
+    p = argparse.ArgumentParser(description="Lethe CLI dashboard.")
+    p.add_argument("url", nargs="?", default=DEFAULT_URL,
+                   help="coordinator URL (default: %(default)s)")
+    p.add_argument("--log", action="store_true",
+                   help="write every event as JSONL to ./dashboard-events.jsonl")
+    p.add_argument("--log-file", metavar="PATH",
+                   help="write every event as JSONL to PATH (implies --log)")
+    args = p.parse_args()
+
+    url = args.url.rstrip("/")
+    log_path = args.log_file or ("dashboard-events.jsonl" if args.log else None)
+
     try:
-        asyncio.run(main_async(url))
+        asyncio.run(main_async(url, log_path))
     except KeyboardInterrupt:
         print("\nbye.")
 
