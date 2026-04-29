@@ -1,0 +1,306 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 612. 792.]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 3338
+>>
+stream
+0.200025 w
+0 G
+BT
+/F10 14 Tf
+16.0999999999999979 TL
+0 g
+72. 720. Td
+(Formal dispute · medical bill review) Tj
+ET
+BT
+/F9 10.5 Tf
+12.0749999999999993 TL
+0 g
+72. 682. Td
+(2026-04-28) Tj
+T* () Tj
+T* (Dear Billing Department,) Tj
+T* () Tj
+T* (I am writing on behalf of the above-referenced patient to formally dispute charges totaling $770.00 on the) Tj
+T* (itemized statement dated [STATEMENT_DATE]. This dispute is submitted pursuant to 45 CFR § 149.620) Tj
+T* (\(federal patient-provider dispute resolution\) and requests correction of billing errors identified through) Tj
+T* (independent audit.) Tj
+T* () Tj
+T* (The following line items are disputed:) Tj
+T* () Tj
+T* (1. CPT 99215 — Office Visit, High Complexity \($385.00\): The documentation provided does not support a) Tj
+T* (high-complexity evaluation and management service. Based on the presenting complaint, examination scope,) Tj
+T* (and medical decision-making documented, this encounter meets criteria for CPT 99213 \(moderate) Tj
+T* (complexity\). This constitutes upcoding in violation of NCCI Policy Manual, Chapter 11, which requires that) Tj
+T* (E/M level selection be supported by documentation of complexity elements.) Tj
+T* () Tj
+T* (2. Modifier 25 Applied to CPT 99215 \($385.00\): Modifier 25 was appended to indicate a significant,) Tj
+T* (separately identifiable E/M service on the same day as a procedure. However, the clinical documentation) Tj
+T* (does not demonstrate that the E/M service was distinct from the standard pre-procedure assessment. Per) Tj
+T* (NCCI Policy Manual, Chapter 1, and AMA CPT modifier 25 guidance, this modifier requires clear) Tj
+T* (documentation of a separate, medically necessary evaluation beyond the procedure's inherent work.) Tj
+T* () Tj
+T* (3. CPT 92557 — Comprehensive Audiometry \($195.00\): This service was billed at $195.00; however, the) Tj
+T* (patient's coverage is governed by Washington State workers' compensation, which establishes binding) Tj
+T* (maximum allowable fees. We request verification that this charge complies with the Washington L&I fee) Tj
+T* (schedule as required under WAC 296-20-135 and RCW 51.04.030. If the billed amount exceeds the) Tj
+T* (allowable fee, adjustment is mandatory.) Tj
+T* () Tj
+T* (For audit integrity and transparency, the original bill has been cryptographically hashed \(SHA-256:) Tj
+T* (0b6360fe23805ec38474ffd22f1a398c69172ed2e40f09a9f30636f96a265bb3\) and anchored on 0G Chain,) Tj
+T* (establishing an immutable record of the disputed charges.) Tj
+T* () Tj
+T* (We respectfully request a corrected, itemized statement reflecting these adjustments within thirty \(30\) days of) Tj
+T* (receipt of this letter. Please direct all correspondence to [YOUR ADDRESS] or via the contact information) Tj
+T* (on file. We remain committed to resolving this matter cooperatively and in compliance with applicable) Tj
+T* (federal and state regulations.) Tj
+T* () Tj
+T* (Thank you for your prompt attention to this dispute.) Tj
+ET
+BT
+/F9 8.5 Tf
+9.7749999999999986 TL
+0.471 g
+72. 52. Td
+(anchor sha256: 0x0b6360fe23805ec38474ffd22f1a398c69172ed2e40f09a9f30636f96a265bb3) Tj
+ET
+BT
+/F9 8.5 Tf
+9.7749999999999986 TL
+0.471 g
+72. 40. Td
+(network: 0g galileo testnet · executor: keeperhub) Tj
+ET
+BT
+/F9 8.5 Tf
+9.7749999999999986 TL
+0.471 g
+72. 28. Td
+(audited via lethe · forgotten by design) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20260428165900-07'00')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000003510 00000 n 
+0000005327 00000 n 
+0000000015 00000 n 
+0000000120 00000 n 
+0000003567 00000 n 
+0000003692 00000 n 
+0000003822 00000 n 
+0000003955 00000 n 
+0000004092 00000 n 
+0000004215 00000 n 
+0000004344 00000 n 
+0000004476 00000 n 
+0000004612 00000 n 
+0000004740 00000 n 
+0000004867 00000 n 
+0000004996 00000 n 
+0000005129 00000 n 
+0000005231 00000 n 
+0000005575 00000 n 
+0000005661 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <6DE501E3E84FB8F5997DF52C1549BF6E> <6DE501E3E84FB8F5997DF52C1549BF6E> ]
+>>
+startxref
+5765
+%%EOF

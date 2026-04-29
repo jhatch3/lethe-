@@ -17,3 +17,5 @@ resend>=2.0.0
 # email-validator backs pydantic's EmailStr — required at uvicorn startup
 # because routers/appeal.py declares `recipient_email: EmailStr`.
 email-validator>=2.2.0
+# CLI dashboard (tools/dashboard.py) — Rich TUI consuming /api/events/global.
+rich>=13.7.0

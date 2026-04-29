@@ -61,22 +61,10 @@ export default function Home() {
           <span className="em">Forgotten by design.</span>
         </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.55 }}
-          className="sub"
-        >
-          Three independent AI agents review every bill, then talk it over peer-to-peer
-          on a Gensyn AXL mesh and revise their votes with each other&apos;s findings as
-          context. Anything they still agree is wrong gets drafted into an appeal.
-          Your bill never touches storage and never reaches a model provider.
-        </motion.p>
-
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
+          transition={{ duration: 0.6, delay: 0.55 }}
           style={{ opacity: heroFade }}
           className="hero-ctas"
         >
@@ -91,7 +79,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.95 }}
+          transition={{ duration: 0.7, delay: 0.7 }}
           style={{ opacity: heroFade }}
           className="hero-foot"
         >
@@ -112,33 +100,33 @@ export default function Home() {
               The <span className="em">problem</span>
             </h2>
             <p className="section-kicker">
-              Most patients pay bills they shouldn&apos;t. The few tools that exist make the privacy problem worse.
+              Medical billing errors cost Americans <strong>$125 billion</strong> every year. Most of that money is paid by patients who never know they were overcharged.
             </p>
           </motion.div>
           <motion.div className="problem-grid" {...reveal}>
             <div className="problem-cell">
-              <div className="problem-stat">~80<span className="pct">%</span></div>
-              <h3 className="problem-h">of medical bills contain errors</h3>
+              <div className="problem-stat">$125<span className="pct">B</span></div>
+              <h3 className="problem-h">lost to billing errors every year</h3>
               <p className="problem-p">
-                Approximately 80% of U.S. medical bills contain some kind of error — duplicated codes, wrong modifiers, services that never happened. Hospital billing errors result in overcharges of 26 percent on average in those bills that contained errors.
+                ~80% of U.S. medical bills contain at least one error — duplicate codes, wrong modifiers, phantom services — and hospital errors push individual bills 26% above what was actually owed on average. The errors aren&apos;t rare; they&apos;re the default. The cost lands on patients, employers, and premiums.
               </p>
-              <div className="source">[1] Aptarro · 2026 stats &nbsp; [2] Coronis Health / NerdWallet</div>
+              <div className="source">[1] HealthSureHub · medical billing error statistics &nbsp; [2] Aptarro · 2026 stats</div>
             </div>
             <div className="problem-cell">
-              <div className="problem-stat">~75<span className="pct">%</span></div>
-              <h3 className="problem-h">of disputes succeed — when patients file</h3>
+              <div className="problem-stat">$88<span className="pct">B</span></div>
+              <h3 className="problem-h">in medical debt on credit reports</h3>
               <p className="problem-p">
-                Disputing bills leads to corrections in nearly 75% of cases. The catch: 40% of adults who did not appeal were uncertain about how to go about doing so or who to contact.
+                The CFPB estimates roughly $88B of medical debt sits on Americans&apos; credit reports — debt the agency calls &ldquo;often confusing and erroneous.&rdquo; Bills that may not even be valid still tank credit scores, block apartments, deny auto loans, and disqualify job applications. ~75% of disputes succeed when patients file — but 40% of adults don&apos;t know how to start.
               </p>
-              <div className="source">[3] Solace Health &nbsp; [4] AJMC 2026 survey</div>
+              <div className="source">[3] CFPB / Hathr.AI &nbsp; [4] Solace Health · dispute success rates &nbsp; [5] AJMC 2026 survey</div>
             </div>
             <div className="problem-cell">
-              <div className="problem-stat">∞</div>
-              <h3 className="problem-h">retention by default</h3>
+              <div className="problem-stat">$31<span className="pct">B</span></div>
+              <h3 className="problem-h">in improper federal payments / year</h3>
               <p className="problem-p">
-                Existing services upload your records to a central database and keep them indefinitely. The CFPB has estimated that roughly $88 billion in medical debt appears on Americans&apos; credit reports — debt that is &ldquo;often confusing and erroneous.&rdquo;
+                CMS reports $31B+ in improper Medicare/Medicaid payments annually — separate from the $125B private-pay figure above. That&apos;s taxpayer money flowing to bills that shouldn&apos;t have been paid. ~50% of denied claims are never even resubmitted because the appeal process is too slow.
               </p>
-              <div className="source">[5] Hathr.AI / CFPB</div>
+              <div className="source">[6] CMS · FY2024 improper payments fact sheet &nbsp; [7] PCG Software · financial impact of billing errors</div>
             </div>
           </motion.div>
         </div>
@@ -151,100 +139,10 @@ export default function Home() {
             <h2 className="section-title">
               Built around <span className="em">what you don&apos;t keep.</span>
             </h2>
-            <p className="section-kicker">
-              Privacy isn&apos;t a setting; it&apos;s the architecture. Nothing about Lethe works if we hold your bill.
-            </p>
           </motion.div>
-          <motion.div className="feat-grid" {...reveal}>
-            <div className="feat green">
-              <div className="label">Zero retention</div>
-              <h3>Memory-only, then gone.</h3>
-              <p>
-                Your bill is held in coordinator memory only for the ~60 seconds the audit takes, then zeroed. Nothing is written to disk, nothing reaches a model provider, nothing about the original bill is persisted on-chain. The privacy guarantee is the architecture — not a policy you have to trust.
-              </p>
-              <div className="tick">— never written · never logged · never sent</div>
-            </div>
-            <div className="feat amber">
-              <div className="label">3-agent independent consensus</div>
-              <h3>Three minds, one verdict.</h3>
-              <p>
-                GPT-4o, Claude, and Gemini reason over the redacted payload independently — different training data, different blind spots, no shared scratchpad. A finding only enters the result when at least two of three agree on the canonical billing code. If they split three ways, the system says &ldquo;clarify&rdquo; instead of pretending to be sure.
-              </p>
-              <div className="tick">— quorum 2/3 · clarify on tie</div>
-            </div>
-            <div className="feat violet">
-              <div className="label">Decentralized agents</div>
-              <h3>No central broker.</h3>
-              <p>
-                Each agent runs in its own container with its own cryptographic identity, joined to a peer-to-peer mesh. Findings travel agent-to-agent over an encrypted overlay network — there&apos;s no orchestrator nudging the answer and no single point an attacker could compromise to silently sway a verdict.
-              </p>
-              <div className="tick">— ed25519 identity · encrypted mesh</div>
-            </div>
-            <div className="feat pink">
-              <div className="label">Consensus through debate</div>
-              <h3>Agents that change their minds.</h3>
-              <p>
-                After the first independent vote, every agent sees its peers&apos; findings and runs a second pass — adding evidence it missed, dropping claims peers convinced it were wrong, or holding firm. The final verdict runs on the post-debate votes; nothing makes it through that didn&apos;t survive peer review.
-              </p>
-              <div className="tick">— vote → exchange → reflect → tally</div>
-            </div>
-            <div className="feat rose">
-              <div className="label">Verifiable on-chain</div>
-              <h3>One registry, two chains.</h3>
-              <p>
-                Every audit&apos;s SHA-256, verdict, finding events, provider stats, and storage pointer are anchored on a single deployed contract per chain — canonical on 0G Galileo, mirrored to Ethereum Sepolia. Three workflow methods (anchor, dispute filing, appeal-sent attestation) on the same address. Anyone with the bill&apos;s hash can verify the full audit trail from either explorer, forever.
-              </p>
-              <div className="tick">— LetheRegistry · canonical + mirror</div>
-            </div>
-            <div className="feat cyan">
-              <div className="label">Smarter every audit</div>
-              <h3>Memory that compounds.</h3>
-              <p>
-                Anonymized findings from past audits live on-chain as Finding events; the full schema-versioned audit blob lives in 0G Storage with the merkle root anchored alongside the bill. Future runs query both layers and feed dispute / clarify rates per code into the agents&apos; priors. The system gets sharper without ever knowing whose bills produced the patterns.
-              </p>
-              <div className="tick">— learn from past · zero PHI</div>
-            </div>
-            <div className="feat ink">
-              <div className="label">Auto-drafted appeal</div>
-              <h3>A letter, ready when you are.</h3>
-              <p>
-                When consensus lands on dispute, a separate model drafts a formal appeal letter with regulatory citations. You review it, edit it, choose who to send it to — Lethe never auto-submits to an insurer. The letter plus full chain verification can be emailed to the provider&apos;s billing department directly from the dashboard.
-              </p>
-              <div className="tick">— draft → review → send when you&apos;re ready</div>
-            </div>
-            <div className="feat amber">
-              <div className="label">On-chain provider reputation</div>
-              <h3>Patterns by NPI, not by patient.</h3>
-              <p>
-                Each audit&apos;s provider NPI is salted-hashed and rolled into a public dispute-rate aggregate on the same contract. Visit <code>/providers/&lt;npi&gt;</code> for any provider&apos;s running stats — total audits, dispute rate, total flagged dollars — read directly from chain. Individual bills aren&apos;t linkable; the pattern is.
-              </p>
-              <div className="tick">— salted NPI hash · per-provider stats</div>
-            </div>
-            <div className="feat green">
-              <div className="label">File with the insurer</div>
-              <h3>One click, structured claim.</h3>
-              <p>
-                After consensus, the dashboard can dispatch the disputed-codes packet directly to the insurance payer or clearinghouse via X12 837 / FHIR Claim. Five adapters registered (Stedi · Availity · Change Healthcare · direct FHIR · stub). The provider gets the appeal letter; the payer gets a formal claim — both with the same on-chain receipt.
-              </p>
-              <div className="tick">— X12 837 · FHIR · pluggable adapters</div>
-            </div>
-            <div className="feat violet">
-              <div className="label">Audit history, your wallet</div>
-              <h3>Every receipt, scoped to you.</h3>
-              <p>
-                Connect a wallet (any EIP-1193 — MetaMask, Rabby, Coinbase) and the dashboard remembers every audit you&apos;ve run. Bill SHA, verdict, chain tx, and timestamp persist locally per wallet address — never sent to a server, switchable across wallets, removable on disconnect. Strictly opt-in personal index.
-              </p>
-              <div className="tick">— EIP-1193 · localStorage · zero-server</div>
-            </div>
-            <div className="feat pink">
-              <div className="label">Versioned coding rules</div>
-              <h3>NCCI rulebook, anchored.</h3>
-              <p>
-                CMS&apos;s NCCI coding rules (bundling pairs, modifier requirements, units caps) live as a JSON manifest in 0G Storage; the manifest hash is anchored on-chain so every audit ties to a specific rules version. The rules update once per quarter via one tx — no contract redeploy, no coordinator restart.
-              </p>
-              <div className="tick">— rules JSON in 0G Storage · manifest hash on-chain</div>
-            </div>
-          </motion.div>
+          <motion.p className="section-prose" {...reveal}>
+            Your bill enters coordinator memory, gets parsed and redacted, then disappears — never written to disk, never logged, never sent to a model provider, never persisted on-chain. Three independent agents (GPT-4o, Claude, Gemini) reason over the redacted payload, broadcast findings across a real peer-to-peer mesh, and re-vote with each other&apos;s reasoning as context; two of three must agree or the system says <em>clarify</em>. What stays is the proof — a SHA-256, a verdict, and anonymized findings anchored to <code>LetheRegistry</code>{" "}on 0G Galileo and mirrored to Ethereum Sepolia — plus, on dispute, a fourth agent drafts an appeal letter you review and send. Privacy isn&apos;t a setting; it&apos;s the architecture.
+          </motion.p>
         </div>
       </section>
 

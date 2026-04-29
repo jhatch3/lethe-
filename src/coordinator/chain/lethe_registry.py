@@ -168,7 +168,7 @@ def _bytes_to_left_padded(s: str, width: int) -> bytes:
 
 
 def _stub(sha256: str, reason: str, kind: str = "anchor") -> Dict[str, Any]:
-    tx = "0x" + hashlib.sha256(f"{kind}:{sha256}:{reason}".encode()).hexdigest()[:40]
+    tx = "0x" + hashlib.sha256(f"{kind}:{sha256}:{reason}".encode()).hexdigest()
     return {
         "network": "0g-galileo-testnet",
         "bill_sha256": sha256,
