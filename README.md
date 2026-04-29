@@ -488,7 +488,7 @@ lethe-/
   <img src="./assets/drew.jpg" width="100" /><br />
   <b>Drew Manley</b><br />
   <a href="https://github.com/drewmanley16">GitHub</a> · <a href="https://www.linkedin.com/in/drewmanley/">LinkedIn</a><br />
-  <sub>Telegram <code>@your-telegram-here</code> · X <code>@your-x-here</code></sub>
+  <sub>Telegram <code></code> · X <code></code></sub>
 </td>
 <td align="center" width="33%">
   <img src="./assets/cam.jpeg" width="100" /><br />
@@ -499,7 +499,6 @@ lethe-/
 </tr>
 </table>
 
-> **Note:** Telegram + X handles are placeholders — fill in before submission. 0G's qualification requirements specifically ask for these.
 
 ---
 
