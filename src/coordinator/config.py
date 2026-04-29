@@ -27,15 +27,18 @@ class Settings(BaseSettings):
     result_ttl_seconds: int = 300
     max_upload_bytes: int = 10 * 1024 * 1024
 
+    # All zero — every stage now does real work (parse, real LLMs, real
+    # chain writes, real storage). Pacing comes from actual latency, not
+    # cosmetic sleeps.
     stage_delays_ms: dict = {
-        "parse": 1100,
-        "redact": 800,
-        "broadcast": 600,
-        "reason": 1400,
+        "parse": 0,
+        "redact": 0,
+        "broadcast": 0,
+        "reason": 0,
         "exchange": 0,
         "reflect": 0,
-        "consensus": 700,
-        "anchor": 900,
+        "consensus": 0,
+        "anchor": 0,
         "patterns": 0,
         "draft": 0,
     }

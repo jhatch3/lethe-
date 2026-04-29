@@ -20,7 +20,72 @@ import os from 'node:os';
 import crypto from 'node:crypto';
 import http from 'node:http';
 import { ethers } from 'ethers';
-import { Indexer, MemData, defaultUploadOption } from '@0glabs/0g-ts-sdk';
+import { Indexer, MemData, defaultUploadOption, Uploader } from '@0glabs/0g-ts-sdk';
+
+// --- Monkey-patch Uploader.submitTransaction ---
+// The 0G Galileo Flow contract has been upgraded: the SDK calls submit(Submission)
+// (selector 0xef3e12dc), which now reverts. Successful txs use selector 0xbc8c11f8
+// with args (Submission, address sender, uint256 length). We rebuild the on-chain
+// commit step using a raw call against that selector while keeping the SDK's
+// off-chain pipeline (merkle tree, node selection, segment upload) intact.
+const NEW_SUBMIT_SELECTOR = '0xbc8c11f8';
+const SUBMISSION_ABI = '(uint256,bytes,(bytes32,uint256)[])';
+const MARKET_ABI = ['function pricePerSector() view returns (uint256)'];
+const FLOW_MARKET_ABI = ['function market() view returns (address)'];
+
+(Uploader.prototype as any).submitTransaction = async function (
+  submission: any,
+  opts: any,
+) {
+  const flow = this.flow;
+  const provider = this.provider;
+  const signer = flow.runner;
+  const sender: string = await signer.getAddress();
+
+  const marketAddr: string = await flow.market();
+  const market = new ethers.Contract(marketAddr, MARKET_ABI, provider);
+  const pricePerSector: bigint = await market.pricePerSector();
+
+  // SDK-equivalent fee: pricePerSector × number of padded sectors.
+  // submission.nodes is array of (root, height); each contributes 2^height chunks
+  // (256 bytes each); 1 sector = 256 bytes for fee purposes here.
+  let totalChunks = 0n;
+  for (const n of submission.nodes) {
+    totalChunks += 1n << BigInt(n.height);
+  }
+  const fee: bigint = opts && opts.fee && BigInt(opts.fee) > 0n
+    ? BigInt(opts.fee)
+    : pricePerSector * totalChunks;
+
+  // Function takes a SINGLE struct arg wrapping (Submission, address, uint256).
+  // Verified by decoding successful txs from other submitters on Galileo.
+  const coder = ethers.AbiCoder.defaultAbiCoder();
+  const encodedArgs = coder.encode(
+    [`(${SUBMISSION_ABI},address,uint256)`],
+    [[
+      [submission.length, submission.tags, submission.nodes.map((n: any) => [n.root, n.height])],
+      sender,
+      submission.length,
+    ]],
+  );
+  const calldata = NEW_SUBMIT_SELECTOR + encodedArgs.slice(2);
+  const feeData = await provider.getFeeData();
+  const gasPrice = feeData.gasPrice ?? 4_000_000_000n;
+
+  console.log('Submitting transaction (patched 0xbc8c11f8) with storage fee:', fee.toString());
+  try {
+    const tx = await signer.sendTransaction({
+      to: await flow.getAddress(),
+      data: calldata,
+      value: fee,
+      gasPrice,
+    });
+    const receipt = await tx.wait();
+    return [receipt, null];
+  } catch (e: any) {
+    return [null, new Error('Failed to submit transaction: ' + (e?.message ?? e))];
+  }
+};
 
 loadEnv({ path: path.resolve(__dirname, '..', '..', '..', '.env') });
 

@@ -144,35 +144,48 @@ async def run(job_id: str) -> None:
         # Fetch prior pattern stats once for all three agents — cached.
         # Surface the read on the SSE bus so the dashboard can show the
         # agents literally pulling from the on-chain PatternRegistry.
+        # Pull provider history from the on-chain ProviderReputation contract
+        # (only when we have an NPI from the parsed bill). Fetched in parallel
+        # with pattern + storage priors so the reason stage doesn't pay for
+        # serial RPC round-trips.
+        npi_for_history = provider_reputation.extract_npi(npi_extracted_text)
+        log.info(
+            "[%s] provider history: extracted_npi=%s (text_len=%d)",
+            _short(job_id), npi_for_history or "<none>", len(npi_extracted_text or ""),
+        )
+
         try:
-            # Storage-first priors: storage blobs carry full structured records
-            # (full code strings, voter agent names, schema-versioned) — strictly
-            # richer than the bytes32-truncated PatternRegistry events. Try
-            # storage first; if it returns nothing (sidecar down OR
-            # StorageIndex empty) fall back to chain events.
-            storage_blobs, prior_stats = await asyncio.gather(
+            # Storage AND PatternRegistry: storage blobs carry the full
+            # structured records (rich), PatternRegistry events carry the
+            # bytes32-truncated aggregate. Pass BOTH to the agents — they
+            # de-duplicate naturally and the redundancy is small.
+            storage_blobs, prior_stats, provider_stats = await asyncio.gather(
                 storage_priors.fetch_recent_storage_priors(limit=8),
                 chain_patterns.get_pattern_stats(),
+                provider_reputation.fetch_stats(npi_for_history) if npi_for_history else asyncio.sleep(0, result={}),
                 return_exceptions=False,
             )
             storage_block = storage_priors.format_storage_priors_for_prompt(storage_blobs)
-            if storage_block:
-                prior_block = storage_block
-                priors_source = "0g-storage"
-            else:
-                prior_block = chain_patterns.format_for_prompt(prior_stats, top_n=30)
-                priors_source = "patternregistry-events" if prior_block else "none"
+            patterns_block = chain_patterns.format_for_prompt(prior_stats, top_n=30)
+            provider_block = provider_reputation.format_history_for_prompt(provider_stats or {})
+            blocks = [b for b in (storage_block, patterns_block, provider_block) if b]
+            prior_block = "\n\n".join(blocks)
+            sources = []
+            if storage_block: sources.append("0g-storage")
+            if patterns_block: sources.append("patternregistry-events")
+            if provider_block: sources.append("provider-reputation")
+            priors_source = "+".join(sources) if sources else "none"
         except Exception as e:
             log.warning("prior fetch failed: %s — proceeding without", e)
             prior_stats = {}
             storage_blobs = []
+            provider_stats = {}
             prior_block = ""
             priors_source = "none"
         if prior_block:
-            # When storage is the source, summarize from storage blobs (richer);
-            # when chain events are the source, summarize from prior_stats (the
-            # existing aggregator). Both produce the same `top_codes` shape.
-            if priors_source == "0g-storage":
+            # When storage blobs are available, summarize from those (richer);
+            # otherwise use prior_stats. Both produce the same `top_codes` shape.
+            if storage_blobs:
                 from collections import Counter, defaultdict
                 code_actions: dict = defaultdict(Counter)
                 code_amounts: dict = defaultdict(list)
@@ -223,12 +236,30 @@ async def run(job_id: str) -> None:
             await _emit(
                 job_id, "patterns.prior_loaded",
                 source=priors_source,
-                blob_count=len(storage_blobs) if priors_source == "0g-storage" else 0,
+                blob_count=len(storage_blobs),
                 code_count=code_count,
                 total_observations=total_obs,
                 top_codes=top_codes,
                 registry_address=settings.pattern_registry_address,
                 registry_short=registry_short,
+                network="0g-galileo-testnet",
+            )
+
+        # Provider history fetched in parallel above; surface it as its own
+        # event so the dashboard shows the agents pulling from the on-chain
+        # ProviderReputation contract before they reason.
+        if provider_stats and provider_stats.get("total_audits", 0):
+            await _emit(
+                job_id, "provider.history_loaded",
+                npi=provider_stats.get("npi"),
+                npi_hash=provider_stats.get("npi_hash"),
+                total_audits=provider_stats.get("total_audits", 0),
+                dispute_count=provider_stats.get("dispute_count", 0),
+                clarify_count=provider_stats.get("clarify_count", 0),
+                approve_count=provider_stats.get("approve_count", 0),
+                dispute_rate_pct=provider_stats.get("dispute_rate_pct", 0.0),
+                total_flagged_usd=provider_stats.get("total_flagged_usd", 0.0),
+                registry_address=provider_stats.get("registry_address"),
                 network="0g-galileo-testnet",
             )
 

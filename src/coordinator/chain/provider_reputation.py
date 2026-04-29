@@ -127,12 +127,20 @@ def _do_record_sync(
         "type": 2,
         "maxFeePerGas": w3.to_wei(6, "gwei"),
         "maxPriorityFeePerGas": w3.to_wei(4, "gwei"),
-        "gas": 110_000,
+        # 5 SSTOREs into a cold slot (~41k each first time) plus event emit
+        # plus call overhead. 110k was an OOG silent revert — bumping past
+        # the worst-case cold-write budget.
+        "gas": 300_000,
     })
     signed = acct.sign_transaction(tx)
     tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=90, poll_latency=2)
     tx_hex = tx_hash.hex()
+    if receipt.status != 1:
+        raise RuntimeError(
+            f"recordAudit reverted on-chain (gas_used={receipt.gasUsed}/{300_000} "
+            f"tx={tx_hex if tx_hex.startswith('0x') else '0x' + tx_hex})"
+        )
     return {
         "executor": "0g-direct-provider-reputation",
         "live": True,
@@ -140,7 +148,7 @@ def _do_record_sync(
         "block_number": receipt.blockNumber,
         "registry_address": settings.provider_reputation_address,
         "npi_hash": npi_hash_hex,
-        "status": "confirmed" if receipt.status == 1 else "reverted",
+        "status": "confirmed",
     }
 
 
@@ -189,8 +197,11 @@ async def record_audit(
 
 
 async def fetch_stats(npi: str) -> Dict[str, Any]:
-    """Read aggregate stats for a given NPI. Used by the public providers page."""
+    """Read aggregate stats for a given NPI. Used by the public providers page
+    and by the audit pipeline to surface provider history before agents reason.
+    """
     if not settings.provider_reputation_address:
+        log.info("fetch_stats(%s): contract not configured", npi)
         return {"configured": False}
     npi_hash = hash_npi(npi)
 
@@ -216,7 +227,14 @@ async def fetch_stats(npi: str) -> Dict[str, Any]:
     try:
         s = await asyncio.to_thread(_read_sync)
         if s is None:
+            log.warning("fetch_stats(%s) hash=%s: rpc unreachable", npi, npi_hash[:18])
             return {"configured": True, "error": "rpc unreachable"}
+        log.info(
+            "fetch_stats(%s) hash=%s → total=%d dispute=%d clarify=%d approve=%d flagged_cents=%d",
+            npi, npi_hash[:18],
+            s["total_audits"], s["dispute_count"], s["clarify_count"],
+            s["approve_count"], s["total_flagged_cents"],
+        )
         s["npi"] = npi
         s["npi_hash"] = npi_hash
         s["dispute_rate_pct"] = round(
@@ -227,4 +245,32 @@ async def fetch_stats(npi: str) -> Dict[str, Any]:
         s["configured"] = True
         return s
     except Exception as e:
+        log.warning("fetch_stats(%s) hash=%s failed: %s", npi, npi_hash[:18], e)
         return {"configured": True, "error": str(e)[:200], "npi": npi}
+
+
+def format_history_for_prompt(stats: Dict[str, Any]) -> str:
+    """Compact-format provider reputation stats for the agent prompt.
+
+    Returns "" when stats are missing/zero so callers can join blocks
+    without empty placeholder noise.
+    """
+    if not stats or not stats.get("configured") or stats.get("error"):
+        return ""
+    total = int(stats.get("total_audits", 0) or 0)
+    if total == 0:
+        return ""
+    disp = int(stats.get("dispute_count", 0) or 0)
+    clar = int(stats.get("clarify_count", 0) or 0)
+    appr = int(stats.get("approve_count", 0) or 0)
+    flagged_usd = float(stats.get("total_flagged_usd", 0.0) or 0.0)
+    rate = stats.get("dispute_rate_pct", 0.0)
+    return (
+        "PROVIDER HISTORY (on-chain ProviderReputation, NPI hash "
+        f"{stats.get('npi_hash', '')[:18]}…):\n"
+        f"- prior audits: {total}\n"
+        f"- disputed: {disp} ({rate}%)  clarify: {clar}  approve: {appr}\n"
+        f"- total prior flagged: ${flagged_usd:,.2f}\n"
+        "Use this as a prior on this provider's billing patterns; "
+        "do not let it override evidence in the current bill.\n"
+    )
