@@ -191,6 +191,55 @@ async def refresh_loop(state: State, client: httpx.AsyncClient) -> None:
         await asyncio.sleep(SNAPSHOT_REFRESH_S)
 
 
+async def keyboard_quit_loop(quit_event: asyncio.Event) -> None:
+    """Background poller — sets `quit_event` when user presses 'q' or ESC.
+
+    Cross-platform: msvcrt on Windows, tty/select on Unix. Polls every 100 ms
+    so it doesn't pin the CPU. Falls back silently if stdin isn't a TTY (e.g.
+    output redirected to a pipe — Ctrl+C still works in that case).
+    """
+    import sys as _sys
+    if not _sys.stdin.isatty():
+        return
+
+    import platform
+    if platform.system() == "Windows":
+        try:
+            import msvcrt  # type: ignore[import-not-found]
+        except ImportError:
+            return
+        while not quit_event.is_set():
+            await asyncio.sleep(0.1)
+            if msvcrt.kbhit():
+                try:
+                    ch = msvcrt.getwch()
+                except Exception:
+                    continue
+                if ch and ch.lower() in ("q", "\x1b"):  # q or ESC
+                    quit_event.set()
+                    return
+    else:
+        try:
+            import termios
+            import tty
+            import select as _select
+        except ImportError:
+            return
+        fd = _sys.stdin.fileno()
+        old = termios.tcgetattr(fd)
+        try:
+            tty.setcbreak(fd)
+            while not quit_event.is_set():
+                await asyncio.sleep(0.1)
+                if _select.select([_sys.stdin], [], [], 0)[0]:
+                    ch = _sys.stdin.read(1)
+                    if ch.lower() in ("q", "\x1b"):
+                        quit_event.set()
+                        return
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Rendering
 # ─────────────────────────────────────────────────────────────────────────────
@@ -243,7 +292,8 @@ def render_header(state: State) -> Panel:
 
     bal_color = "yellow" if (bal_og is not None and bal_og < 0.005) else "green"
     markup = (
-        f"[bold cyan]Lethe coordinator[/bold cyan]  ·  {coord}\n"
+        f"[bold cyan]Lethe coordinator[/bold cyan]  ·  {coord}"
+        f"   [dim](press[/dim] [yellow]q[/yellow] [dim]to quit)[/dim]\n"
         f"[dim]wallet[/dim]  {short(addr, 10, 8)}   "
         f"[dim]bal[/dim]  [{bal_color}]{fmt_balance(bal_og)}[/{bal_color}]\n"
         f"SSE: {sse_dot} {sse_label}{sse_err}   "
@@ -490,21 +540,28 @@ async def main_async(coord_url: str, log_path: Optional[str]) -> None:
         console.print(f"[dim]logging events to[/dim] [cyan]{log_path}[/cyan] "
                       f"[dim](JSONL · one event per line)[/dim]")
 
+    quit_event = asyncio.Event()
+
     async with httpx.AsyncClient() as client:
         await fetch_snapshot(state, client)
 
         sse_task = asyncio.create_task(stream_events(state, client))
         refresh_task = asyncio.create_task(refresh_loop(state, client))
+        kb_task = asyncio.create_task(keyboard_quit_loop(quit_event))
 
         try:
             with Live(build_layout(state), console=console, refresh_per_second=4,
                       screen=False) as live:
-                while True:
+                while not quit_event.is_set():
                     live.update(build_layout(state))
-                    await asyncio.sleep(0.25)
+                    try:
+                        await asyncio.wait_for(quit_event.wait(), timeout=0.25)
+                    except asyncio.TimeoutError:
+                        pass
         finally:
             sse_task.cancel()
             refresh_task.cancel()
+            kb_task.cancel()
             if state.log_fp is not None:
                 state.log_fp.close()
 
