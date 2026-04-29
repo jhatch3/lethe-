@@ -1,0 +1,311 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 612. 792.]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 3205
+>>
+stream
+0.200025 w
+0 G
+BT
+/F10 14 Tf
+16.0999999999999979 TL
+0 g
+72. 720. Td
+(Formal dispute · medical bill review) Tj
+ET
+BT
+/F9 10.5 Tf
+12.0749999999999993 TL
+0 g
+72. 682. Td
+(Justin) Tj
+T* (123 Main) Tj
+T* (2026-04-29) Tj
+T* () Tj
+T* (To: Hatch) Tj
+T* (RE: Account ACC-123 · DOS 2024-05-05) Tj
+T* () Tj
+T* (Dear Billing Department,) Tj
+T* () Tj
+T* (I am writing to formally dispute charges totaling $1,670.00 on the above-referenced account. This dispute is) Tj
+T* (submitted pursuant to 45 CFR § 149.620, which establishes the federal patient-provider dispute resolution) Tj
+T* (process. An independent audit of the itemized statement has identified coding and billing errors that require) Tj
+T* (correction.) Tj
+T* () Tj
+T* (The following line items are disputed:) Tj
+T* () Tj
+T* (1. CPT 29877 — Arthroscopy, knee, surgical; debridement/shaving of articular cartilage — $875.00. This) Tj
+T* (procedure code appears to have been billed in violation of National Correct Coding Initiative \(NCCI\) edits.) Tj
+T* (Per the NCCI Policy Manual, Chapter 4, CPT 29877 is frequently bundled with other arthroscopic) Tj
+T* (procedures performed during the same operative session and may not be separately billable without) Tj
+T* (appropriate documentation and modifier usage. No such modifier or supporting documentation has been) Tj
+T* (provided.) Tj
+T* () Tj
+T* (2. Patient Responsibility Balance — $795.00. This balance includes amounts attributable to the improperly) Tj
+T* (unbundled CPT 29877 charge described above. Under the No Surprises Act, 45 CFR § 149.410 and §) Tj
+T* (2799B-1, patients may not be balance-billed for amounts stemming from improper coding, lack of prior) Tj
+T* (authorization, or other provider billing errors. The patient responsibility must be recalculated after correction) Tj
+T* (of the underlying coding error.) Tj
+T* () Tj
+T* (To ensure transparency and auditability, the original itemized statement has been cryptographically hashed) Tj
+T* (\(SHA-256: 4e14685c57214ae5011eb88530b8318f089885869dce9c5f395d7125951775db\) and anchored on) Tj
+T* (the 0G Chain decentralized ledger. This immutable record preserves the integrity of the disputed bill for) Tj
+T* (regulatory review.) Tj
+T* () Tj
+T* (I respectfully request that you provide a corrected, compliant itemized statement within thirty \(30\) calendar) Tj
+T* (days of receipt of this letter, along with written explanation of all adjustments made. If you believe the) Tj
+T* (original charges are correct, please provide the operative report, modifier justification, and NCCI edit) Tj
+T* (override documentation to support separate billing of CPT 29877.) Tj
+T* () Tj
+T* (Thank you for your prompt attention to this matter. I look forward to an amicable resolution in accordance) Tj
+T* (with applicable federal regulations.) Tj
+T* () Tj
+T* (Sincerely,) Tj
+T* (Justin) Tj
+ET
+BT
+/F9 8.5 Tf
+9.7749999999999986 TL
+0.471 g
+72. 52. Td
+(anchor sha256: 0x4e14685c57214ae5011eb88530b8318f089885869dce9c5f395d7125951775db) Tj
+ET
+BT
+/F9 8.5 Tf
+9.7749999999999986 TL
+0.471 g
+72. 40. Td
+(network: 0g galileo testnet · executor: keeperhub) Tj
+ET
+BT
+/F9 8.5 Tf
+9.7749999999999986 TL
+0.471 g
+72. 28. Td
+(audited via lethe · forgotten by design) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20260428211802-07'00')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000003377 00000 n 
+0000005194 00000 n 
+0000000015 00000 n 
+0000000120 00000 n 
+0000003434 00000 n 
+0000003559 00000 n 
+0000003689 00000 n 
+0000003822 00000 n 
+0000003959 00000 n 
+0000004082 00000 n 
+0000004211 00000 n 
+0000004343 00000 n 
+0000004479 00000 n 
+0000004607 00000 n 
+0000004734 00000 n 
+0000004863 00000 n 
+0000004996 00000 n 
+0000005098 00000 n 
+0000005442 00000 n 
+0000005528 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <4F3B342167927CBA3C4C3B2CAD43E37F> <4F3B342167927CBA3C4C3B2CAD43E37F> ]
+>>
+startxref
+5632
+%%EOF
