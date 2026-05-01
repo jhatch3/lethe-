@@ -4,12 +4,12 @@
 
 <h4><sub><i>Lethe</i> &nbsp;·&nbsp; <code>/ˈliː.θi/</code> &nbsp;·&nbsp; LEE-thee &nbsp;·&nbsp; the river of forgetfulness in Greek mythology</sub></h4>
 
-<h3>Medical bills, audited by AI consensus.<br/>Forgotten by design.</h3>
+<h3>Catch medical billing errors with AI.<br/>Without ever sharing your personal info.</h3>
 
 <p>
-  Your bill is parsed and redacted locally. The AI never sees your PHI.<br/>
-  Three independent agents vote on the redacted payload over a real Gensyn AXL mesh. Anything they agree is wrong is drafted into an appeal.<br/>
-  The original bill is held in coordinator memory only — never written to disk, never persisted on-chain.
+  Drop in your hospital bill. Lethe strips out everything personal — your name, your date of birth, your address — before any AI ever sees it.<br/>
+  Three independent AI models check the bill in parallel and have to <i>agree</i> before flagging an error. When they catch a mistake, Lethe drafts the appeal letter for you.<br/>
+  The original bill is never saved. Not on a server, not on the blockchain — wiped from memory the moment the audit ends.
 </p>
 
 <p>
@@ -39,14 +39,14 @@
 
 ## 📑 Table of contents
 
-- [🩺 Problem](#-problem)
-- [✨ Solution](#-solution)
+- [🩺 The problem](#-the-problem-medical-billing-is-broken)
+- [✨ The solution](#-the-solution-three-ais-that-have-to-agree-zero-memory-of-you)
 - [🎯 What the software does](#-what-the-software-does)
   - [Features](#features)
   - [Built with](#built-with)
   - [On-chain artifacts](#on-chain-artifacts)
   - [Contract reference](#contract-reference)
-  - [Hackathon tracks](#hackathon-tracks)
+  - [Powered by software that's changing what's possible](#powered-by-software-thats-changing-whats-possible)
 - [🎬 Demo](#-demo)
 - [📁 Repository structure](#-repository-structure)
 - [👥 Team](#-team)
@@ -57,58 +57,42 @@
 
 ---
 
-## 🩺 Problem
+## 🩺 The problem: medical billing is broken
 
-Most patients receive bills they can't read, can't afford, and can't dispute — even when those bills contain billing errors. The few tools that try to help store everything you upload, indefinitely.
+Picture this. You go in for a routine procedure. Weeks later, a bill shows up for $4,000. You can't read the codes. You can't tell what's wrong. You don't have hours to fight it. So you pay.
 
-<table>
-<tr>
-<td width="33%" valign="top">
+That's the reality for millions of Americans every year — and it's not a small problem. It's a quiet, nationwide tax on people who are already sick.
 
-### 80% of bills overcharge
-Surveys consistently find that the majority of itemized hospital bills contain at least one error in the patient's disfavor: duplicated codes, wrong modifiers, services that never happened.
+### A $125 billion mistake, every single year
 
-</td>
-<td width="33%" valign="top">
+| | |
+|---|---|
+| **$125B** | U.S. losses from medical billing errors annually ([HealthSureHub](https://healthsurehub.com/medical-billing-error-statistics/?utm_source=chatgpt.com)) |
+| **49–80%** | of itemized hospital bills contain at least one error — almost always in the patient's disfavor ([HealthSureHub](https://healthsurehub.com/medical-billing-error-statistics/?utm_source=chatgpt.com)) |
+| **$31B+** | improper Medicare and Medicaid payments per year ([CMS](https://www.cms.gov/newsroom/fact-sheets/fiscal-year-2024-improper-payments-fact-sheet?utm_source=chatgpt.com)) |
+| **38%** | of people who *do* dispute a bill get charges reduced or eliminated ([AJMC](https://www.ajmc.com/view/survey-exposes-pervasive-billing-errors-aggressive-tactics-in-us-health-insurance?utm_source=chatgpt.com)) |
+| **23%** | of people don't even try because the process takes too much time ([AJMC](https://www.ajmc.com/view/survey-exposes-pervasive-billing-errors-aggressive-tactics-in-us-health-insurance?utm_source=chatgpt.com)) |
+| **~50%** | of denied claims are never resubmitted because the friction is too high ([PCG Software](https://www.pcgsoftware.com/financial-impact-of-medical-billing-errors?utm_source=chatgpt.com)) |
 
-### Disputing is brutal
-The standard process means hours on the phone, navigating insurer portals, drafting appeal letters, and waiting weeks for a response. Most patients never start.
+So you have a system that overcharges most patients, makes disputing nearly impossible, and the few tools built to help? They upload your most private medical records to their servers and keep them forever. That's the *opposite* of what someone holding a sensitive bill wants.
 
-</td>
-<td width="33%" valign="top">
-
-### The few tools that exist store everything
-Existing services upload your records to a central database and keep them indefinitely. That's the opposite of what a HIPAA-anxious patient wants.
-
-</td>
-</tr>
-</table>
-
-### By the numbers
-
-**💸 Financial impact**
-- **$125B annual U.S. losses** tied to medical billing errors ([HealthSureHub](https://healthsurehub.com/medical-billing-error-statistics/?utm_source=chatgpt.com))
-- **38% of people who dispute bills get charges reduced or eliminated** ([AJMC](https://www.ajmc.com/view/survey-exposes-pervasive-billing-errors-aggressive-tactics-in-us-health-insurance?utm_source=chatgpt.com))
-- **$31B+ improper Medicare/Medicaid payments per year** ([CMS](https://www.cms.gov/newsroom/fact-sheets/fiscal-year-2024-improper-payments-fact-sheet?utm_source=chatgpt.com))
-
-**⏱️ Time and friction costs**
-- **23% of people do not dispute bills because it takes too much time** ([AJMC](https://www.ajmc.com/view/survey-exposes-pervasive-billing-errors-aggressive-tactics-in-us-health-insurance?utm_source=chatgpt.com))
-- **~50% of denied claims are never resubmitted** due to process friction ([PCG Software](https://www.pcgsoftware.com/financial-impact-of-medical-billing-errors?utm_source=chatgpt.com))
-
-**🧠 Supporting context**
-- **49–80% of medical bills contain errors** ([HealthSureHub](https://healthsurehub.com/medical-billing-error-statistics/?utm_source=chatgpt.com))
+**That's the gap Lethe fills.** Catch the errors. Never keep the data.
 
 ---
 
-## ✨ Solution
+## ✨ The solution: three AIs that have to agree, zero memory of you
 
-Lethe audits a medical bill in a way that **never trusts a single AI** and **never keeps the bill**.
+Lethe is built on two ideas: **never trust a single AI**, and **never keep the bill**. Here's what happens when you drop in a PDF, in plain English:
 
-Drop in a PDF. A deterministic parser extracts the structured data (CPT/ICD codes, modifiers, charges, dates of service) and a redaction pass strips every piece of PHI (patient name, DOB, address, MRN, account numbers) — *before any AI ever sees the payload*. Three independent AI agents (GPT-4o, Claude Sonnet, Gemini Flash) analyze the redacted bill in parallel; one of them can optionally run on a **decentralized inference node** instead of a closed model API. They **broadcast their own findings** over a [Gensyn AXL](https://blog.gensyn.ai/introducing-axl/) peer-to-peer mesh and run a **round-2 reflection** with their peers' findings as new context — so each agent gets a chance to revise its vote. A finding only enters the final result if **at least 2 of 3 agents agree** after that reflection round. A fourth agent (Claude) drafts a formal appeal letter from the agreed-on findings.
+1. **Read the bill.** A regular program (not an AI) pulls out the codes, charges, and dates of service.
+2. **Strip your identity.** Names, dates of birth, addresses, account numbers — all wiped out *before any AI sees a single byte*.
+3. **Three AIs check the work — independently.** GPT-4o, Claude Sonnet 4.5, and Gemini Flash each analyze the redacted bill in parallel. One can optionally run on a *decentralized* AI network instead of a centralized provider, so no single company controls the verdict.
+4. **They share findings and re-check.** The agents broadcast what they each found over a peer-to-peer network, then run a second pass with their peers' findings as new context. They're allowed to change their minds.
+5. **Two of three or it doesn't count.** A finding only makes the final result if at least 2 of the 3 agents agree on it after that second round. A 1-1-1 split falls back to *clarify* — Lethe never lets registration order silently pick a winner.
+6. **Draft the appeal.** A fourth AI writes a formal, citation-bearing dispute letter from the agreed-on errors. You review and download — Lethe never auto-submits anything.
+7. **Forget the bill.** The original PDF is wiped from memory. What stays on the blockchain is just a hash + verdict — proof the audit happened, with nothing inside it that could identify you.
 
-The original bill never touches storage and never reaches a model provider. It lives in coordinator memory long enough for the parser and redactor to run, then it's discarded. What persists is a SHA-256 + verdict on [0G Galileo](https://0g.ai), the same record mirrored to Ethereum Sepolia via [KeeperHub](https://keeperhub.com), the full anonymized audit blob in **0G Storage** with merkle root + commitment tx in the receipt, and (on `dispute`) a Sepolia filing.
-
-When the user types a provider's email and clicks **Send**, the coordinator dispatches a formatted appeal letter (with full chain verification) to the provider via a transactional email service, then KeeperHub fires a third workflow recording the send on-chain (recipient address keccak-hashed, never plaintext). **Three KeeperHub workflows, three on-chain records, one immutable audit trail per bill.**
+When you click **Send appeal**, Lethe emails the letter to the provider and writes a receipt on-chain that the appeal went out. **Three blockchain records per audit:** the verdict, the dispute filing (if there was one), and the appeal-sent attestation. Anyone can verify they happened — nobody can read what was in your bill.
 
 ### How it works
 
@@ -368,13 +352,17 @@ Both chains run the **same** [`LetheRegistry.sol`](./src/contracts/src/LetheRegi
 
 **Why the asymmetry:** Galileo is where the swarm thinks — `Finding` events feed prompts, the rulebook lives in 0G Storage, agent γ runs on 0G Compute. Sepolia is where KeeperHub proves to the wider Ethereum ecosystem that the audit happened: three workflows, three methods, one immutable ledger entry per real-world action.
 
-### Hackathon tracks
+### Powered by software that's changing what's possible
 
-> Submitted to all three sponsor tracks at [ETHGlobal OpenAgents](https://ethglobal.com/events/openagents). Each track maps to a load-bearing piece of the system, with verifiable on-chain or open-source artifacts.
+Lethe couldn't have been built five years ago. The pieces it depends on — distributed AI compute, peer-to-peer agent meshes, cross-chain workflow execution — were research papers, not production systems. **Three sponsor companies took those ideas and shipped them**, and each one is making a category of software possible that used to require trusting a single corporation.
 
-#### 🎖️ Track 1 — Gensyn AXL · Best Application of AXL
+> Submitted to all three sponsor tracks at [ETHGlobal OpenAgents](https://ethglobal.com/events/openagents). Each one maps to a load-bearing piece of the system, with verifiable on-chain or open-source artifacts.
 
-**How we use AXL:** Each of the three audit agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 keypair, joined to the public Gensyn mesh via two TLS bootstrap peers. Agents exchange findings between rounds via real `POST /send` broadcasts and `GET /recv` inbox drains — the round-2 reflection LLM call literally cannot fire without findings arriving across the mesh. The frontend `/axl` page renders **live topology** plus a 200-entry message log (every send/recv with bytes, latency, and signed pubkey pair).
+#### 🎖️ Gensyn — letting AI agents talk to each other directly
+
+**Why this matters for the world.** Most "multi-agent AI" today is one server orchestrating a few model calls in a loop. That's not really agents collaborating — it's one program calling APIs. **Gensyn AXL** is a peer-to-peer network where independent agents can find each other and exchange messages directly, with cryptographic identities and end-to-end encryption. That unlocks AI consensus the way it should work: agents on different nodes, run by different operators, sharing findings without a single party in the middle. For sensitive use cases like healthcare, legal, or finance — where you can't have one company silently controlling the verdict — that's a genuine breakthrough.
+
+**How Lethe uses AXL.** Each of the three audit agents has its own AXL sidecar Docker container running the upstream Gensyn `node` binary with a unique ed25519 keypair, joined to the public Gensyn mesh via two TLS bootstrap peers. Agents exchange findings between rounds via real `POST /send` broadcasts and `GET /recv` inbox drains — the round-2 reflection LLM call literally cannot fire without findings arriving across the mesh. The frontend `/axl` page renders **live topology** plus a 200-entry message log (every send/recv with bytes, latency, and signed pubkey pair).
 
 **Cross-node communication proof:**
 - Three separate Docker services in [`docker-compose.yml`](./docker-compose.yml) — `axl-alpha`, `axl-beta`, `axl-gamma`
@@ -384,9 +372,11 @@ Both chains run the **same** [`LetheRegistry.sol`](./src/contracts/src/LetheRegi
 
 **Code:** [`agents/transport_axl.py`](./src/coordinator/agents/transport_axl.py) (HTTP client + 200-entry message ring buffer), [`pipeline/runner.py`](./src/coordinator/pipeline/runner.py) (`_exchange()` and `_reflect_all()` stages), [`infra/axl/`](./infra/axl/) (Dockerfile + per-peer configs).
 
-#### 🛠️ Track 2 — 0G · Best Autonomous Agents, Swarms & iNFT Innovations
+#### 🛠️ 0G — making decentralized AI infrastructure actually usable
 
-**How we use 0G — three pillars:** Lethe is a 3-agent swarm (GPT-4o · Claude · Gemini) that uses **the entire 0G stack**:
+**Why this matters for the world.** A lot of "decentralized AI" is marketing. **0G** is the rare project that built the three primitives needed to run real AI applications without trusting a single provider: a high-throughput chain for verifiable records, a storage layer for model weights and large blobs, and a compute network for distributed inference. When an AI judges your medical bill — or your loan application, or a court filing — it shouldn't be possible for a single company to silently swap the model out from under you. 0G is the infrastructure that lets that promise actually be kept: every verdict anchored on a public chain, every rulebook stored as a versioned manifest anyone can audit, and the inference itself running on a network instead of a closed API.
+
+**How Lethe uses 0G — three pillars:** Lethe is a 3-agent swarm (GPT-4o · Claude · Gemini) that uses **the entire 0G stack**:
 
 - **0G Chain.** `LetheRegistry` is one contract that owns the full audit surface — anchor record (SHA-256, verdict, NPI hash, storage root, rulebook version), `Finding` events for each consensus finding, aggregate provider stats updated atomically inside `anchor()`, and the rulebook manifest pointer. The coordinator reads `Finding` events back via `eth_getLogs` (cached 120s) and feeds aggregate dispute/clarify rates into agent prompts as priors. **Each new audit gets smarter via on-chain shared memory — and there's exactly one address to verify.**
 - **0G Storage — bidirectional.** Every audit's full anonymized record is uploaded as a JSON blob via `@0glabs/0g-ts-sdk` (through a local Node sidecar) — returns a merkle root + on-chain commitment tx. The `(billHash → storageRoot)` pointer is *also* written to a deployed `StorageIndex` contract on Galileo, so future audits query `eth_getLogs` for recent roots and pull blobs back via the sidecar's `GET /download?root=R` endpoint. **The agents read priors from Storage** when blobs are available (full code strings + voter agent names) — strictly richer than the `bytes32`-truncated `PatternRegistry` events. Storage isn't cold archive; it's the primary memory layer.
@@ -400,9 +390,11 @@ Both chains run the **same** [`LetheRegistry.sol`](./src/contracts/src/LetheRegi
 
 **Code:** [`chain/zerog.py`](./src/coordinator/chain/zerog.py) (anchor writes), [`chain/zerog_storage.py`](./src/coordinator/chain/zerog_storage.py) (PatternRegistry indexer), [`chain/zerog_blob.py`](./src/coordinator/chain/zerog_blob.py) (0G Storage uploader · 4 KB padding · circuit breaker), [`chain/storage_priors.py`](./src/coordinator/chain/storage_priors.py) (StorageIndex pointer write + read-back loop), [`chain/patterns.py`](./src/coordinator/chain/patterns.py) (chain-event priors fallback), [`agents/audit_0g.py`](./src/coordinator/agents/audit_0g.py) (γ on 0G Compute), [`agents/audit_google.py`](./src/coordinator/agents/audit_google.py) (γ factory · auto-fallback to Gemini), [`scripts/storage_sidecar.ts`](./src/coordinator/scripts/storage_sidecar.ts) and [`scripts/headers_sidecar.ts`](./src/coordinator/scripts/headers_sidecar.ts) (Node bridges to 0G TS SDKs).
 
-#### 💚 Track 3 — KeeperHub · Best Innovative Use of KeeperHub
+#### 💚 KeeperHub — turning agreements into automatic, verifiable actions
 
-**How we use KeeperHub — three distinct workflows.** KeeperHub is the execution platform that turns one consensus into multiple chain-verifiable side effects:
+**Why this matters for the world.** The hardest part of any blockchain product isn't writing the smart contract. It's getting the right thing to happen at the right time, across systems that don't trust each other. **KeeperHub** is the workflow layer that handles "when X happens here, fire Y over there" — across chains, off-chain APIs, and time-delayed conditions. An AI consensus is just a thought until something happens because of it: a record gets written, an email goes out, a follow-up fires weeks later. KeeperHub is what turns a software opinion into a verifiable real-world action. For software that's supposed to *advocate* for someone — patients, borrowers, plaintiffs — that follow-through is the whole product.
+
+**How Lethe uses KeeperHub — three distinct workflows.** KeeperHub turns one consensus into multiple chain-verifiable side effects:
 
 All three workflows hit the **same** `LetheRegistry` contract on Sepolia ([`0x93D6…973E`](https://sepolia.etherscan.io/address/0x93D691801FE81Fe3aC7187fe1F394f40a045973E)) — three different methods, three different gates, one address.
 
@@ -540,6 +532,6 @@ Disputes drafted by Lethe should be reviewed by a human before submission to a r
 
 <br /><br />
 
-<a href="#-problem"><b>↑ Back to top ↑</b></a>
+<a href="#-the-problem-medical-billing-is-broken"><b>↑ Back to top ↑</b></a>
 
 </div>
