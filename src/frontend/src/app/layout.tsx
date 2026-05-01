@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { Raleway, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Web3Provider } from "@/components/Web3Provider";
 
-const inter = Inter({
-  variable: "--font-inter",
-  weight: ["300", "400", "500", "600"],
-  subsets: ["latin"],
-});
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
+// Roobert is the primary brand typeface in the monopo-saigon style guide,
+// but it is not available on Google Fonts. The spec explicitly substitutes
+// `system-ui, sans-serif`, so we expose a CSS variable that resolves to that
+// stack and let any future self-hosted Roobert webfont layer in front of it
+// without touching every component.
+const raleway = Raleway({
+  variable: "--font-raleway",
+  weight: ["300", "400", "600"],
   subsets: ["latin"],
 });
 
@@ -36,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${raleway.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <Web3Provider>{children}</Web3Provider>

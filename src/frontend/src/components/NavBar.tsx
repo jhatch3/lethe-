@@ -50,6 +50,12 @@ export function NavBar({ subBrand, cta }: NavBarProps) {
         <Link href={isHome ? "#features" : "/#features"} onClick={handleAnchor("features")}>
           Features
         </Link>
+        <Link href={isHome ? "#patterns" : "/#patterns"} onClick={handleAnchor("patterns")}>
+          Patterns
+        </Link>
+        <Link href={isHome ? "#rules" : "/#rules"} onClick={handleAnchor("rules")}>
+          Rules
+        </Link>
         <a
           href="https://github.com/jhatch3/lethe-"
           target="_blank"
@@ -65,12 +71,13 @@ export function NavBar({ subBrand, cta }: NavBarProps) {
               href="/my-audits"
               style={{
                 fontSize: 12,
-                fontFamily: "var(--font-jetbrains-mono), monospace",
-                padding: "5px 10px",
+                fontFamily: "var(--font-roobert)",
+                padding: "8px 14px",
                 border: "1px solid var(--line-strong)",
-                borderRadius: 3,
-                color: "var(--accent-violet)",
+                borderRadius: "var(--radius-buttons)",
+                color: "var(--color-frost-white)",
                 textDecoration: "none",
+                letterSpacing: 0,
               }}
               title="View audits anchored from this wallet"
             >
@@ -81,10 +88,10 @@ export function NavBar({ subBrand, cta }: NavBarProps) {
               style={{
                 background: "transparent",
                 border: "none",
-                color: "var(--ink-faint)",
-                fontSize: 11,
+                color: "var(--color-whisper-gray)",
+                fontSize: 14,
                 cursor: "pointer",
-                padding: "2px 4px",
+                padding: "2px 6px",
               }}
               title="Disconnect wallet"
             >
@@ -96,14 +103,15 @@ export function NavBar({ subBrand, cta }: NavBarProps) {
             onClick={() => void connect()}
             disabled={connecting}
             style={{
-              fontSize: 12,
-              padding: "5px 12px",
+              fontSize: 13,
+              padding: "8px 16px",
               border: "1px solid var(--line-strong)",
-              borderRadius: 3,
+              borderRadius: "var(--radius-buttons)",
               background: "transparent",
-              color: "var(--ink)",
+              color: "var(--color-frost-white)",
               cursor: connecting ? "wait" : "pointer",
-              fontFamily: "inherit",
+              fontFamily: "var(--font-roobert)",
+              letterSpacing: 0,
             }}
             title="Connect a wallet to track your audits"
           >
