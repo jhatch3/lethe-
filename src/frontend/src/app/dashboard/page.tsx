@@ -12,6 +12,7 @@ import {
   type DragEvent,
 } from "react";
 import { NavBar } from "@/components/NavBar";
+import { useWallet } from "@/components/useWallet";
 
 type Phase = "idle" | "processing" | "complete";
 
@@ -297,6 +298,7 @@ const reveal = (delay = 0) => ({
 });
 
 export default function Dashboard() {
+  const { address, connect: connectWallet } = useWallet();
   const [phase, setPhase] = useState<Phase>("idle");
   const [step, setStep] = useState(-1);
   const [filename, setFilename] = useState("");
@@ -1121,14 +1123,21 @@ export default function Dashboard() {
     }
   }, []);
 
+  const requireWallet = useCallback((): boolean => {
+    if (address) return true;
+    void connectWallet();
+    return false;
+  }, [address, connectWallet]);
+
   const onFile = useCallback(
     (file: File | null) => {
       if (!file) return;
       const ok = /\.(pdf|txt|png|jpg|jpeg|webp)$/i.test(file.name);
       if (!ok) return;
+      if (!requireWallet()) return;
       void startUpload(file);
     },
-    [startUpload]
+    [startUpload, requireWallet]
   );
 
   const onDrop = useCallback(
@@ -1136,10 +1145,25 @@ export default function Dashboard() {
       e.preventDefault();
       setDragging(false);
       const f = e.dataTransfer?.files?.[0];
-      if (f) onFile(f);
+      if (!f) return;
+      if (!requireWallet()) return;
+      onFile(f);
     },
-    [onFile]
+    [onFile, requireWallet]
   );
+
+  const onSampleClick = useCallback(
+    (name: string, ext: string) => {
+      if (!requireWallet()) return;
+      void startSample(name, ext);
+    },
+    [startSample, requireWallet]
+  );
+
+  const onUploadStageClick = useCallback(() => {
+    if (!requireWallet()) return;
+    fileInputRef.current?.click();
+  }, [requireWallet]);
 
   const progress = useMemo(() => {
     if (phase === "idle") return 0;
@@ -1197,7 +1221,7 @@ export default function Dashboard() {
                 <motion.div
                   className={`upload-stage${dragging ? " dragging" : ""}`}
                   {...reveal(0.25)}
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={onUploadStageClick}
                   onDragOver={(e) => {
                     e.preventDefault();
                     setDragging(true);
@@ -1206,9 +1230,13 @@ export default function Dashboard() {
                   onDrop={onDrop}
                 >
                   <div className="up-glyph">+</div>
-                  <div className="up-h">Drop a file or click to choose</div>
+                  <div className="up-h">
+                    {address ? "Drop a file or click to choose" : "Connect wallet to upload"}
+                  </div>
                   <div className="up-p">
-                    Parsed and redacted locally before any agent sees it. Original is never written to disk.
+                    {address
+                      ? "Parsed and redacted locally before any agent sees it. Original is never written to disk."
+                      : "Audits are anchored to your wallet so you can verify them later. Connect a wallet to begin."}
                   </div>
                   <div className="upload-types">
                     <span>pdf</span>
@@ -1235,7 +1263,7 @@ export default function Dashboard() {
                         <button
                           key={s.name}
                           className="sample-chip"
-                          onClick={() => startSample(s.name, s.ext)}
+                          onClick={() => onSampleClick(s.name, s.ext)}
                         >
                           {s.name}
                           <span className="ext">{s.ext}</span>

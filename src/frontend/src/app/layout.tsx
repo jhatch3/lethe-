@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Web3Provider } from "@/components/Web3Provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -37,7 +38,9 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <Web3Provider>{children}</Web3Provider>
+      </body>
     </html>
   );
 }
