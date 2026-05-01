@@ -1,85 +1,42 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-
-/** Minimal wallet hook — no wagmi/viem dependency. Just window.ethereum. */
+import { useAccount, useDisconnect } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 const STORAGE_KEY = "lethe.wallet.address";
 
-type EthRequestArgs = { method: string; params?: unknown[] };
-type EthOnHandler = (...args: unknown[]) => void;
-type EthereumProvider = {
-  request: (args: EthRequestArgs) => Promise<unknown>;
-  on?: (event: string, handler: EthOnHandler) => void;
-  removeListener?: (event: string, handler: EthOnHandler) => void;
-};
-
-declare global {
-  interface Window {
-    ethereum?: EthereumProvider;
-  }
-}
-
 export function useWallet() {
-  const [address, setAddress] = useState<string | null>(null);
-  const [connecting, setConnecting] = useState(false);
+  const { address: rawAddress, isConnecting, isReconnecting } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const { disconnect: wagmiDisconnect } = useDisconnect();
   const [error, setError] = useState<string | null>(null);
 
-  // Hydrate from localStorage on mount so the connection survives reload.
+  const address = rawAddress ? rawAddress.toLowerCase() : null;
+  const connecting = isConnecting || isReconnecting;
+
+  // Mirror connected address into localStorage so legacy reads
+  // (dashboard/page.tsx reads `lethe.wallet.address` directly) keep working.
   useEffect(() => {
     try {
-      const cached = localStorage.getItem(STORAGE_KEY);
-      if (cached && /^0x[0-9a-fA-F]{40}$/.test(cached)) setAddress(cached);
+      if (address) localStorage.setItem(STORAGE_KEY, address);
+      else localStorage.removeItem(STORAGE_KEY);
     } catch {}
-  }, []);
-
-  // Listen for account changes from the injected wallet.
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.ethereum?.on) return;
-    const handler: EthOnHandler = (...args: unknown[]) => {
-      const accounts = args[0] as string[] | undefined;
-      const next = accounts?.[0]?.toLowerCase() ?? null;
-      setAddress(next);
-      try {
-        if (next) localStorage.setItem(STORAGE_KEY, next);
-        else localStorage.removeItem(STORAGE_KEY);
-      } catch {}
-    };
-    window.ethereum.on("accountsChanged", handler);
-    return () => {
-      window.ethereum?.removeListener?.("accountsChanged", handler);
-    };
-  }, []);
+  }, [address]);
 
   const connect = useCallback(async () => {
-    if (typeof window === "undefined" || !window.ethereum) {
-      setError("No wallet found. Install MetaMask or another EIP-1193 wallet.");
-      return null;
-    }
-    setConnecting(true);
     setError(null);
-    try {
-      const accounts = (await window.ethereum.request({
-        method: "eth_requestAccounts",
-      })) as string[];
-      const next = accounts[0]?.toLowerCase() ?? null;
-      setAddress(next);
-      if (next) {
-        try { localStorage.setItem(STORAGE_KEY, next); } catch {}
-      }
-      return next;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+    if (!openConnectModal) {
+      setError("Wallet modal unavailable. Refresh the page and try again.");
       return null;
-    } finally {
-      setConnecting(false);
     }
-  }, []);
+    openConnectModal();
+    return null;
+  }, [openConnectModal]);
 
   const disconnect = useCallback(() => {
-    setAddress(null);
-    try { localStorage.removeItem(STORAGE_KEY); } catch {}
-  }, []);
+    wagmiDisconnect();
+  }, [wagmiDisconnect]);
 
   return { address, connecting, error, connect, disconnect };
 }
@@ -120,9 +77,8 @@ export function appendAudit(wallet: string | null, audit: LocalAudit): void {
   try {
     const key = AUDITS_KEY_PREFIX + wallet.toLowerCase();
     const existing = loadAudits(wallet);
-    // Dedupe by sha
     const filtered = existing.filter((a) => a.sha !== audit.sha);
-    const next = [audit, ...filtered].slice(0, 100); // cap at 100 most recent
+    const next = [audit, ...filtered].slice(0, 100);
     localStorage.setItem(key, JSON.stringify(next));
   } catch {}
 }
