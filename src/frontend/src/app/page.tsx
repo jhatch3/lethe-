@@ -90,6 +90,14 @@ export default function Home() {
           <span><b>KH</b>: 3 workflows</span>
           <span><b>1</b> contract per chain</span>
         </motion.div>
+
+        <motion.div
+          className="scroll-cue"
+          style={{ opacity: heroFade }}
+          aria-hidden="true"
+        >
+          <span className="cue-arrow">↓</span>
+        </motion.div>
       </section>
 
       <section id="problem" className="band">
@@ -108,7 +116,7 @@ export default function Home() {
               <div className="problem-stat">$125<span className="pct">B</span></div>
               <h3 className="problem-h">lost to billing errors every year</h3>
               <p className="problem-p">
-                ~80% of U.S. medical bills contain at least one error — duplicate codes, wrong modifiers, phantom services — and hospital errors push individual bills 26% above what was actually owed on average. The errors aren&apos;t rare; they&apos;re the default. The cost lands on patients, employers, and premiums.
+                Roughly 80% of U.S. medical bills contain at least one error. Duplicate codes, wrong modifiers, phantom services. On the bills that have errors, hospital overcharges average 26% above what was actually owed. The errors aren&apos;t rare. They&apos;re the default. And the cost lands on patients, employers, and premiums.
               </p>
               <div className="source">[1] HealthSureHub · medical billing error statistics &nbsp; [2] Aptarro · 2026 stats</div>
             </div>
@@ -116,7 +124,7 @@ export default function Home() {
               <div className="problem-stat">$88<span className="pct">B</span></div>
               <h3 className="problem-h">in medical debt on credit reports</h3>
               <p className="problem-p">
-                The CFPB estimates roughly $88B of medical debt sits on Americans&apos; credit reports — debt the agency calls &ldquo;often confusing and erroneous.&rdquo; Bills that may not even be valid still tank credit scores, block apartments, deny auto loans, and disqualify job applications. ~75% of disputes succeed when patients file — but 40% of adults don&apos;t know how to start.
+                The CFPB estimates roughly $88B of medical debt sits on Americans&apos; credit reports. The agency calls a lot of it &ldquo;confusing and erroneous.&rdquo; Bills that may not even be valid still tank credit scores, block apartments, deny auto loans, and disqualify job applications. About 75% of disputes succeed when patients actually file one. The catch: 40% of adults don&apos;t know how to start.
               </p>
               <div className="source">[3] CFPB / Hathr.AI &nbsp; [4] Solace Health · dispute success rates &nbsp; [5] AJMC 2026 survey</div>
             </div>
@@ -124,7 +132,7 @@ export default function Home() {
               <div className="problem-stat">$31<span className="pct">B</span></div>
               <h3 className="problem-h">in improper federal payments / year</h3>
               <p className="problem-p">
-                CMS reports $31B+ in improper Medicare/Medicaid payments annually — separate from the $125B private-pay figure above. That&apos;s taxpayer money flowing to bills that shouldn&apos;t have been paid. ~50% of denied claims are never even resubmitted because the appeal process is too slow.
+                CMS reports $31B+ in improper Medicare/Medicaid payments every year. That&apos;s separate from the $125B private-pay figure above. Taxpayer money, flowing to bills that shouldn&apos;t have been paid. And about half of denied claims never get resubmitted because the appeal process is too slow.
               </p>
               <div className="source">[6] CMS · FY2024 improper payments fact sheet &nbsp; [7] PCG Software · financial impact of billing errors</div>
             </div>
@@ -141,7 +149,7 @@ export default function Home() {
             </h2>
           </motion.div>
           <motion.p className="section-prose" {...reveal}>
-            Your bill enters coordinator memory, gets parsed and redacted, then disappears — never written to disk, never logged, never sent to a model provider, never persisted on-chain. Three independent agents (GPT-4o, Claude, Gemini) reason over the redacted payload, broadcast findings across a real peer-to-peer mesh, and re-vote with each other&apos;s reasoning as context; two of three must agree or the system says <em>clarify</em>. What stays is the proof — a SHA-256, a verdict, and anonymized findings anchored to <code>LetheRegistry</code>{" "}on 0G Galileo and mirrored to Ethereum Sepolia — plus, on dispute, a fourth agent drafts an appeal letter you review and send. Privacy isn&apos;t a setting; it&apos;s the architecture.
+            Your bill goes to the coordinator, gets parsed for billing codes, then PHI-redacted before anything leaves that process. The model providers only see the redacted payload: CPT/ICD codes, modifiers, charges, and dates of service. The original PDF stays in coordinator memory and is dropped when the audit ends. From there, three independent agents (GPT-4o, Claude Sonnet 4.5, Gemini Flash) reason over the redacted payload, broadcast their findings across a real Gensyn AXL peer-to-peer mesh, and re-vote with each other&apos;s findings as context. Action only fires when <em>≥2 of 3</em> agree. What we keep is just the proof: a SHA-256 of the original on <code>BillRegistry</code> (0G Galileo), the same record mirrored to Sepolia, anonymized findings on <code>PatternRegistry</code>, and the full audit record (findings, votes, drafts; not the bill) in 0G Storage, pointer-anchored on <code>StorageIndex</code>. If consensus is dispute, a fourth agent drafts an appeal letter you review before it sends. Privacy isn&apos;t a setting. It&apos;s the architecture.
           </motion.p>
         </div>
       </section>
@@ -154,39 +162,138 @@ export default function Home() {
               Built on <span className="em">three pillars.</span>
             </h2>
             <p className="section-kicker">
-              Memory, communication, execution — each handled by purpose-built decentralized infrastructure.
+              Memory, communication, execution. Each one handled by purpose-built decentralized infrastructure.
             </p>
           </motion.div>
           <motion.div className="tracks" {...reveal}>
             <div className="track a">
               <div className="role">/ memory</div>
-              <div className="name">0G — <em>chain · storage · compute</em></div>
+              <div className="name">0G <em>· chain, storage, compute</em></div>
               <p>
-                Three layers handle different jobs: <strong>Chain</strong> anchors the SHA-256 + verdict of every audit and indexes anonymized findings as on-chain events. <strong>Storage</strong> holds the full schema-versioned audit record off-chain but provably linked. <strong>Compute</strong> can run one of the agents on decentralized inference instead of a closed model API.
+                Three layers doing three different jobs. <strong>Chain.</strong> <code>BillRegistry</code> on 0G Galileo anchors the SHA-256 and verdict of every audit. <code>PatternRegistry</code> indexes anonymized findings as on-chain events the next audit can learn from. <strong>Storage.</strong> The full audit record (findings, votes, drafts; not the bill) lives on 0G Storage, with a merkle root pointer recorded on the <code>StorageIndex</code> contract so anyone can verify the record they&apos;re reading is the one that was anchored. <strong>Compute.</strong> The 0G compute broker is provisioned so an agent can run on decentralized inference instead of a closed model API.
               </p>
               <p className="pitch">
-                Ephemeral PHI, persistent learning. Agents get smarter without anyone&apos;s records being recoverable.
+                Ephemeral PHI, durable proof. The bill is gone. The verdict isn&apos;t.
               </p>
             </div>
             <div className="track b">
               <div className="role">/ communication</div>
-              <div className="name">Gensyn AXL — <em>peer-to-peer mesh</em></div>
+              <div className="name">Gensyn AXL <em>· peer-to-peer mesh</em></div>
               <p>
-                Each agent has its own cryptographic identity and runs in its own container, joined to a public encrypted mesh. Findings travel directly between agents over the overlay — there is no central message broker, no orchestrator silently nudging the answer, no single point of compromise.
+                Each agent has its own ed25519 identity and runs in its own AXL sidecar, joined to an encrypted overlay. Findings travel directly between peers. There&apos;s no central broker, no orchestrator silently nudging the answer toward consensus. Round 2 happens on the mesh: each agent re-votes with the other two&apos;s findings as context, and only then does the coordinator count the votes.
               </p>
               <p className="pitch">
-                Independence is verifiable, not just claimed. The mesh is load-bearing — peer review does not happen without it.
+                Independence is verifiable, not just claimed. Peer review does not happen without the mesh. It&apos;s load-bearing, not decoration.
               </p>
             </div>
             <div className="track c">
               <div className="role">/ execution</div>
-              <div className="name">KeeperHub — <em>workflow orchestration</em></div>
+              <div className="name">KeeperHub <em>· workflow orchestration</em></div>
               <p>
-                Three workflows fire per audit: mirror the anchor to a second chain, file the dispute on a separate on-chain registry when consensus disagrees, and attest when an appeal letter is sent. Retries, gas optimization, and an audit log are handled automatically.
+                Three KeeperHub workflows per audit. <strong>(1)</strong> Mirror the 0G anchor to Sepolia. <strong>(2)</strong> When consensus is <em>dispute</em>, file on the Sepolia <code>DisputeRegistry</code>. <strong>(3)</strong> When you click <em>Send appeal</em>, record an attestation on <code>AppealRegistry</code> as the email goes out. Retries, gas, and the run log are handled by the keeper.
               </p>
               <p className="pitch">
-                If one chain has issues, the proof still lives on the other. Every appeal sent has an immutable receipt.
+                If one chain stalls, the proof lives on the other. Every appeal sent has an immutable receipt.
               </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="patterns" className="band">
+        <div className="container">
+          <motion.div className="section-head" {...reveal}>
+            <span className="section-num">[ 04 ]</span>
+            <h2 className="section-title">
+              Patterns <span className="em">that learn.</span>
+            </h2>
+            <p className="section-kicker">
+              Anonymized findings, anchored on chain, queryable by anyone, and used as priors on the next audit.
+            </p>
+          </motion.div>
+          <motion.div className="split-row" {...reveal}>
+            <div className="split-text">
+              <p>
+                Every audit emits one event per consensus finding to the on-chain <code>PatternRegistry</code> on 0G Galileo. No PHI ever leaves the coordinator. Only the billing code, the action the agents took (<em>dispute</em>, <em>clarify</em>, or <em>aligned</em>), the severity, and the dollar amount.
+              </p>
+              <p className="dim">
+                The next audit reads those stats as priors. Agents see something like <em>&ldquo;CPT 99214 has been disputed 67% of the time across 47 prior audits&rdquo;</em> and calibrate their confidence accordingly. The system gets sharper over time, without anyone&apos;s records being recoverable.
+              </p>
+              <Link href="/patterns" className="btn btn-ghost split-cta">
+                Browse the registry <span className="arr">→</span>
+              </Link>
+            </div>
+            <div className="explain-card">
+              <div className="card-eyebrow">PatternRegistry &middot; 0G Galileo</div>
+              <div className="pattern-row">
+                <span className="p-code">CPT 99214</span>
+                <span className="p-desc">Office visit, established patient (moderate complexity)</span>
+                <span className="p-amt">$245</span>
+              </div>
+              <div className="pattern-stats">
+                <div className="ps">
+                  <span className="ps-num">47</span>
+                  <span className="ps-label">Observations</span>
+                </div>
+                <div className="ps">
+                  <span className="ps-num warn">67%</span>
+                  <span className="ps-label">Dispute rate</span>
+                </div>
+                <div className="ps">
+                  <span className="ps-num">12%</span>
+                  <span className="ps-label">Clarify rate</span>
+                </div>
+              </div>
+              <div className="card-foot">
+                Read by every audit before round 1. Written to by every audit after consensus.
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="rules" className="band">
+        <div className="container">
+          <motion.div className="section-head" {...reveal}>
+            <span className="section-num">[ 05 ]</span>
+            <h2 className="section-title">
+              Rules <span className="em">anyone can read.</span>
+            </h2>
+            <p className="section-kicker">
+              The same NCCI ruleset CMS publishes, codified on chain so every audit is grounded in the same canonical source.
+            </p>
+          </motion.div>
+          <motion.div className="split-row" {...reveal}>
+            <div className="split-text">
+              <p>
+                CMS publishes the <strong>NCCI</strong> (National Correct Coding Initiative) ruleset quarterly: which codes are mutually exclusive, which require modifiers, which have units caps. Lethe codifies the active rules in an on-chain <code>NCCIRulebook</code> contract on 0G Galileo.
+              </p>
+              <p className="dim">
+                Audit agents query this contract at reasoning time, so every audit is grounded in the same canonical ruleset. <em>No hidden vendor configuration. No opaque overrides.</em> If a ruling looks wrong, you can read the rule that produced it, and the rule&apos;s citation back to CMS.
+              </p>
+              <Link href="/rules" className="btn btn-ghost split-cta">
+                Open the rulebook <span className="arr">→</span>
+              </Link>
+            </div>
+            <div className="explain-card">
+              <div className="card-eyebrow">NCCIRulebook &middot; v2025-Q3</div>
+              <div className="rule-row">
+                <span className="r-kind">modifier_required</span>
+                <span className="r-codes">
+                  CPT 99213 <span className="arrow">+</span> 11042 <span className="mod">requires modifier 25</span>
+                </span>
+                <span className="r-cite">When an E&amp;M service is performed same-day as a procedure, modifier 25 is required to indicate it was significant and separately identifiable.</span>
+              </div>
+              <div className="rule-row">
+                <span className="r-kind">mutually_exclusive</span>
+                <span className="r-codes">
+                  CPT 80061 <span className="arrow">×</span> 82465
+                </span>
+                <span className="r-cite">A lipid panel already includes total cholesterol; billing both as separate line items is a duplicate.</span>
+              </div>
+              <div className="card-foot">
+                3 rule kinds shown of 5 codified · queryable from any chain
+              </div>
             </div>
           </motion.div>
         </div>
@@ -318,9 +425,6 @@ export default function Home() {
           Drop a bill.<br />
           <em>We&apos;ll handle the rest.</em>
         </motion.h2>
-        <motion.p {...reveal} transition={{ ...reveal.transition, delay: 0.08 }}>
-          Sample bills are loaded in the dashboard. Watch three agents reach consensus over the AXL mesh — live, in your browser.
-        </motion.p>
         <motion.div className="hero-ctas" {...reveal} transition={{ ...reveal.transition, delay: 0.16 }}>
           <Link className="btn btn-primary" href="/dashboard">
             Open dashboard <span className="arr">→</span>
